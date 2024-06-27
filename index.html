@@ -7,14 +7,16 @@
     <style>
         .module {
             border: 1px solid #ccc;
-            padding: 10px;
+            padding: 20px;
             margin: 10px;
             cursor: grab;
+            font-size: 16px;
+            text-align: center;
         }
         .drop-area {
             border: 2px dashed #ccc;
             padding: 20px;
-            min-height: 200px;
+            min-height: 400px;
             margin-top: 20px;
         }
         .dragging {
@@ -22,6 +24,10 @@
         }
         .controls {
             margin-bottom: 20px;
+        }
+        .preview-img {
+            max-width: 100%;
+            height: auto;
         }
     </style>
 </head>
@@ -32,14 +38,14 @@
             <div class="col-md-4">
                 <h2>Módulos Disponibles</h2>
                 <div id="modules">
-                    <div class="module" draggable="true" data-html="<div class='banner'><img src='URL' alt='Banner' width='1160' height='480'></div>">Módulo 1: Banner principal sin texto</div>
-                    <div class="module" draggable="true" data-html="<div class='text-columns'><div class='column'>Texto columna 1</div><div class='column'>Texto columna 2</div></div>">Módulo 2: Texto en 2 columnas</div>
-                    <div class="module" draggable="true" data-html="<div class='img-right'><img src='URL' alt='Imagen' width='560' height='315'><div class='text'>Descripción</div></div>">Módulo 3: Imagen con texto a la derecha</div>
-                    <div class="module" draggable="true" data-html="<div class='img-left'><div class='text'>Descripción</div><img src='URL' alt='Imagen' width='560' height='315'></div>">Módulo 4: Imagen con texto a la izquierda</div>
-                    <div class="module" draggable="true" data-html="<div class='text-list-columns'><ul><li>Característica 1</li><li>Característica 2</li></ul><ul><li>Característica 3</li><li>Característica 4</li></ul></div>">Módulo 5: Lista de texto en 2 columnas</div>
-                    <div class="module" draggable="true" data-html="<div class='banner-text'><img src='URL' alt='Banner con texto' width='1160' height='360'><div class='text'>Título</div></div>">Módulo 6: Banner con texto</div>
-                    <div class="module" draggable="true" data-html="<div class='two-imgs'><div class='img'><img src='URL' alt='Imagen 1' width='560' height='315'><div class='text'>Descripción 1</div></div><div class='img'><img src='URL' alt='Imagen 2' width='560' height='315'><div class='text'>Descripción 2</div></div></div>">Módulo 7: 2 imágenes con texto debajo</div>
-                    <div class="module" draggable="true" data-html="<div class='video-text'><video width='773' height='435' controls><source src='URL' type='video/mp4'></video><div class='text'>Descripción del video</div></div>">Módulo 8: Video más texto</div>
+                    <div class="module" draggable="true" data-module="1">Módulo 1: Banner principal sin texto</div>
+                    <div class="module" draggable="true" data-module="2">Módulo 2: Texto en 2 columnas</div>
+                    <div class="module" draggable="true" data-module="3">Módulo 3: Imagen con texto a la derecha</div>
+                    <div class="module" draggable="true" data-module="4">Módulo 4: Imagen con texto a la izquierda</div>
+                    <div class="module" draggable="true" data-module="5">Módulo 5: Lista de texto en 2 columnas</div>
+                    <div class="module" draggable="true" data-module="6">Módulo 6: Banner con texto</div>
+                    <div class="module" draggable="true" data-module="7">Módulo 7: 2 imágenes con texto debajo</div>
+                    <div class="module" draggable="true" data-module="8">Módulo 8: Video más texto</div>
                 </div>
             </div>
             <div class="col-md-8">
@@ -56,7 +62,7 @@
     <script>
         $(document).ready(function() {
             $('.module').on('dragstart', function(event) {
-                event.originalEvent.dataTransfer.setData('text/html', $(this).data('html'));
+                event.originalEvent.dataTransfer.setData('text/plain', $(this).data('module'));
                 $(this).addClass('dragging');
             });
             $('.module').on('dragend', function() {
@@ -68,14 +74,45 @@
             });
             $('#drop-area').on('drop', function(event) {
                 event.preventDefault();
-                var html = event.originalEvent.dataTransfer.getData('text/html');
-                $(this).append(html);
+                var moduleId = event.originalEvent.dataTransfer.getData('text/plain');
+                addModuleToDropArea(moduleId);
             });
             $('#generate-html').on('click', function() {
                 var generatedHtml = $('#drop-area').html();
                 $('#generated-html').val(generatedHtml);
             });
         });
+
+        function addModuleToDropArea(moduleId) {
+            var html = '';
+            switch(moduleId) {
+                case '1':
+                    html = `<div class='module' contenteditable='true'><img src='https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabellaCL/inpage_media/SKU-IMG_VISTA/public' alt='Banner' class='preview-img' width='1160' height='480'></div>`;
+                    break;
+                case '2':
+                    html = `<div class='module' contenteditable='true'><div class='text-columns'><div class='column'>Texto columna 1</div><div class='column'>Texto columna 2</div></div></div>`;
+                    break;
+                case '3':
+                    html = `<div class='module' contenteditable='true'><div class='img-right'><img src='https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabellaCL/inpage_media/SKU-IMG_VISTA/public' alt='Imagen' class='preview-img' width='560' height='315'><div class='text'>Descripción</div></div></div>`;
+                    break;
+                case '4':
+                    html = `<div class='module' contenteditable='true'><div class='img-left'><div class='text'>Descripción</div><img src='https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabellaCL/inpage_media/SKU-IMG_VISTA/public' alt='Imagen' class='preview-img' width='560' height='315'></div></div>`;
+                    break;
+                case '5':
+                    html = `<div class='module' contenteditable='true'><div class='text-list-columns'><ul><li>Característica 1</li><li>Característica 2</li></ul><ul><li>Característica 3</li><li>Característica 4</li></ul></div></div>`;
+                    break;
+                case '6':
+                    html = `<div class='module' contenteditable='true'><div class='banner-text'><img src='https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabellaCL/inpage_media/SKU-IMG_VISTA/public' alt='Banner con texto' class='preview-img' width='1160' height='360'><div class='text'>Título</div></div></div>`;
+                    break;
+                case '7':
+                    html = `<div class='module' contenteditable='true'><div class='two-imgs'><div class='img'><img src='https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabellaCL/inpage_media/SKU-IMG_VISTA/public' alt='Imagen 1' class='preview-img' width='560' height='315'><div class='text'>Descripción 1</div></div><div class='img'><img src='https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabellaCL/inpage_media/SKU-IMG_VISTA/public' alt='Imagen 2' class='preview-img' width='560' height='315'><div class='text'>Descripción 2</div></div></div></div>`;
+                    break;
+                case '8':
+                    html = `<div class='module' contenteditable='true'><div class='video-text'><video width='773' height='435' controls><source src='URL' type='video/mp4'></video><div class='text'>Descripción del video</div></div></div>`;
+                    break;
+            }
+            $('#drop-area').append(html);
+        }
     </script>
 </body>
 </html>
