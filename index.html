@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Generador de HTML</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .module {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            cursor: grab;
+        }
+        .drop-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            min-height: 200px;
+        }
+        .dragging {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generador de HTML</h1>
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Módulos Disponibles</h2>
+                <div id="modules">
+                    <div class="module" draggable="true" data-html="<div>Texto</div>">Módulo de Texto</div>
+                    <div class="module" draggable="true" data-html="<div><img src='URL' alt='Imagen'></div>">Módulo de Imagen</div>
+                    <!-- Agrega más módulos según sea necesario -->
+                </div>
+            </div>
+            <div class="col-md-8">
+                <h2>Construye tu Página</h2>
+                <div id="drop-area" class="drop-area"></div>
+                <button id="generate-html" class="btn btn-primary mt-3">Generar HTML</button>
+                <textarea id="generated-html" class="form-control mt-3" rows="10"></textarea>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.module').on('dragstart', function(event) {
+                event.originalEvent.dataTransfer.setData('text/html', $(this).data('html'));
+                $(this).addClass('dragging');
+            });
+            $('.module').on('dragend', function() {
+                $(this).removeClass('dragging');
+            });
+            $('#drop-area').on('dragover', function(event) {
+                event.preventDefault();
+                event.originalEvent.dataTransfer.dropEffect = 'move';
+            });
+            $('#drop-area').on('drop', function(event) {
+                event.preventDefault();
+                var html = event.originalEvent.dataTransfer.getData('text/html');
+                $(this).append(html);
+            });
+            $('#generate-html').on('click', function() {
+                var generatedHtml = $('#drop-area').html();
+                $('#generated-html').val(generatedHtml);
+            });
+        });
+    </script>
+</body>
+</html>
