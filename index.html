@@ -15,9 +15,13 @@
             border: 2px dashed #ccc;
             padding: 20px;
             min-height: 200px;
+            margin-top: 20px;
         }
         .dragging {
             opacity: 0.5;
+        }
+        .controls {
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -28,16 +32,23 @@
             <div class="col-md-4">
                 <h2>Módulos Disponibles</h2>
                 <div id="modules">
-                    <div class="module" draggable="true" data-html="<div>Texto</div>">Módulo de Texto</div>
-                    <div class="module" draggable="true" data-html="<div><img src='URL' alt='Imagen'></div>">Módulo de Imagen</div>
-                    <!-- Agrega más módulos según sea necesario -->
+                    <div class="module" draggable="true" data-html="<div class='banner'><img src='URL' alt='Banner' width='1160' height='480'></div>">Módulo 1: Banner principal sin texto</div>
+                    <div class="module" draggable="true" data-html="<div class='text-columns'><div class='column'>Texto columna 1</div><div class='column'>Texto columna 2</div></div>">Módulo 2: Texto en 2 columnas</div>
+                    <div class="module" draggable="true" data-html="<div class='img-right'><img src='URL' alt='Imagen' width='560' height='315'><div class='text'>Descripción</div></div>">Módulo 3: Imagen con texto a la derecha</div>
+                    <div class="module" draggable="true" data-html="<div class='img-left'><div class='text'>Descripción</div><img src='URL' alt='Imagen' width='560' height='315'></div>">Módulo 4: Imagen con texto a la izquierda</div>
+                    <div class="module" draggable="true" data-html="<div class='text-list-columns'><ul><li>Característica 1</li><li>Característica 2</li></ul><ul><li>Característica 3</li><li>Característica 4</li></ul></div>">Módulo 5: Lista de texto en 2 columnas</div>
+                    <div class="module" draggable="true" data-html="<div class='banner-text'><img src='URL' alt='Banner con texto' width='1160' height='360'><div class='text'>Título</div></div>">Módulo 6: Banner con texto</div>
+                    <div class="module" draggable="true" data-html="<div class='two-imgs'><div class='img'><img src='URL' alt='Imagen 1' width='560' height='315'><div class='text'>Descripción 1</div></div><div class='img'><img src='URL' alt='Imagen 2' width='560' height='315'><div class='text'>Descripción 2</div></div></div>">Módulo 7: 2 imágenes con texto debajo</div>
+                    <div class="module" draggable="true" data-html="<div class='video-text'><video width='773' height='435' controls><source src='URL' type='video/mp4'></video><div class='text'>Descripción del video</div></div>">Módulo 8: Video más texto</div>
                 </div>
             </div>
             <div class="col-md-8">
                 <h2>Construye tu Página</h2>
                 <div id="drop-area" class="drop-area"></div>
-                <button id="generate-html" class="btn btn-primary mt-3">Generar HTML</button>
-                <textarea id="generated-html" class="form-control mt-3" rows="10"></textarea>
+                <div class="controls">
+                    <button id="generate-html" class="btn btn-primary mt-3">Generar HTML</button>
+                    <textarea id="generated-html" class="form-control mt-3" rows="10"></textarea>
+                </div>
             </div>
         </div>
     </div>
