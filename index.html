@@ -29,6 +29,19 @@
             max-width: 100%;
             height: auto;
         }
+        .module-content {
+            position: relative;
+        }
+        .remove-module {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -81,34 +94,38 @@
                 var generatedHtml = $('#drop-area').html();
                 $('#generated-html').val(generatedHtml);
             });
+
+            $(document).on('click', '.remove-module', function() {
+                $(this).closest('.module-content').remove();
+            });
         });
 
         function addModuleToDropArea(moduleId) {
             var html = '';
             switch(moduleId) {
                 case '1':
-                    html = `<div class='module' contenteditable='true'><img src='https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabellaCL/inpage_media/SKU-IMG_VISTA/public' alt='Banner' class='preview-img' width='1160' height='480'></div>`;
+                    html = `<div class='module-content'><button class='remove-module'>X</button><img src='https://via.placeholder.com/1160x480' alt='Banner' class='preview-img' width='1160' height='480'></div>`;
                     break;
                 case '2':
-                    html = `<div class='module' contenteditable='true'><div class='text-columns'><div class='column'>Texto columna 1</div><div class='column'>Texto columna 2</div></div></div>`;
+                    html = `<div class='module-content'><button class='remove-module'>X</button><div class='text-columns'><div class='column'>Texto columna 1</div><div class='column'>Texto columna 2</div></div></div>`;
                     break;
                 case '3':
-                    html = `<div class='module' contenteditable='true'><div class='img-right'><img src='https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabellaCL/inpage_media/SKU-IMG_VISTA/public' alt='Imagen' class='preview-img' width='560' height='315'><div class='text'>Descripción</div></div></div>`;
+                    html = `<div class='module-content'><button class='remove-module'>X</button><div class='img-right'><img src='https://via.placeholder.com/560x315' alt='Imagen' class='preview-img' width='560' height='315'><div class='text'>Descripción</div></div></div>`;
                     break;
                 case '4':
-                    html = `<div class='module' contenteditable='true'><div class='img-left'><div class='text'>Descripción</div><img src='https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabellaCL/inpage_media/SKU-IMG_VISTA/public' alt='Imagen' class='preview-img' width='560' height='315'></div></div>`;
+                    html = `<div class='module-content'><button class='remove-module'>X</button><div class='img-left'><div class='text'>Descripción</div><img src='https://via.placeholder.com/560x315' alt='Imagen' class='preview-img' width='560' height='315'></div></div>`;
                     break;
                 case '5':
-                    html = `<div class='module' contenteditable='true'><div class='text-list-columns'><ul><li>Característica 1</li><li>Característica 2</li></ul><ul><li>Característica 3</li><li>Característica 4</li></ul></div></div>`;
+                    html = `<div class='module-content'><button class='remove-module'>X</button><div class='text-list-columns'><ul><li>Característica 1</li><li>Característica 2</li></ul><ul><li>Característica 3</li><li>Característica 4</li></ul></div></div>`;
                     break;
                 case '6':
-                    html = `<div class='module' contenteditable='true'><div class='banner-text'><img src='https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabellaCL/inpage_media/SKU-IMG_VISTA/public' alt='Banner con texto' class='preview-img' width='1160' height='360'><div class='text'>Título</div></div></div>`;
+                    html = `<div class='module-content'><button class='remove-module'>X</button><div class='banner-text'><img src='https://via.placeholder.com/1160x360' alt='Banner con texto' class='preview-img' width='1160' height='360'><div class='text'>Título</div></div></div>`;
                     break;
                 case '7':
-                    html = `<div class='module' contenteditable='true'><div class='two-imgs'><div class='img'><img src='https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabellaCL/inpage_media/SKU-IMG_VISTA/public' alt='Imagen 1' class='preview-img' width='560' height='315'><div class='text'>Descripción 1</div></div><div class='img'><img src='https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabellaCL/inpage_media/SKU-IMG_VISTA/public' alt='Imagen 2' class='preview-img' width='560' height='315'><div class='text'>Descripción 2</div></div></div></div>`;
+                    html = `<div class='module-content'><button class='remove-module'>X</button><div class='two-imgs'><div class='img'><img src='https://via.placeholder.com/560x315' alt='Imagen 1' class='preview-img' width='560' height='315'><div class='text'>Descripción 1</div></div><div class='img'><img src='https://via.placeholder.com/560x315' alt='Imagen 2' class='preview-img' width='560' height='315'><div class='text'>Descripción 2</div></div></div></div>`;
                     break;
                 case '8':
-                    html = `<div class='module' contenteditable='true'><div class='video-text'><video width='773' height='435' controls><source src='URL' type='video/mp4'></video><div class='text'>Descripción del video</div></div></div>`;
+                    html = `<div class='module-content'><button class='remove-module'>X</button><div class='video-text'><video width='773' height='435' controls><source src='URL' type='video/mp4'></video><div class='text'>Descripción del video</div></div></div>`;
                     break;
             }
             $('#drop-area').append(html);
