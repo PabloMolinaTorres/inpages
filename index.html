@@ -5,10 +5,39 @@
     <title>Generador de HTML</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container-fluid {
+            height: 100%;
+            display: flex;
+        }
+        .modules-panel {
+            width: 20%;
+            border-right: 1px solid #ccc;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .editor-panel {
+            width: 60%;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .code-panel {
+            width: 20%;
+            border-left: 1px solid #ccc;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
         .module {
             border: 1px solid #ccc;
-            padding: 20px;
-            margin: 10px;
+            padding: 10px;
+            margin: 10px 0;
             cursor: grab;
             font-size: 16px;
             text-align: center;
@@ -16,7 +45,7 @@
         .drop-area {
             border: 2px dashed #ccc;
             padding: 20px;
-            min-height: 400px;
+            min-height: 80vh;
             margin-top: 20px;
         }
         .dragging {
@@ -53,30 +82,30 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Generador de HTML</h1>
-        <div class="row">
-            <div class="col-md-4">
-                <h2>Módulos Disponibles</h2>
-                <div id="modules">
-                    <div class="module" draggable="true" data-module="1">Módulo 1: Banner principal sin texto</div>
-                    <div class="module" draggable="true" data-module="2">Módulo 2: Texto en 2 columnas</div>
-                    <div class="module" draggable="true" data-module="3">Módulo 3: Imagen con texto a la derecha</div>
-                    <div class="module" draggable="true" data-module="4">Módulo 4: Imagen con texto a la izquierda</div>
-                    <div class="module" draggable="true" data-module="5">Módulo 5: Lista de texto en 2 columnas</div>
-                    <div class="module" draggable="true" data-module="6">Módulo 6: Banner con texto</div>
-                    <div class="module" draggable="true" data-module="7">Módulo 7: 2 imágenes con texto debajo</div>
-                    <div class="module" draggable="true" data-module="8">Módulo 8: Video más texto</div>
-                </div>
+    <div class="container-fluid">
+        <div class="modules-panel">
+            <h2>Módulos Disponibles</h2>
+            <div id="modules">
+                <div class="module" draggable="true" data-module="1">Módulo 1: Banner principal sin texto</div>
+                <div class="module" draggable="true" data-module="2">Módulo 2: Texto en 2 columnas</div>
+                <div class="module" draggable="true" data-module="3">Módulo 3: Imagen con texto a la derecha</div>
+                <div class="module" draggable="true" data-module="4">Módulo 4: Imagen con texto a la izquierda</div>
+                <div class="module" draggable="true" data-module="5">Módulo 5: Lista de texto en 2 columnas</div>
+                <div class="module" draggable="true" data-module="6">Módulo 6: Banner con texto</div>
+                <div class="module" draggable="true" data-module="7">Módulo 7: 2 imágenes con texto debajo</div>
+                <div class="module" draggable="true" data-module="8">Módulo 8: Video más texto</div>
             </div>
-            <div class="col-md-8">
-                <h2>Construye tu Página</h2>
-                <div id="drop-area" class="drop-area"></div>
-                <div class="controls">
-                    <button id="generate-html" class="btn btn-primary mt-3">Generar HTML</button>
-                    <textarea id="generated-html" class="form-control mt-3" rows="10"></textarea>
-                </div>
+        </div>
+        <div class="editor-panel">
+            <h2>Construye tu Página</h2>
+            <div id="drop-area" class="drop-area"></div>
+            <div class="controls">
+                <button id="generate-html" class="btn btn-primary mt-3">Generar HTML</button>
             </div>
+        </div>
+        <div class="code-panel">
+            <h2>Código Generado</h2>
+            <textarea id="generated-html" class="form-control" rows="20"></textarea>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -189,25 +218,4 @@
                                     <div class='img'>
                                         <img src='https://via.placeholder.com/560x315' alt='Imagen 2' class='preview-img' width='560' height='315'>
                                         <input type='file' class='upload-image-input upload-image'>
-                                        <div class='text'>Descripción 2</div>
-                                    </div>
-                                </div>
-                            </div>`;
-                    break;
-                case '8':
-                    html = `<div class='module-content'>
-                                <button class='remove-module'>X</button>
-                                <div class='video-text'>
-                                    <video width='773' height='435' controls>
-                                        <source src='URL' type='video/mp4'>
-                                    </video>
-                                    <div class='text'>Descripción del video</div>
-                                </div>
-                            </div>`;
-                    break;
-            }
-            $('#drop-area').append(html);
-        }
-    </script>
-</body>
-</html>
+                                        <div class='text'>Descripción
