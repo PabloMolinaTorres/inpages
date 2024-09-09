@@ -27,28 +27,29 @@
         }
         .container {
             display: flex;
+            flex-direction: column;
             height: 100%;
             width: 100%;
+        }
+        .columns {
+            display: flex;
+            width: 100%; /* Usar el 100% del ancho de la pantalla */
             justify-content: space-between;
+            padding: 20px;
         }
         .leftContainer {
-            width: 30%;
+            width: 350px; /* Ancho fijo de 350px */
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
+            height: 900px; /* Altura fija de 900px */
         }
         .rightContainer {
-            width: 40%; /* Ajuste para que sea más ancha */
+            width: 350px; /* Mantener simetría con la columna izquierda */
             padding: 20px;
-            height: 500px; /* Ajuste para que sea más larga */
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
+            height: 900px;
         }
         textarea {
             width: 100%;
-            height: 250px;
+            height: 250px; /* Mantener el área de texto más compacta */
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -61,8 +62,8 @@
             border: none;
             margin-top: 10px;
             background-color: #8fca00;
-            height: 50px;
-            line-height: 50px;
+            height: 40px;
+            line-height: 40px;
             border-radius: 5px;
             color: white;
             font-size: 12px;
@@ -70,12 +71,12 @@
             text-transform: uppercase;
         }
         .country-selector {
-            margin-bottom: 10px;
+            margin: 10px 0;
         }
         .country-link {
             margin-right: 10px;
             color: #999;
-            font-size: 14px;
+            font-size: 12px;
             text-decoration: none;
             font-weight: bold;
             cursor: pointer;
@@ -92,7 +93,8 @@
         .switch-container {
             display: flex;
             align-items: center;
-            margin-top: 20px;
+            justify-content: flex-start;
+            margin: 20px;
         }
         .switch-container span {
             font-size: 14px;
@@ -143,26 +145,31 @@
 <body>
     <a href="index.html" class="link-visualizador">Visualizador</a> <!-- Enlace al Visualizador -->
     <div class="container">
-        <div class="leftContainer">
-            <div class="country-selector">
-                <a href="#" class="country-link selected" id="linkCL">Chile</a>
-                <a href="#" class="country-link" id="linkPE">Perú</a>
-                <a href="#" class="country-link" id="linkCO">Colombia</a>
+        <!-- Columnas para las áreas de búsqueda y descarga -->
+        <div class="columns">
+            <div class="leftContainer">
+                <div class="country-selector">
+                    <a href="#" class="country-link selected" id="linkCL">Chile</a>
+                    <a href="#" class="country-link" id="linkPE">Perú</a>
+                    <a href="#" class="country-link" id="linkCO">Colombia</a>
+                </div>
+                <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
+                <button id="buscar">Buscar</button>
             </div>
-            <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
-            <button id="buscar">Buscar</button>
-            <div class="switch-container">
-                <span>Vista</span>
-                <label class="switch">
-                    <input type="checkbox" id="viewToggle">
-                    <span class="slider"></span>
-                </label>
-                <span>SKU</span>
+            <div class="rightContainer">
+                <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+                <button id="downloadAll">Descargar Todo</button>
             </div>
         </div>
-        <div class="rightContainer">
-            <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
-            <button id="downloadAll">Descargar Todo</button>
+
+        <!-- Switch para cambiar entre Vista y SKU, ubicado abajo a la izquierda -->
+        <div class="switch-container">
+            <span>Vista</span>
+            <label class="switch">
+                <input type="checkbox" id="viewToggle">
+                <span class="slider"></span>
+            </label>
+            <span>SKU</span>
         </div>
     </div>
 
