@@ -30,32 +30,30 @@
             height: 100%;
             width: 100%;
         }
-        .leftContainer, .rightContainer {
-            width: 50%;
-            padding: 20px;
-            overflow-y: auto;
-        }
         .leftContainer {
-            border-right: 1px solid #eeeeee;
+            width: 30%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
         }
         textarea {
-            width: calc(100% - 40px);
-            margin: 20px 0;
+            width: 100%;
+            margin: 10px 0;
             padding: 10px;
-            height: 150px;
+            height: 300px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
-            font-size: 14px;
+            font-size: 12px;
             resize: none;
         }
         button {
-            width: calc(100% - 40px);
+            width: 100%;
             border: none;
-            margin: 20px 0;
+            margin: 10px 0;
             background-color: #8fca00;
-            height: 50px;
-            line-height: 50px;
+            height: 40px;
+            line-height: 40px;
             border-radius: 5px;
             color: white;
             font-size: 12px;
@@ -66,6 +64,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
+            width: 70%;
         }
         .imgWrapper {
             width: 120px;
@@ -187,13 +186,27 @@
             font-weight: bold;
             font-size: 12px;
         }
+        .rightContainer {
+            width: 70%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
     <a href="index.html" class="link-visualizador">Visualizador</a> <!-- Enlace al Visualizador -->
     <div class="container">
         <div class="leftContainer">
-            <h3>Buscar Imágenes</h3>
+            <div class="country-selector">
+                <a href="#" class="country-link selected" id="linkCL">Chile</a>
+                <a href="#" class="country-link" id="linkPE">Perú</a>
+                <a href="#" class="country-link" id="linkCO">Colombia</a>
+            </div>
+            <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
+            <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+            <button id="buscar">Buscar</button>
             <div class="switch-container">
                 <span>Vista</span>
                 <label class="switch">
@@ -202,23 +215,11 @@
                 </label>
                 <span>SKU</span>
             </div>
-            <div class="country-selector">
-                <a href="#" class="country-link selected" id="linkCL">Chile</a>
-                <a href="#" class="country-link" id="linkPE">Perú</a>
-                <a href="#" class="country-link" id="linkCO">Colombia</a>
-            </div>
-            <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
-            <div id="leftCount"></div>
-            <button id="buscar">Buscar</button>
+        </div>
+        <div class="rightContainer">
             <div class="imgContainer" id="imgContainer">
                 <!-- Imágenes aparecerán aquí -->
             </div>
-        </div>
-        <div class="rightContainer">
-            <h3>Renombrar y Descargar</h3>
-            <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
-            <div id="rightCount"></div>
-            <button id="downloadAll">Descargar Todo</button>
         </div>
     </div>
 
@@ -243,7 +244,7 @@
                 };
 
                 img.onerror = function() {
-                    resolve(null); // Resolviendo la promesa sin añadir la miniatura "No disponible"
+                    resolve(null); // No mostrar errores ni alertas si no se encuentra la imagen
                 };
             });
         }
@@ -278,8 +279,6 @@
                             loadImage(sku).then(function(imageElement) {
                                 if (imageElement) {
                                     $('#imgContainer').append(imageElement);
-                                } else {
-                                    alert('Imagen no disponible para SKU: ' + sku);
                                 }
                                 updateCounts();
                             });
@@ -297,8 +296,6 @@
                         }
                     }
                 });
-            } else {
-                alert('Por favor, ingrese SKUs.');
             }
         });
 
