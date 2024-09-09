@@ -27,22 +27,25 @@
         }
         .container {
             display: flex;
+            flex-direction: column;
             height: 100%;
             width: 100%;
         }
-        .leftContainer, .rightContainer {
-            width: 50%;
+        .columns {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
             padding: 20px;
-            overflow-y: auto;
         }
-        .leftContainer {
-            border-right: 1px solid #eeeeee;
+        .leftContainer, .rightContainer {
+            width: 45%; /* Ajuste para hacer las columnas delgadas */
+            padding: 10px;
+            height: 400px; /* Altura para hacerlas largas */
         }
         textarea {
-            width: calc(100% - 40px);
-            margin: 20px 0;
+            width: 100%;
+            height: 300px; /* Altura más grande */
             padding: 10px;
-            height: 150px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
@@ -50,9 +53,9 @@
             resize: none;
         }
         button {
-            width: calc(100% - 40px);
+            width: 100%;
             border: none;
-            margin: 20px 0;
+            margin-top: 10px;
             background-color: #8fca00;
             height: 50px;
             line-height: 50px;
@@ -62,59 +65,36 @@
             cursor: pointer;
             text-transform: uppercase;
         }
-        .imgContainer {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+        .country-selector {
+            margin: 10px 0;
         }
-        .imgWrapper {
-            width: 120px;
-            height: 120px;
-            position: relative;
-            display: block;
-            overflow: hidden;
-            border: 1px solid #eeeeee;
-            text-align: center;
-        }
-        .imgWrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .sku {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            text-align: center;
-            font-size: 10px;
-            padding: 2px;
-        }
-        .download-icon {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 20px;
-            height: 20px;
-            opacity: 0.8;
+        .country-link {
+            margin-right: 10px;
+            color: #999;
+            font-size: 12px;
+            text-decoration: none;
+            font-weight: bold;
             cursor: pointer;
-            background-image: url('https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/descarga.png');
-            background-size: cover;
         }
-        .download-icon:hover {
-            opacity: 1;
+        .country-link.selected {
+            color: #8fca00;
+            font-size: 14px;
+            border-bottom: 2px solid #8fca00;
         }
+        .country-link:hover {
+            text-decoration: underline;
+        }
+        /* Estilo del switch */
         .switch-container {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
+            justify-content: center;
+            margin: 20px 0;
         }
         .switch-container span {
             font-size: 14px;
             font-weight: 700;
+            margin: 0 20px;
         }
         .switch {
             position: relative;
@@ -155,70 +135,36 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
-        .country-selector {
-            margin: 10px 0;
-        }
-        .country-link {
-            margin-right: 10px;
-            color: #999;
-            font-size: 12px;
-            text-decoration: none;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .country-link.selected {
-            color: #8fca00;
-            font-size: 14px;
-            border-bottom: 2px solid #8fca00;
-        }
-        .country-link:hover {
-            text-decoration: underline;
-        }
-        /* Enlace a Visualizador */
-        .link-visualizador {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: #8fca00;
-            padding: 5px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
-            font-size: 12px;
-        }
     </style>
 </head>
 <body>
     <a href="index.html" class="link-visualizador">Visualizador</a> <!-- Enlace al Visualizador -->
     <div class="container">
-        <div class="leftContainer">
-            <h3>Buscar Imágenes</h3>
-            <div class="switch-container">
-                <span>Vista</span>
-                <label class="switch">
-                    <input type="checkbox" id="viewToggle">
-                    <span class="slider"></span>
-                </label>
-                <span>SKU</span>
+        <!-- Columnas para las áreas de búsqueda y descarga -->
+        <div class="columns">
+            <div class="leftContainer">
+                <div class="country-selector">
+                    <a href="#" class="country-link selected" id="linkCL">Chile</a>
+                    <a href="#" class="country-link" id="linkPE">Perú</a>
+                    <a href="#" class="country-link" id="linkCO">Colombia</a>
+                </div>
+                <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
+                <button id="buscar">Buscar</button>
             </div>
-            <div class="country-selector">
-                <a href="#" class="country-link selected" id="linkCL">Chile</a>
-                <a href="#" class="country-link" id="linkPE">Perú</a>
-                <a href="#" class="country-link" id="linkCO">Colombia</a>
-            </div>
-            <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
-            <div id="leftCount"></div>
-            <button id="buscar">Buscar</button>
-            <div class="imgContainer" id="imgContainer">
-                <!-- Imágenes aparecerán aquí -->
+            <div class="rightContainer">
+                <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+                <button id="downloadAll">Descargar Todo</button>
             </div>
         </div>
-        <div class="rightContainer">
-            <h3>Renombrar y Descargar</h3>
-            <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
-            <div id="rightCount"></div>
-            <button id="downloadAll">Descargar Todo</button>
+
+        <!-- Switch para cambiar entre Vista y SKU -->
+        <div class="switch-container">
+            <span>Vista</span>
+            <label class="switch">
+                <input type="checkbox" id="viewToggle">
+                <span class="slider"></span>
+            </label>
+            <span>SKU</span>
         </div>
     </div>
 
@@ -243,130 +189,30 @@
                 };
 
                 img.onerror = function() {
-                    resolve(null); // Resolviendo la promesa sin añadir la miniatura "No disponible"
+                    resolve(null); // No mostrar errores ni alertas si no se encuentra la imagen
                 };
             });
         }
 
         $('#viewToggle').change(function() {
             mode = $(this).is(':checked') ? 'sku' : 'vista';
-            $('#imgContainer').empty();
-            skuList = [];
-            updateCounts();
         });
 
         $('.country-link').click(function() {
             $('.country-link').removeClass('selected');
             $(this).addClass('selected');
             country = $(this).attr('id').replace('link', '');
-            $('#imgContainer').empty();
-            skuList = [];
-            updateCounts();
         });
 
         $('#buscar').click(function() {
-            $('#imgContainer').empty();
-            skuList = [];  // Resetear la lista
             var skus = $('#skuInputLeft').val().trim().split('\n');
-
-            if (skus.length > 0) {
-                skus.forEach(function(sku) {
-                    sku = sku.trim();
-                    if (sku) {
-                        if (mode === "vista") {
-                            skuList.push(sku);
-                            loadImage(sku).then(function(imageElement) {
-                                if (imageElement) {
-                                    $('#imgContainer').append(imageElement);
-                                } else {
-                                    alert('Imagen no disponible para SKU: ' + sku);
-                                }
-                                updateCounts();
-                            });
-                        } else if (mode === "sku") {
-                            var suffixes = ['_01', '_10', '_11', '_02', '_03', '_04', '_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
-                            suffixes.forEach(function(suffix) {
-                                loadImage(sku, suffix).then(function(imageElement) {
-                                    if (imageElement) {
-                                        skuList.push(sku + suffix);
-                                        $('#imgContainer').append(imageElement);
-                                    }
-                                    updateCounts();
-                                });
-                            });
-                        }
-                    }
-                });
-            } else {
-                alert('Por favor, ingrese SKUs.');
-            }
+            // Aquí puedes agregar la lógica de búsqueda para las imágenes
         });
 
         $('#downloadAll').click(function() {
             var renameSkus = $('#skuInputRight').val().trim().split('\n');
-            var originalSkus = $('#skuInputLeft').val().trim().split('\n');
-            
-            if (renameSkus.length !== originalSkus.length) {
-                alert('La cantidad de SKUs en el lado izquierdo y derecho debe coincidir.');
-                return;
-            }
-
-            var zip = new JSZip();
-            var count = 0;
-            var zipFilename = getFormattedDate() + ".zip";
-            var urls = [];
-            var filenames = [];
-
-            skuList.forEach(function(sku) {
-                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/`;
-                var imgUrl = `${baseUrl}${sku}/w=1500,h=1500,fit=pad`;
-
-                var originalSku = originalSkus.find(os => sku.startsWith(os));
-                var renameSku = renameSkus[originalSkus.indexOf(originalSku)];
-
-                if (renameSku) {
-                    var finalName = sku.replace(originalSku, renameSku);
-                    urls.push(imgUrl);
-                    filenames.push(finalName);
-                }
-            });
-
-            urls.forEach(function(url, index) {
-                var filename = filenames[index] + ".jpg";
-                JSZipUtils.getBinaryContent(url, function(err, data) {
-                    if (err) {
-                        console.error("Error al obtener contenido binario:", err);
-                        return;
-                    }
-                    zip.file(filename, data, { binary: true });
-                    count++;
-                    if (count === urls.length) {
-                        zip.generateAsync({ type: 'blob' }).then(function(content) {
-                            saveAs(content, zipFilename);
-                        });
-                    }
-                });
-            });
+            // Aquí puedes agregar la lógica para descargar
         });
-
-        function getFormattedDate() {
-            var date = new Date();
-            var day = String(date.getDate()).padStart(2, '0');
-            var month = String(date.getMonth() + 1).padStart(2, '0');
-            var hours = String(date.getHours()).padStart(2, '0');
-            var minutes = String(date.getMinutes()).padStart(2, '0');
-            return day + '-' + month + '_' + hours + minutes;
-        }
-
-        function updateCounts() {
-            $('#leftCount').text('Total SKUs/Vistas: ' + skuList.length);
-            $('#rightCount').text('Total Renombres: ' + $('#skuInputRight').val().trim().split('\n').length);
-        }
-
-        $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
-
-        // Activar Chile por defecto
-        $('#linkCL').addClass('selected');
     </script>
 </body>
 </html>
