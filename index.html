@@ -33,17 +33,22 @@
         }
         .columns {
             display: flex;
-            width: 44%; /* 22% para cada columna */
+            width: 44%; /* Ajuste para que las columnas sigan ocupando 44% de la mitad izquierda */
             justify-content: space-between;
             padding: 20px;
         }
-        .leftContainer, .rightContainer {
-            width: 22%; /* Cada columna ocupa el 22% del ancho de la pantalla */
+        .leftContainer {
+            width: 25%; /* Ajuste para que sea más ancha */
+            padding: 20px;
+            height: 500px; /* Altura más larga */
+        }
+        .rightContainer {
+            width: 22%;
             padding: 10px;
         }
         textarea {
             width: 100%;
-            height: 150px; /* Altura ajustada */
+            height: 250px; /* Altura ajustada para que sea más larga */
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
