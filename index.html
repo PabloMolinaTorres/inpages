@@ -107,16 +107,7 @@
         .download-icon:hover {
             opacity: 1;
         }
-        .switch-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .switch-container span {
-            font-size: 14px;
-            font-weight: 700;
-        }
+
         .switch {
             position: relative;
             display: inline-block;
@@ -180,6 +171,15 @@
             text-decoration: underline;
         }
 
+        /* Estilo del switch para "Vista" y "SKU" */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-top: 20px;
+            margin-left: 20px;
+        }
+
         /* Enlace a Visualizador */
         .link-visualizador {
             position: absolute;
@@ -200,14 +200,6 @@
     <div class="container">
         <div class="leftContainer">
             <h3>Buscar Imágenes</h3>
-            <div class="switch-container">
-                <span>Vista</span>
-                <label class="switch">
-                    <input type="checkbox" id="viewToggle">
-                    <span class="slider"></span>
-                </label>
-                <span>SKU</span>
-            </div>
             <div class="country-selector">
                 <a href="#" class="country-link active" id="linkCL">Chile</a>
                 <a href="#" class="country-link" id="linkPE">Perú</a>
@@ -218,6 +210,14 @@
             <button id="buscar">Buscar</button>
             <div class="imgContainer" id="imgContainer">
                 <!-- Imágenes aparecerán aquí -->
+            </div>
+            <div class="switch-container"> <!-- Switch justo debajo de la columna izquierda -->
+                <span>Vista</span>
+                <label class="switch">
+                    <input type="checkbox" id="viewToggle">
+                    <span class="slider"></span>
+                </label>
+                <span>SKU</span>
             </div>
         </div>
         <div class="rightContainer">
