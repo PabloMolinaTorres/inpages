@@ -27,30 +27,23 @@
         }
         .container {
             display: flex;
-            flex-direction: column;
             height: 100%;
             width: 100%;
         }
-        .columns {
-            display: flex;
-            width: 100%; /* Usar el 100% del ancho de la pantalla */
-            justify-content: space-between;
+        .leftContainer, .rightContainer {
+            width: 350px; /* Ancho específico */
+            height: 900px; /* Alto específico */
             padding: 20px;
+            overflow-y: auto;
         }
         .leftContainer {
-            width: 350px; /* Ancho fijo de 350px */
-            padding: 20px;
-            height: 900px; /* Altura fija de 900px */
-        }
-        .rightContainer {
-            width: 350px; /* Mantener simetría con la columna izquierda */
-            padding: 20px;
-            height: 900px;
+            border-right: 1px solid #eeeeee;
         }
         textarea {
             width: 100%;
-            height: 250px; /* Mantener el área de texto más compacta */
+            margin: 20px 0;
             padding: 10px;
+            height: 600px; /* Dejar suficiente espacio para escribir */
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
@@ -60,46 +53,69 @@
         button {
             width: 100%;
             border: none;
-            margin-top: 10px;
+            margin: 20px 0;
             background-color: #8fca00;
-            height: 40px;
-            line-height: 40px;
+            height: 50px;
+            line-height: 50px;
             border-radius: 5px;
             color: white;
             font-size: 12px;
             cursor: pointer;
             text-transform: uppercase;
         }
-        .country-selector {
-            margin: 10px 0;
+        .imgContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-        .country-link {
-            margin-right: 10px;
-            color: #999;
-            font-size: 12px;
-            text-decoration: none;
-            font-weight: bold;
+        .imgWrapper {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            display: block;
+            overflow: hidden;
+            border: 1px solid #eeeeee;
+            text-align: center;
+        }
+        .imgWrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .sku {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            text-align: center;
+            font-size: 10px;
+            padding: 2px;
+        }
+        .download-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            opacity: 0.8;
             cursor: pointer;
+            background-image: url('https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/descarga.png');
+            background-size: cover;
         }
-        .country-link.selected {
-            color: #8fca00;
-            font-size: 14px;
-            border-bottom: 2px solid #8fca00;
+        .download-icon:hover {
+            opacity: 1;
         }
-        .country-link:hover {
-            text-decoration: underline;
-        }
-        /* Estilo del switch */
         .switch-container {
             display: flex;
             align-items: center;
-            justify-content: flex-start;
-            margin: 20px;
+            justify-content: space-between;
+            margin-bottom: 20px;
         }
         .switch-container span {
             font-size: 14px;
             font-weight: 700;
-            margin-right: 10px;
         }
         .switch {
             position: relative;
@@ -140,36 +156,67 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
+        .country-selector {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .country-flag {
+            width: 32px;
+            height: 32px;
+            margin: 0 5px;
+            cursor: pointer;
+            filter: grayscale(100%);
+            transition: filter 0.3s;
+        }
+        .country-flag.active {
+            filter: grayscale(0%);
+        }
+        /* Enlace a Visualizador */
+        .link-visualizador {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #8fca00;
+            padding: 5px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
     <a href="index.html" class="link-visualizador">Visualizador</a> <!-- Enlace al Visualizador -->
     <div class="container">
-        <!-- Columnas para las áreas de búsqueda y descarga -->
-        <div class="columns">
-            <div class="leftContainer">
-                <div class="country-selector">
-                    <a href="#" class="country-link selected" id="linkCL">Chile</a>
-                    <a href="#" class="country-link" id="linkPE">Perú</a>
-                    <a href="#" class="country-link" id="linkCO">Colombia</a>
-                </div>
-                <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
-                <button id="buscar">Buscar</button>
+        <div class="leftContainer">
+            <h3>Buscar Imágenes</h3>
+            <div class="switch-container">
+                <span>Vista</span>
+                <label class="switch">
+                    <input type="checkbox" id="viewToggle">
+                    <span class="slider"></span>
+                </label>
+                <span>SKU</span>
             </div>
-            <div class="rightContainer">
-                <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
-                <button id="downloadAll">Descargar Todo</button>
+            <div class="country-selector">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Flag_of_Chile.svg" id="flagCL" class="country-flag" alt="Chile">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/Flag_of_Peru.svg" id="flagPE" class="country-flag" alt="Perú">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Colombia.svg" id="flagCO" class="country-flag" alt="Colombia">
+            </div>
+            <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
+            <div id="leftCount"></div>
+            <button id="buscar">Buscar</button>
+            <div class="imgContainer" id="imgContainer">
+                <!-- Imágenes aparecerán aquí -->
             </div>
         </div>
-
-        <!-- Switch para cambiar entre Vista y SKU, ubicado abajo a la izquierda -->
-        <div class="switch-container">
-            <span>Vista</span>
-            <label class="switch">
-                <input type="checkbox" id="viewToggle">
-                <span class="slider"></span>
-            </label>
-            <span>SKU</span>
+        <div class="rightContainer">
+            <h3>Renombrar y Descargar</h3>
+            <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+            <div id="rightCount"></div>
+            <button id="downloadAll">Descargar Todo</button>
         </div>
     </div>
 
@@ -194,30 +241,130 @@
                 };
 
                 img.onerror = function() {
-                    resolve(null); // No mostrar errores ni alertas si no se encuentra la imagen
+                    resolve(null); // Resolviendo la promesa sin añadir la miniatura "No disponible"
                 };
             });
         }
 
         $('#viewToggle').change(function() {
             mode = $(this).is(':checked') ? 'sku' : 'vista';
+            $('#imgContainer').empty();
+            skuList = [];
+            updateCounts();
         });
 
-        $('.country-link').click(function() {
-            $('.country-link').removeClass('selected');
-            $(this).addClass('selected');
-            country = $(this).attr('id').replace('link', '');
+        $('.country-flag').click(function() {
+            $('.country-flag').removeClass('active');
+            $(this).addClass('active');
+            country = $(this).attr('id').replace('flag', '');
+            $('#imgContainer').empty();
+            skuList = [];
+            updateCounts();
         });
 
         $('#buscar').click(function() {
+            $('#imgContainer').empty();
+            skuList = [];  // Resetear la lista
             var skus = $('#skuInputLeft').val().trim().split('\n');
-            // Aquí puedes agregar la lógica de búsqueda para las imágenes
+
+            if (skus.length > 0) {
+                skus.forEach(function(sku) {
+                    sku = sku.trim();
+                    if (sku) {
+                        if (mode === "vista") {
+                            skuList.push(sku);
+                            loadImage(sku).then(function(imageElement) {
+                                if (imageElement) {
+                                    $('#imgContainer').append(imageElement);
+                                } else {
+                                    alert('Imagen no disponible para SKU: ' + sku);
+                                }
+                                updateCounts();
+                            });
+                        } else if (mode === "sku") {
+                            var suffixes = ['_01', '_10', '_11', '_02', '_03', '_04', '_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
+                            suffixes.forEach(function(suffix) {
+                                loadImage(sku, suffix).then(function(imageElement) {
+                                    if (imageElement) {
+                                        skuList.push(sku + suffix);
+                                        $('#imgContainer').append(imageElement);
+                                    }
+                                    updateCounts();
+                                });
+                            });
+                        }
+                    }
+                });
+            } else {
+                alert('Por favor, ingrese SKUs.');
+            }
         });
 
         $('#downloadAll').click(function() {
             var renameSkus = $('#skuInputRight').val().trim().split('\n');
-            // Aquí puedes agregar la lógica para descargar
+            var originalSkus = $('#skuInputLeft').val().trim().split('\n');
+            
+            if (renameSkus.length !== originalSkus.length) {
+                alert('La cantidad de SKUs en el lado izquierdo y derecho debe coincidir.');
+                return;
+            }
+
+            var zip = new JSZip();
+            var count = 0;
+            var zipFilename = getFormattedDate() + ".zip";
+            var urls = [];
+            var filenames = [];
+
+            skuList.forEach(function(sku) {
+                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/`;
+                var imgUrl = `${baseUrl}${sku}/w=1500,h=1500,fit=pad`;
+
+                var originalSku = originalSkus.find(os => sku.startsWith(os));
+                var renameSku = renameSkus[originalSkus.indexOf(originalSku)];
+
+                if (renameSku) {
+                    var finalName = sku.replace(originalSku, renameSku);
+                    urls.push(imgUrl);
+                    filenames.push(finalName);
+                }
+            });
+
+            urls.forEach(function(url, index) {
+                var filename = filenames[index] + ".jpg";
+                JSZipUtils.getBinaryContent(url, function(err, data) {
+                    if (err) {
+                        console.error("Error al obtener contenido binario:", err);
+                        return;
+                    }
+                    zip.file(filename, data, { binary: true });
+                    count++;
+                    if (count === urls.length) {
+                        zip.generateAsync({ type: 'blob' }).then(function(content) {
+                            saveAs(content, zipFilename);
+                        });
+                    }
+                });
+            });
         });
+
+        function getFormattedDate() {
+            var date = new Date();
+            var day = String(date.getDate()).padStart(2, '0');
+            var month = String(date.getMonth() + 1).padStart(2, '0');
+            var hours = String(date.getHours()).padStart(2, '0');
+            var minutes = String(date.getMinutes()).padStart(2, '0');
+            return day + '-' + month + '_' + hours + minutes;
+        }
+
+        function updateCounts() {
+            $('#leftCount').text('Total SKUs/Vistas: ' + skuList.length);
+            $('#rightCount').text('Total Renombres: ' + $('#skuInputRight').val().trim().split('\n').length);
+        }
+
+        $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
+
+        // Activar Chile por defecto
+        $('#flagCL').addClass('active');
     </script>
 </body>
 </html>
