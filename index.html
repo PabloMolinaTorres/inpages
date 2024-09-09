@@ -69,7 +69,8 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            width: 70%;
+            width: 100%; /* Aumenta a 100% para que la previsualización ocupe toda la derecha */
+            padding-bottom: 20px;
         }
         .imgWrapper {
             width: 120px;
@@ -198,6 +199,12 @@
             flex-direction: column;
             overflow-y: auto;
         }
+        /* Botón "Descargar Todo" */
+        #downloadAll {
+            align-self: flex-end;
+            margin-top: 20px;
+            width: 150px;
+        }
     </style>
 </head>
 <body>
@@ -227,7 +234,7 @@
             <div class="imgContainer" id="imgContainer">
                 <!-- Imágenes aparecerán aquí -->
             </div>
-            <button id="downloadAll">Descargar Todo</button> <!-- Botón de descargar en la columna derecha -->
+            <button id="downloadAll">Descargar Todo</button> <!-- Botón de descargar -->
         </div>
     </div>
 
