@@ -2,224 +2,275 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Generador de HTML</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Renombrador de Imágenes Falabella</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/falabella.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Last-Modified" content="0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js?v=1.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js?v=1.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.1.0/jszip-utils.min.js?v=1.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js?v=1.0"></script>
     <style>
-        body, html {
+        * {
+            box-sizing: border-box;
+            font-family: 'Lato', sans-serif;
+        }
+        html, body {
             height: 100%;
             margin: 0;
-            font-family: Arial, sans-serif;
+            padding: 0;
+            color: #333;
+            background-color: #fff;
         }
-        .container-fluid {
-            height: 100%;
+        .container {
             display: flex;
+            height: 100%;
+            width: 100%;
         }
-        .modules-panel {
-            width: 15%;
-            border-right: 1px solid #ccc;
-            padding: 10px;
-            box-sizing: border-box;
-            overflow-y: auto;
+        .leftContainer {
+            width: 30%;
+            padding: 20px;
+            border-right: 1px solid #eeeeee;
         }
-        .editor-panel {
-            width: 65%;
-            padding: 10px;
-            box-sizing: border-box;
-            overflow-y: auto;
+        .rightContainer {
+            flex-grow: 1;
+            padding: 20px;
         }
-        .code-panel {
-            width: 20%;
-            border-left: 1px solid #ccc;
-            padding: 10px;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-        .module {
-            border: 1px solid #ccc;
-            padding: 10px;
+        textarea {
+            width: 100%;
             margin: 10px 0;
-            cursor: grab;
-            font-size: 16px;
+            padding: 8px;
+            height: 120px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Lato', sans-serif;
+            font-size: 12px;
+            resize: none;
+        }
+        button {
+            width: 100%;
+            border: none;
+            margin: 10px 0;
+            background-color: #8fca00;
+            height: 40px;
+            line-height: 40px;
+            border-radius: 5px;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .imgContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .imgWrapper {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            display: block;
+            overflow: hidden;
+            border: 1px solid #eeeeee;
             text-align: center;
         }
-        .drop-area {
-            border: 2px dashed #ccc;
-            padding: 20px;
-            min-height: 80vh;
-            margin-top: 20px;
+        .imgWrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
-        .dragging {
-            opacity: 0.5;
-        }
-        .controls {
-            margin-bottom: 20px;
-        }
-        .preview-img {
-            max-width: 100%;
-            height: auto;
-        }
-        .module-content {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        .remove-module {
+        .sku {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: red;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            text-align: center;
+            font-size: 10px;
+            padding: 2px;
         }
-        .upload-image {
-            display: block;
+        .download-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            opacity: 0.8;
+            cursor: pointer;
+            background-image: url('https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/descarga.png');
+            background-size: cover;
+        }
+        .download-icon:hover {
+            opacity: 1;
+        }
+        .country-selector {
             margin: 10px 0;
         }
-        .hidden {
-            display: none;
+        .country-link {
+            margin-right: 10px;
+            color: #8fca00;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .country-link:hover {
+            text-decoration: underline;
+        }
+        .switch-container {
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="modules-panel">
-            <h2>Módulos Disponibles</h2>
-            <div id="modules">
-                <div class="module" draggable="true" data-module="1">Módulo 1: Banner principal sin texto</div>
-                <div class="module" draggable="true" data-module="2">Módulo 2: Texto en 2 columnas</div>
-                <div class="module" draggable="true" data-module="3">Módulo 3: Imagen con texto a la derecha</div>
-                <div class="module" draggable="true" data-module="4">Módulo 4: Imagen con texto a la izquierda</div>
-                <div class="module" draggable="true" data-module="5">Módulo 5: Lista de texto en 2 columnas</div>
-                <div class="module" draggable="true" data-module="6">Módulo 6: Banner con texto</div>
-                <div class="module" draggable="true" data-module="7">Módulo 7: 2 imágenes con texto debajo</div>
-                <div class="module" draggable="true" data-module="8">Módulo 8: Video más texto</div>
+    <a href="index.html" class="link-visualizador">Visualizador</a> <!-- Enlace al Visualizador -->
+    <div class="container">
+        <div class="leftContainer">
+            <h3>Buscar Imágenes</h3>
+            <div class="country-selector">
+                <a href="#" class="country-link" id="linkCL">Chile</a>
+                <a href="#" class="country-link" id="linkPE">Perú</a>
+                <a href="#" class="country-link" id="linkCO">Colombia</a>
             </div>
+            <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
+            <div id="leftCount"></div>
+            <button id="buscar">Buscar</button>
+
+            <h3>Renombrar y Descargar</h3>
+            <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+            <div id="rightCount"></div>
+            <button id="downloadAll">Descargar Todo</button>
         </div>
-        <div class="editor-panel">
-            <h2>Construye tu Página</h2>
-            <div id="drop-area" class="drop-area"></div>
-            <div class="controls">
-                <button id="generate-html" class="btn btn-primary mt-3">Generar HTML</button>
+        <div class="rightContainer">
+            <div class="imgContainer" id="imgContainer">
+                <!-- Imágenes aparecerán aquí -->
             </div>
-        </div>
-        <div class="code-panel">
-            <h2>Código Generado</h2>
-            <textarea id="generated-html" class="form-control" rows="20"></textarea>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
     <script>
-        $(document).ready(function() {
-            $('.module').on('dragstart', function(event) {
-                event.originalEvent.dataTransfer.setData('text/plain', $(this).data('module'));
-                $(this).addClass('dragging');
-            });
-            $('.module').on('dragend', function() {
-                $(this).removeClass('dragging');
-            });
-            $('#drop-area').on('dragover', function(event) {
-                event.preventDefault();
-                event.originalEvent.dataTransfer.dropEffect = 'move';
-            });
-            $('#drop-area').on('drop', function(event) {
-                event.preventDefault();
-                var moduleId = event.originalEvent.dataTransfer.getData('text/plain');
-                addModuleToDropArea(moduleId);
-            });
-            $('#generate-html').on('click', function() {
-                var generatedHtml = $('#drop-area').html();
-                $('#generated-html').val(generatedHtml);
-            });
+        var skuList = [];
+        var mode = "vista"; // Por defecto, modo vista
+        var country = "CL"; // Por defecto, Chile
 
-            $(document).on('click', '.remove-module', function() {
-                $(this).closest('.module-content').remove();
-            });
+        function loadImage(sku, suffix = "") {
+            return new Promise(function(resolve, reject) {
+                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/`;
+                var imgUrl = `${baseUrl}${sku}${suffix}/w=1500,h=1500,fit=pad`;
+                var img = new Image();
+                img.src = imgUrl;
+                img.alt = sku + suffix;
 
-            $(document).on('change', '.upload-image-input', function() {
-                var input = this;
-                if (input.files && input.files[0]) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        $(input).closest('.module-content').find('.preview-img').attr('src', e.target.result);
+                img.onload = function() {
+                    var wrapper = $('<div class="imgWrapper"><a href="' + imgUrl + '" target="_blank"></a></div>');
+                    wrapper.find('a').append(img);
+                    wrapper.append('<div class="sku">' + sku + suffix + '</div>');
+                    resolve(wrapper);
+                };
+
+                img.onerror = function() {
+                    resolve(null);
+                };
+            });
+        }
+
+        $('.country-link').click(function() {
+            country = $(this).attr('id').replace('link', '');
+            $('#imgContainer').empty();
+            skuList = [];
+            updateCounts();
+        });
+
+        $('#buscar').click(function() {
+            $('#imgContainer').empty();
+            skuList = [];  // Resetear la lista
+            var skus = $('#skuInputLeft').val().trim().split('\n');
+
+            if (skus.length > 0) {
+                skus.forEach(function(sku) {
+                    sku = sku.trim();
+                    if (sku) {
+                        skuList.push(sku);
+                        loadImage(sku).then(function(imageElement) {
+                            if (imageElement) {
+                                $('#imgContainer').append(imageElement);
+                            } else {
+                                alert('Imagen no disponible para SKU: ' + sku);
+                            }
+                            updateCounts();
+                        });
                     }
-                    reader.readAsDataURL(input.files[0]);
+                });
+            } else {
+                alert('Por favor, ingrese SKUs.');
+            }
+        });
+
+        $('#downloadAll').click(function() {
+            var renameSkus = $('#skuInputRight').val().trim().split('\n');
+            var originalSkus = $('#skuInputLeft').val().trim().split('\n');
+            
+            if (renameSkus.length !== originalSkus.length) {
+                alert('La cantidad de SKUs en el lado izquierdo y derecho debe coincidir.');
+                return;
+            }
+
+            var zip = new JSZip();
+            var count = 0;
+            var zipFilename = getFormattedDate() + ".zip";
+            var urls = [];
+            var filenames = [];
+
+            skuList.forEach(function(sku) {
+                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/`;
+                var imgUrl = `${baseUrl}${sku}/w=1500,h=1500,fit=pad`;
+
+                var originalSku = originalSkus.find(os => sku.startsWith(os));
+                var renameSku = renameSkus[originalSkus.indexOf(originalSku)];
+
+                if (renameSku) {
+                    var finalName = sku.replace(originalSku, renameSku);
+                    urls.push(imgUrl);
+                    filenames.push(finalName);
                 }
+            });
+
+            urls.forEach(function(url, index) {
+                var filename = filenames[index] + ".jpg";
+                JSZipUtils.getBinaryContent(url, function(err, data) {
+                    if (err) {
+                        console.error("Error al obtener contenido binario:", err);
+                        return;
+                    }
+                    zip.file(filename, data, { binary: true });
+                    count++;
+                    if (count === urls.length) {
+                        zip.generateAsync({ type: 'blob' }).then(function(content) {
+                            saveAs(content, zipFilename);
+                        });
+                    }
+                });
             });
         });
 
-        function addModuleToDropArea(moduleId) {
-            var html = '';
-            switch(moduleId) {
-                case '1':
-                    html = `<div class='module-content'>
-                                <button class='remove-module'>X</button>
-                                <img src='https://via.placeholder.com/1160x480' alt='Banner' class='preview-img' width='1160' height='480'>
-                                <input type='file' class='upload-image-input upload-image'>
-                            </div>`;
-                    break;
-                case '2':
-                    html = `<div class='module-content'>
-                                <button class='remove-module'>X</button>
-                                <div class='text-columns'>
-                                    <div class='column'>Texto columna 1</div>
-                                    <div class='column'>Texto columna 2</div>
-                                </div>
-                            </div>`;
-                    break;
-                case '3':
-                    html = `<div class='module-content'>
-                                <button class='remove-module'>X</button>
-                                <div class='img-right'>
-                                    <img src='https://via.placeholder.com/560x315' alt='Imagen' class='preview-img' width='560' height='315'>
-                                    <input type='file' class='upload-image-input upload-image'>
-                                    <div class='text'>Descripción</div>
-                                </div>
-                            </div>`;
-                    break;
-                case '4':
-                    html = `<div class='module-content'>
-                                <button class='remove-module'>X</button>
-                                <div class='img-left'>
-                                    <div class='text'>Descripción</div>
-                                    <img src='https://via.placeholder.com/560x315' alt='Imagen' class='preview-img' width='560' height='315'>
-                                    <input type='file' class='upload-image-input upload-image'>
-                                </div>
-                            </div>`;
-                    break;
-                case '5':
-                    html = `<div class='module-content'>
-                                <button class='remove-module'>X</button>
-                                <div class='text-list-columns'>
-                                    <ul><li>Característica 1</li><li>Característica 2</li></ul>
-                                    <ul><li>Característica 3</li><li>Característica 4</li></ul>
-                                </div>
-                            </div>`;
-                    break;
-                case '6':
-                    html = `<div class='module-content'>
-                                <button class='remove-module'>X</button>
-                                <div class='banner-text'>
-                                    <img src='https://via.placeholder.com/1160x360' alt='Banner con texto' class='preview-img' width='1160' height='360'>
-                                    <input type='file' class='upload-image-input upload-image'>
-                                    <div class='text'>Título</div>
-                                </div>
-                            </div>`;
-                    break;
-                case '7':
-                    html = `<div class='module-content'>
-                                <button class='remove-module'>X</button>
-                                <div class='two-imgs'>
-                                    <div class='img'>
-                                        <img src='https://via.placeholder.com/560x315' alt='Imagen 1' class='preview-img' width='560' height='315'>
-                                        <input type='file' class='upload-image-input upload-image'>
-                                        <div class='text'>Descripción 1</div>
-                                    </div>
-                                    <div class='img'>
-                                        <img src='https://via.placeholder.com/560x315' alt='Imagen 2' class='preview-img' width='560' height='315'>
-                                        <input type='file' class='upload-image-input upload-image'>
-                                        <div class='text'>Descripción 2</div>
-                                    </div>
-                                </div>
-                            </div>`;
-                   
+        function getFormattedDate() {
+            var date = new Date();
+            var day = String(date.getDate()).padStart(2, '0');
+            var month = String(date.getMonth() + 1).padStart(2, '0');
+            var hours = String(date.getHours()).padStart(2, '0');
+            var minutes = String(date.getMinutes()).padStart(2, '0');
+            return day + '-' + month + '_' + hours + minutes;
+        }
+
+        function updateCounts() {
+            $('#leftCount').text('Total SKUs/Vistas: ' + skuList.length);
+            $('#rightCount').text('Total Renombres: ' + $('#skuInputRight').val().trim().split('\n').length);
+        }
+
+        $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
+    </script>
+</body>
+</html>
