@@ -156,22 +156,30 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
+
+        /* Nueva Estilización de Países */
         .country-selector {
             display: flex;
             justify-content: center;
             margin: 10px 0;
         }
-        .country-flag {
-            width: 32px;
-            height: 32px;
-            margin: 0 5px;
+        .country-link {
+            color: grey;
+            font-size: 12px;
+            margin-right: 10px;
             cursor: pointer;
-            filter: grayscale(100%);
-            transition: filter 0.3s;
+            text-decoration: none;
         }
-        .country-flag.active {
-            filter: grayscale(0%);
+        .country-link.active {
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
+            border-bottom: 2px solid #8fca00;
         }
+        .country-link:hover {
+            text-decoration: underline;
+        }
+
         /* Enlace a Visualizador */
         .link-visualizador {
             position: absolute;
@@ -201,9 +209,9 @@
                 <span>SKU</span>
             </div>
             <div class="country-selector">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Flag_of_Chile.svg" id="flagCL" class="country-flag" alt="Chile">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/Flag_of_Peru.svg" id="flagPE" class="country-flag" alt="Perú">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Colombia.svg" id="flagCO" class="country-flag" alt="Colombia">
+                <a href="#" class="country-link active" id="linkCL">Chile</a>
+                <a href="#" class="country-link" id="linkPE">Perú</a>
+                <a href="#" class="country-link" id="linkCO">Colombia</a>
             </div>
             <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
             <div id="leftCount"></div>
@@ -253,10 +261,10 @@
             updateCounts();
         });
 
-        $('.country-flag').click(function() {
-            $('.country-flag').removeClass('active');
+        $('.country-link').click(function() {
+            $('.country-link').removeClass('active');
             $(this).addClass('active');
-            country = $(this).attr('id').replace('flag', '');
+            country = $(this).attr('id').replace('link', '');
             $('#imgContainer').empty();
             skuList = [];
             updateCounts();
@@ -364,7 +372,7 @@
         $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
 
         // Activar Chile por defecto
-        $('#flagCL').addClass('active');
+        $('#linkCL').addClass('active');
     </script>
 </body>
 </html>
