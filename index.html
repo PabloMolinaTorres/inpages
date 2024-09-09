@@ -35,12 +35,17 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
+            justify-content: flex-start;
+        }
+        .textAreaWrapper {
+            display: flex;
+            justify-content: space-between;
         }
         textarea {
-            width: 100%;
+            width: 48%; /* Para que ambos cuadros de texto ocupen el 48% del espacio disponible */
             margin: 10px 0;
             padding: 10px;
-            height: 300px;
+            height: 250px; /* Largo mayor que el ancho */
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
@@ -204,8 +209,10 @@
                 <a href="#" class="country-link" id="linkPE">Perú</a>
                 <a href="#" class="country-link" id="linkCO">Colombia</a>
             </div>
-            <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
-            <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+            <div class="textAreaWrapper">
+                <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
+                <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+            </div>
             <button id="buscar">Buscar</button>
             <div class="switch-container">
                 <span>Vista</span>
