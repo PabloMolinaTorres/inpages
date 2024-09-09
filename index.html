@@ -39,8 +39,9 @@
             justify-content: flex-start;
         }
         .rightContainer {
-            width: 30%;
+            width: 40%; /* Ajuste para que sea más ancha */
             padding: 20px;
+            height: 500px; /* Ajuste para que sea más larga */
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -137,19 +138,6 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
-        .centerContainer {
-            width: 40%;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        .centerContainer button {
-            margin: 10px;
-            width: 200px;
-            background-color: #8fca00;
-        }
     </style>
 </head>
 <body>
@@ -172,12 +160,9 @@
                 <span>SKU</span>
             </div>
         </div>
-        <div class="centerContainer">
-            <button id="downloadAll">DESCARGAR TODO</button>
-            <button id="ordenarVistas">ORDENAR VISTAS</button>
-        </div>
         <div class="rightContainer">
             <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+            <button id="downloadAll">Descargar Todo</button>
         </div>
     </div>
 
