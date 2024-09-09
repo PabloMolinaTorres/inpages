@@ -160,10 +160,16 @@
         }
         .country-link {
             margin-right: 10px;
-            color: #8fca00;
+            color: #999;
+            font-size: 12px;
             text-decoration: none;
             font-weight: bold;
             cursor: pointer;
+        }
+        .country-link.selected {
+            color: #8fca00;
+            font-size: 14px;
+            border-bottom: 2px solid #8fca00;
         }
         .country-link:hover {
             text-decoration: underline;
@@ -197,7 +203,7 @@
                 <span>SKU</span>
             </div>
             <div class="country-selector">
-                <a href="#" class="country-link" id="linkCL">Chile</a>
+                <a href="#" class="country-link selected" id="linkCL">Chile</a>
                 <a href="#" class="country-link" id="linkPE">Perú</a>
                 <a href="#" class="country-link" id="linkCO">Colombia</a>
             </div>
@@ -250,8 +256,8 @@
         });
 
         $('.country-link').click(function() {
-            $('.country-link').removeClass('active');
-            $(this).addClass('active');
+            $('.country-link').removeClass('selected');
+            $(this).addClass('selected');
             country = $(this).attr('id').replace('link', '');
             $('#imgContainer').empty();
             skuList = [];
@@ -360,7 +366,7 @@
         $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
 
         // Activar Chile por defecto
-        $('#linkCL').addClass('active');
+        $('#linkCL').addClass('selected');
     </script>
 </body>
 </html>
