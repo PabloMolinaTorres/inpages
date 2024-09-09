@@ -30,33 +30,32 @@
             height: 100%;
             width: 100%;
         }
-        .leftContainer {
-            width: 30%;
+        .leftContainer, .rightContainer {
+            width: 50%;
             padding: 20px;
+            overflow-y: auto;
+        }
+        .leftContainer {
             border-right: 1px solid #eeeeee;
         }
-        .rightContainer {
-            flex-grow: 1;
-            padding: 20px;
-        }
         textarea {
-            width: 100%;
-            margin: 10px 0;
-            padding: 8px;
-            height: 120px;
+            width: calc(100% - 40px);
+            margin: 20px 0;
+            padding: 10px;
+            height: 150px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
-            font-size: 12px;
+            font-size: 14px;
             resize: none;
         }
         button {
-            width: 100%;
+            width: calc(100% - 40px);
             border: none;
-            margin: 10px 0;
+            margin: 20px 0;
             background-color: #8fca00;
-            height: 40px;
-            line-height: 40px;
+            height: 50px;
+            line-height: 50px;
             border-radius: 5px;
             color: white;
             font-size: 12px;
@@ -107,6 +106,55 @@
         .download-icon:hover {
             opacity: 1;
         }
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .switch-container span {
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #8fca00;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
         .country-selector {
             margin: 10px 0;
         }
@@ -120,8 +168,18 @@
         .country-link:hover {
             text-decoration: underline;
         }
-        .switch-container {
-            margin-bottom: 10px;
+        /* Enlace a Visualizador */
+        .link-visualizador {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #8fca00;
+            padding: 5px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -130,6 +188,14 @@
     <div class="container">
         <div class="leftContainer">
             <h3>Buscar Imágenes</h3>
+            <div class="switch-container">
+                <span>Vista</span>
+                <label class="switch">
+                    <input type="checkbox" id="viewToggle">
+                    <span class="slider"></span>
+                </label>
+                <span>SKU</span>
+            </div>
             <div class="country-selector">
                 <a href="#" class="country-link" id="linkCL">Chile</a>
                 <a href="#" class="country-link" id="linkPE">Perú</a>
@@ -138,16 +204,15 @@
             <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
             <div id="leftCount"></div>
             <button id="buscar">Buscar</button>
-
+            <div class="imgContainer" id="imgContainer">
+                <!-- Imágenes aparecerán aquí -->
+            </div>
+        </div>
+        <div class="rightContainer">
             <h3>Renombrar y Descargar</h3>
             <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
             <div id="rightCount"></div>
             <button id="downloadAll">Descargar Todo</button>
-        </div>
-        <div class="rightContainer">
-            <div class="imgContainer" id="imgContainer">
-                <!-- Imágenes aparecerán aquí -->
-            </div>
         </div>
     </div>
 
@@ -172,12 +237,21 @@
                 };
 
                 img.onerror = function() {
-                    resolve(null);
+                    resolve(null); // Resolviendo la promesa sin añadir la miniatura "No disponible"
                 };
             });
         }
 
+        $('#viewToggle').change(function() {
+            mode = $(this).is(':checked') ? 'sku' : 'vista';
+            $('#imgContainer').empty();
+            skuList = [];
+            updateCounts();
+        });
+
         $('.country-link').click(function() {
+            $('.country-link').removeClass('active');
+            $(this).addClass('active');
             country = $(this).attr('id').replace('link', '');
             $('#imgContainer').empty();
             skuList = [];
@@ -193,15 +267,28 @@
                 skus.forEach(function(sku) {
                     sku = sku.trim();
                     if (sku) {
-                        skuList.push(sku);
-                        loadImage(sku).then(function(imageElement) {
-                            if (imageElement) {
-                                $('#imgContainer').append(imageElement);
-                            } else {
-                                alert('Imagen no disponible para SKU: ' + sku);
-                            }
-                            updateCounts();
-                        });
+                        if (mode === "vista") {
+                            skuList.push(sku);
+                            loadImage(sku).then(function(imageElement) {
+                                if (imageElement) {
+                                    $('#imgContainer').append(imageElement);
+                                } else {
+                                    alert('Imagen no disponible para SKU: ' + sku);
+                                }
+                                updateCounts();
+                            });
+                        } else if (mode === "sku") {
+                            var suffixes = ['_01', '_10', '_11', '_02', '_03', '_04', '_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
+                            suffixes.forEach(function(suffix) {
+                                loadImage(sku, suffix).then(function(imageElement) {
+                                    if (imageElement) {
+                                        skuList.push(sku + suffix);
+                                        $('#imgContainer').append(imageElement);
+                                    }
+                                    updateCounts();
+                                });
+                            });
+                        }
                     }
                 });
             } else {
@@ -271,6 +358,9 @@
         }
 
         $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
+
+        // Activar Chile por defecto
+        $('#linkCL').addClass('active');
     </script>
 </body>
 </html>
