@@ -41,14 +41,14 @@
         }
         .imgContainer {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: wrap; /* Permitir que las imágenes se alineen en varias filas */
             gap: 10px;
-            margin-top: 20px;
-            width: 100%;
+            max-width: 1200px; /* Limitar el ancho máximo del contenedor de imágenes */
+            margin: 0 auto; /* Centrar el contenedor en la página */
         }
         .imgWrapper {
-            width: 120px; /* Ajustar el ancho del contenedor de la imagen */
-            height: 120px; /* Ajustar el alto del contenedor de la imagen */
+            width: 120px; /* Ajustamos el ancho de las imágenes */
+            height: 120px; /* Ajustamos el alto de las imágenes */
             position: relative;
             display: block;
             overflow: hidden;
@@ -56,9 +56,9 @@
             text-align: center;
         }
         .imgWrapper img {
-            width: 100%; /* Ajustar la imagen al ancho del contenedor */
-            height: 100%; /* Ajustar la imagen al alto del contenedor */
-            object-fit: cover; /* Mantener la proporción de la imagen */
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .sku {
             position: absolute;
@@ -94,20 +94,6 @@
             font-size: 12px;
             cursor: pointer;
             text-transform: uppercase;
-        }
-        .download-icon {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 20px;
-            height: 20px;
-            opacity: 0.8;
-            cursor: pointer;
-            background-image: url('https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/descarga.png');
-            background-size: cover;
-        }
-        .download-icon:hover {
-            opacity: 1;
         }
         .country-selector {
             margin: 10px 0;
@@ -241,24 +227,22 @@
                 img.alt = sku + suffix;
 
                 img.onload = function() {
-                    var wrapper = document.createElement('div'); // Crea un contenedor para la imagen
-                    wrapper.classList.add('imgWrapper'); // Añade la clase imgWrapper al contenedor
-                    var link = document.createElement('a'); // Enlace que rodea la imagen
+                    var wrapper = document.createElement('div');
+                    wrapper.classList.add('imgWrapper');
+                    var link = document.createElement('a');
                     link.href = imgUrl;
-                    link.target = '_blank'; // Abrir la imagen en una nueva pestaña
-                    link.appendChild(img); // Añadir la imagen al enlace
-
-                    var skuDiv = document.createElement('div'); // Div que muestra el SKU
+                    link.target = '_blank';
+                    link.appendChild(img);
+                    var skuDiv = document.createElement('div');
                     skuDiv.classList.add('sku');
                     skuDiv.textContent = sku + suffix;
-
-                    wrapper.appendChild(link); // Añadir el enlace con la imagen al contenedor
-                    wrapper.appendChild(skuDiv); // Añadir el SKU al contenedor
-                    resolve(wrapper); // Devolver el contenedor completo
+                    wrapper.appendChild(link);
+                    wrapper.appendChild(skuDiv);
+                    resolve(wrapper);
                 };
 
                 img.onerror = function() {
-                    resolve(null); // Resolviendo la promesa sin añadir la miniatura "No disponible"
+                    resolve(null);
                 };
             });
         }
