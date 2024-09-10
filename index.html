@@ -44,14 +44,14 @@
             flex-wrap: wrap;
             gap: 10px;
             max-width: 1000px; /* Limitar el ancho máximo del contenedor de imágenes */
-            margin: 0 auto; /* Centrar el contenedor de imágenes */
+            margin: 0 auto; /* Centrar el contenedor en la página */
             justify-content: flex-start; /* Alinear imágenes de izquierda a derecha */
+            overflow: hidden; /* Evitar que los elementos se desborden */
         }
         .imgWrapper {
-            width: 120px; /* Ajustamos el ancho de las imágenes */
-            height: 120px; /* Ajustamos el alto de las imágenes */
+            width: 150px; /* Ajuste del ancho de la imagen */
+            height: 150px; /* Ajuste del alto de la imagen */
             position: relative;
-            display: block;
             overflow: hidden;
             border: 1px solid #eeeeee;
             text-align: center;
@@ -59,18 +59,7 @@
         .imgWrapper img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-        }
-        .sku {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            text-align: center;
-            font-size: 10px;
-            padding: 2px;
+            object-fit: cover; /* Ajuste para que la imagen cubra completamente el área */
         }
         textarea {
             width: 100%;
@@ -95,6 +84,20 @@
             font-size: 12px;
             cursor: pointer;
             text-transform: uppercase;
+        }
+        .download-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            opacity: 0.8;
+            cursor: pointer;
+            background-image: url('https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/descarga.png');
+            background-size: cover;
+        }
+        .download-icon:hover {
+            opacity: 1;
         }
         .country-selector {
             margin: 10px 0;
@@ -168,7 +171,6 @@
             flex-wrap: wrap;
             gap: 10px;
         }
-        /* Estilo del botón Visualizador */
         .link-visualizador {
             position: absolute;
             top: 20px;
