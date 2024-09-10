@@ -29,27 +29,24 @@
             display: flex;
             height: 100%;
             width: 100%;
-            border: 2px solid blue; /* Borde para delimitar la sección del contenedor */
         }
         .leftContainer, .rightContainer {
             width: 300px;
             padding: 20px;
             overflow-y: auto;
-            border: 2px solid green; /* Borde para delimitar las columnas izquierda y derecha */
         }
         .leftContainer {
-            border-right: 2px solid black; /* Borde entre el contenedor izquierdo y el área central */
+            border-right: 1px solid #eeeeee;
         }
         .imgContainer {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Distribuir las imágenes según el tamaño de la pantalla */
             gap: 10px;
             margin-top: 20px;
             width: 100%;
-            border: 2px solid red; /* Borde para delimitar el área de las imágenes */
         }
         .imgWrapper {
-            width: 150px;
+            width: 100%;
             height: 150px;
             position: relative;
             display: block;
@@ -132,7 +129,6 @@
             align-items: center;
             justify-content: space-between;
             margin-top: 20px;
-            border: 2px solid orange; /* Borde para delimitar el área del switch */
         }
         .switch {
             position: relative;
@@ -183,7 +179,6 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            border: 2px solid purple; /* Borde para delimitar el área de visualización */
         }
         /* Estilo del botón Visualizador */
         .link-visualizador {
@@ -197,7 +192,6 @@
             color: white;
             font-weight: bold;
             font-size: 12px;
-            border: 2px solid yellow; /* Borde para delimitar el botón de visualización */
         }
     </style>
 </head>
@@ -229,7 +223,7 @@
             <div id="rightCount">Total Renombres: 0</div>
             <button id="downloadAll">Descargar Todo</button>
         </div>
-        <div class="visualizador" id="imgContainer"></div>
+        <div class="imgContainer" id="imgContainer"></div>
     </div>
 
     <script>
