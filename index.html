@@ -29,11 +29,7 @@
             display: flex;
             justify-content: space-between;
             height: 100%;
-            width: calc(100% - 300px); /* Limitar el ancho para el espacio a la derecha */
-        }
-        .rightSpace {
-            width: 300px; /* Espacio reservado a la derecha */
-            padding: 20px;
+            width: 100%;
         }
         .leftContainer, .rightContainer {
             width: 300px;
@@ -179,12 +175,19 @@
             font-weight: bold;
             margin-right: 10px;
         }
+
+        /* Limitación de la visualización */
         .visualizador {
-            width: 100%;
+            width: calc(100% - 350px); /* Limitar espacio para la visualización de imágenes */
+            max-width: 70%;
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 20px;
         }
+
         /* Estilo del botón Visualizador */
         .link-visualizador {
             position: absolute;
@@ -229,9 +232,6 @@
             <button id="downloadAll">Descargar Todo</button>
         </div>
         <div class="visualizador" id="imgContainer"></div>
-    </div>
-    <div class="rightSpace">
-        <!-- Espacio para futuros botones o elementos -->
     </div>
 
     <script>
