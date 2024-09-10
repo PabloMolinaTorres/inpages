@@ -31,8 +31,8 @@
             width: 100%;
         }
         .leftContainer, .rightContainer {
-            width: 350px; /* Ancho específico */
-            height: 900px; /* Alto específico */
+            width: 350px;
+            height: 900px;
             padding: 20px;
             overflow-y: auto;
         }
@@ -40,13 +40,13 @@
             border-right: 1px solid #eeeeee;
         }
         .rightContainer {
-            margin-top: 30px; /* Bajar la columna derecha */
+            margin-top: 30px;
         }
         textarea {
             width: 100%;
             margin: 20px 0;
             padding: 10px;
-            height: 600px; /* Dejar suficiente espacio para escribir */
+            height: 600px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
@@ -110,7 +110,6 @@
         .download-icon:hover {
             opacity: 1;
         }
-
         .switch {
             position: relative;
             display: inline-block;
@@ -151,7 +150,6 @@
             transform: translateX(30px);
         }
 
-        /* Nueva Estilización de Países */
         .country-selector {
             display: flex;
             justify-content: center;
@@ -174,7 +172,6 @@
             text-decoration: underline;
         }
 
-        /* Estilo del switch para "Vista" y "SKU" */
         .switch-container {
             display: flex;
             align-items: center;
@@ -185,10 +182,9 @@
         .switch-container span {
             font-size: 16px;
             font-weight: 700;
-            margin-right: 15px; /* Añadir más espacio entre el texto y el switch */
+            margin-right: 15px;
         }
 
-        /* Contenedor para la previsualización de imágenes */
         .previewContainer {
             flex-grow: 1;
             padding: 20px;
@@ -199,7 +195,6 @@
             justify-content: flex-start;
         }
 
-        /* Enlace a Visualizador */
         .link-visualizador {
             position: absolute;
             top: 20px;
@@ -215,7 +210,7 @@
     </style>
 </head>
 <body>
-    <a href="index.html" class="link-visualizador">Visualizador</a> <!-- Enlace al Visualizador -->
+    <a href="index.html" class="link-visualizador">Visualizador</a>
     <div class="container">
         <div class="leftContainer">
             <h3>Buscar Imágenes</h3>
@@ -227,7 +222,7 @@
             <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
             <div id="leftCount"></div>
             <button id="buscar">Buscar</button>
-            <div class="switch-container"> <!-- Switch justo debajo de la columna izquierda -->
+            <div class="switch-container">
                 <span>Vista</span>
                 <label class="switch">
                     <input type="checkbox" id="viewToggle">
@@ -242,7 +237,6 @@
             <div id="rightCount"></div>
             <button id="downloadAll">Descargar Todo</button>
         </div>
-        <!-- Contenedor para las previsualizaciones de imágenes -->
         <div class="previewContainer" id="previewContainer">
             <!-- Aquí aparecerán las previsualizaciones -->
         </div>
@@ -250,8 +244,8 @@
 
     <script>
         var skuList = [];
-        var mode = "vista"; // Por defecto, modo vista
-        var country = "CL"; // Por defecto, Chile
+        var mode = "vista";
+        var country = "CL";
 
         function loadImage(sku, suffix = "") {
             return new Promise(function(resolve, reject) {
@@ -269,29 +263,33 @@
                 };
 
                 img.onerror = function() {
-                    resolve(null); // No mostrar errores si no hay imagen
+                    resolve(null);
                 };
             });
         }
 
         $('#viewToggle').change(function() {
             mode = $(this).is(':checked') ? 'sku' : 'vista';
+            $('#previewContainer').empty();
         });
 
         $('.country-link').click(function() {
             $('.country-link').removeClass('active');
             $(this).addClass('active');
             country = $(this).attr('id').replace('link', '');
+            $('#previewContainer').empty();
         });
 
         $('#buscar').click(function() {
             $('#previewContainer').empty();
+            skuList = [];
             var skus = $('#skuInputLeft').val().trim().split('\n');
             if (skus.length > 0) {
                 skus.forEach(function(sku) {
                     sku = sku.trim();
                     if (sku) {
                         if (mode === "vista") {
+                            skuList.push(sku);
                             loadImage(sku).then(function(imageElement) {
                                 if (imageElement) {
                                     $('#previewContainer').append(imageElement);
@@ -369,7 +367,6 @@
             var minutes = String(date.getMinutes()).padStart(2, '0');
             return day + '-' + month + '_' + hours + minutes;
         }
-
     </script>
 </body>
 </html>
