@@ -74,6 +74,7 @@
             display: inline-block;
             vertical-align: top;
             margin-right: 10px;
+            text-align: center; /* Centrar el texto debajo de la imagen */
         }
         .imgWrapper {
             width: 120px;
@@ -90,15 +91,8 @@
             object-fit: cover;
         }
         .sku {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            text-align: center;
-            font-size: 10px;
-            padding: 2px;
+            font-size: 12px;
+            margin-top: 5px; /* Espacio entre la imagen y el nombre */
         }
         .download-icon {
             position: absolute;
@@ -257,9 +251,8 @@
                 img.alt = sku + suffix;
 
                 img.onload = function() {
-                    var wrapper = $('<div class="imgContainer"><div class="imgWrapper"><a href="' + imgUrl + '" target="_blank"></a></div></div>');
+                    var wrapper = $('<div class="imgContainer"><div class="imgWrapper"><a href="' + imgUrl + '" target="_blank"></a></div><div class="sku">' + sku + suffix + '</div></div>');
                     wrapper.find('a').append(img);
-                    wrapper.append('<div class="sku">' + sku + suffix + '</div>');
                     resolve(wrapper);
                 };
 
