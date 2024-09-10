@@ -47,8 +47,8 @@
             width: 100%;
         }
         .imgWrapper {
-            width: 120px;
-            height: 120px;
+            width: 200px;
+            height: 200px;
             position: relative;
             display: block;
             overflow: hidden;
@@ -175,18 +175,22 @@
             font-weight: bold;
             margin-right: 10px;
         }
-
-        /* Limitación de la visualización */
         .visualizador {
-            width: 900px; /* Limitar ancho del visualizador */
-            height: 600px; /* Limitar alto del visualizador */
+            width: calc(100% - 300px); /* Ajustar la vista sin invadir el espacio del lado derecho */
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            overflow-x: auto;
+            padding-right: 300px; /* Espacio reservado en el lado derecho */
+        }
+        .rightMenu {
+            width: 300px; /* Espacio reservado a la derecha */
+            position: absolute;
+            right: 0;
+            height: 100%;
+            background-color: #f9f9f9;
+            border-left: 1px solid #eeeeee;
             padding: 20px;
         }
-
         /* Estilo del botón Visualizador */
         .link-visualizador {
             position: absolute;
@@ -231,6 +235,9 @@
             <button id="downloadAll">Descargar Todo</button>
         </div>
         <div class="visualizador" id="imgContainer"></div>
+        <div class="rightMenu">
+            <!-- Aquí podrás agregar más cosas en el futuro -->
+        </div>
     </div>
 
     <script>
