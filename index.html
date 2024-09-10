@@ -27,6 +27,8 @@
         }
         .container {
             display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
             height: 100%;
             width: 100%;
         }
@@ -34,18 +36,14 @@
             width: 350px; /* Ancho específico */
             height: 900px; /* Alto específico */
             padding: 20px;
-            overflow-y: auto;
         }
         .leftContainer {
             border-right: 1px solid #eeeeee;
-            margin-top: 20px; /* Bajamos unos píxeles la columna izquierda */
         }
-        .imgPreviewContainer {
+        .previewContainer {
             flex-grow: 1;
-            padding-left: 20px; /* Espacio para la previsualización al costado derecho de la columna izquierda */
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            padding: 20px;
+            overflow-y: auto;
         }
         textarea {
             width: 100%;
@@ -231,16 +229,16 @@
             </div>
         </div>
         
-        <!-- Contenedor para previsualizar imágenes a la derecha de la columna izquierda -->
-        <div class="imgPreviewContainer" id="imgPreviewContainer">
-            <!-- Las imágenes de previsualización aparecerán aquí -->
-        </div>
-
         <div class="rightContainer">
             <h3>Renombrar y Descargar</h3>
             <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
             <div id="rightCount"></div>
             <button id="downloadAll">Descargar Todo</button>
+        </div>
+
+        <!-- Sección para la previsualización de imágenes -->
+        <div class="previewContainer" id="imgPreviewContainer">
+            <!-- Aquí aparecerán las imágenes previsualizadas -->
         </div>
     </div>
 
