@@ -27,8 +27,6 @@
         }
         .container {
             display: flex;
-            flex-direction: row;
-            justify-content: flex-start;
             height: 100%;
             width: 100%;
         }
@@ -36,15 +34,10 @@
             width: 350px; /* Ancho específico */
             height: 900px; /* Alto específico */
             padding: 20px;
+            overflow-y: auto;
         }
         .leftContainer {
             border-right: 1px solid #eeeeee;
-        }
-        .previewContainer {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-x: auto; /* Ajuste para que la previsualización sea horizontal */
-            white-space: nowrap; /* Permitir que las imágenes se muestren en una fila */
         }
         textarea {
             width: 100%;
@@ -71,10 +64,9 @@
             text-transform: uppercase;
         }
         .imgContainer {
-            display: inline-block;
-            vertical-align: top;
-            margin-right: 10px;
-            text-align: center; /* Centrar el texto debajo de la imagen */
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .imgWrapper {
             width: 120px;
@@ -91,8 +83,15 @@
             object-fit: cover;
         }
         .sku {
-            font-size: 12px;
-            margin-top: 5px; /* Espacio entre la imagen y el nombre */
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            text-align: center;
+            font-size: 10px;
+            padding: 2px;
         }
         .download-icon {
             position: absolute;
@@ -214,6 +213,9 @@
             <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
             <div id="leftCount"></div>
             <button id="buscar">Buscar</button>
+            <div class="imgContainer" id="imgContainer">
+                <!-- Imágenes aparecerán aquí -->
+            </div>
             <div class="switch-container"> <!-- Switch justo debajo de la columna izquierda -->
                 <span>Vista</span>
                 <label class="switch">
@@ -223,17 +225,11 @@
                 <span>SKU</span>
             </div>
         </div>
-        
         <div class="rightContainer">
             <h3>Renombrar y Descargar</h3>
             <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
             <div id="rightCount"></div>
             <button id="downloadAll">Descargar Todo</button>
-        </div>
-
-        <!-- Sección para la previsualización de imágenes -->
-        <div class="previewContainer" id="imgPreviewContainer">
-            <!-- Aquí aparecerán las imágenes previsualizadas -->
         </div>
     </div>
 
@@ -251,8 +247,9 @@
                 img.alt = sku + suffix;
 
                 img.onload = function() {
-                    var wrapper = $('<div class="imgContainer"><div class="imgWrapper"><a href="' + imgUrl + '" target="_blank"></a></div><div class="sku">' + sku + suffix + '</div></div>');
+                    var wrapper = $('<div class="imgWrapper"><a href="' + imgUrl + '" target="_blank"></a></div>');
                     wrapper.find('a').append(img);
+                    wrapper.append('<div class="sku">' + sku + suffix + '</div>');
                     resolve(wrapper);
                 };
 
@@ -264,7 +261,7 @@
 
         $('#viewToggle').change(function() {
             mode = $(this).is(':checked') ? 'sku' : 'vista';
-            $('#imgPreviewContainer').empty();
+            $('#imgContainer').empty();
             skuList = [];
             updateCounts();
         });
@@ -273,13 +270,13 @@
             $('.country-link').removeClass('active');
             $(this).addClass('active');
             country = $(this).attr('id').replace('link', '');
-            $('#imgPreviewContainer').empty();
+            $('#imgContainer').empty();
             skuList = [];
             updateCounts();
         });
 
         $('#buscar').click(function() {
-            $('#imgPreviewContainer').empty();
+            $('#imgContainer').empty();
             skuList = [];  // Resetear la lista
             var skus = $('#skuInputLeft').val().trim().split('\n');
 
@@ -291,7 +288,7 @@
                             skuList.push(sku);
                             loadImage(sku).then(function(imageElement) {
                                 if (imageElement) {
-                                    $('#imgPreviewContainer').append(imageElement);
+                                    $('#imgContainer').append(imageElement);
                                 }
                                 updateCounts();
                             });
@@ -301,7 +298,7 @@
                                 loadImage(sku, suffix).then(function(imageElement) {
                                     if (imageElement) {
                                         skuList.push(sku + suffix);
-                                        $('#imgPreviewContainer').append(imageElement);
+                                        $('#imgContainer').append(imageElement);
                                     }
                                     updateCounts();
                                 });
@@ -329,18 +326,17 @@
             var urls = [];
             var filenames = [];
 
-            skuList.forEach(function(sku) {
-                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/`;
-                var imgUrl = `${baseUrl}${sku}/w=1500,h=1500,fit=pad`;
-
-                var originalSku = originalSkus.find(os => sku.startsWith(os));
-                var renameSku = renameSkus[originalSkus.indexOf(originalSku)];
-
-                if (renameSku) {
-                    var finalName = sku.replace(originalSku, renameSku);
+            originalSkus.forEach(function(sku, index) {
+                var suffixes = mode === "sku" ? ['_01', '_10', '_11', '_02', '_03', '_04', '_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'] : [''];
+                suffixes.forEach(function(suffix) {
+                    var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/`;
+                    var imgUrl = `${baseUrl}${sku}${suffix}/w=1500,h=1500,fit=pad`;
+                    var renameSku = renameSkus[index]; // Tomamos el renombre correspondiente al índice actual
+                    
+                    var finalName = renameSku + suffix;
                     urls.push(imgUrl);
                     filenames.push(finalName);
-                }
+                });
             });
 
             urls.forEach(function(url, index) {
