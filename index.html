@@ -43,7 +43,7 @@
             width: 100%;
             margin: 20px 0;
             padding: 10px;
-            height: 600px; /* Dejar suficiente espacio para escribir */
+            height: 400px; /* Ajustado para dar más espacio al botón */
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
@@ -212,17 +212,17 @@
             </div>
             <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
             <div id="leftCount"></div>
-            <button id="buscar">Buscar</button>
-            <div class="imgContainer" id="imgContainer">
-                <!-- Imágenes aparecerán aquí -->
-            </div>
-            <div class="switch-container"> <!-- Switch justo debajo de la columna izquierda -->
+            <div class="switch-container"> <!-- Switch debajo del campo de texto -->
                 <span>Vista</span>
                 <label class="switch">
                     <input type="checkbox" id="viewToggle">
                     <span class="slider"></span>
                 </label>
                 <span>SKU</span>
+            </div>
+            <button id="buscar">Buscar</button> <!-- Volviendo el botón a su posición -->
+            <div class="imgContainer" id="imgContainer">
+                <!-- Imágenes aparecerán aquí -->
             </div>
         </div>
         <div class="rightContainer">
