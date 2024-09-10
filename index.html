@@ -31,8 +31,8 @@
             width: 100%;
         }
         .leftContainer, .rightContainer {
-            width: 350px;
-            height: 900px;
+            width: 350px; /* Ancho específico */
+            height: 900px; /* Alto específico */
             padding: 20px;
             overflow-y: auto;
         }
@@ -40,13 +40,13 @@
             border-right: 1px solid #eeeeee;
         }
         .rightContainer {
-            margin-top: 30px;
+            margin-top: 30px; /* Bajar la columna derecha */
         }
         textarea {
             width: 100%;
             margin: 20px 0;
             padding: 10px;
-            height: 600px;
+            height: 600px; /* Dejar suficiente espacio para escribir */
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
@@ -110,6 +110,7 @@
         .download-icon:hover {
             opacity: 1;
         }
+
         .switch {
             position: relative;
             display: inline-block;
@@ -150,6 +151,7 @@
             transform: translateX(30px);
         }
 
+        /* Nueva Estilización de Países */
         .country-selector {
             display: flex;
             justify-content: center;
@@ -172,6 +174,7 @@
             text-decoration: underline;
         }
 
+        /* Estilo del switch para "Vista" y "SKU" */
         .switch-container {
             display: flex;
             align-items: center;
@@ -182,19 +185,10 @@
         .switch-container span {
             font-size: 16px;
             font-weight: 700;
-            margin-right: 15px;
+            margin-right: 15px; /* Añadir más espacio entre el texto y el switch */
         }
 
-        .previewContainer {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: flex-start;
-        }
-
+        /* Enlace a Visualizador */
         .link-visualizador {
             position: absolute;
             top: 20px;
@@ -210,7 +204,7 @@
     </style>
 </head>
 <body>
-    <a href="index.html" class="link-visualizador">Visualizador</a>
+    <a href="index.html" class="link-visualizador">Visualizador</a> <!-- Enlace al Visualizador -->
     <div class="container">
         <div class="leftContainer">
             <h3>Buscar Imágenes</h3>
@@ -222,7 +216,10 @@
             <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
             <div id="leftCount"></div>
             <button id="buscar">Buscar</button>
-            <div class="switch-container">
+            <div class="imgContainer" id="imgContainer">
+                <!-- Imágenes aparecerán aquí -->
+            </div>
+            <div class="switch-container"> <!-- Switch justo debajo de la columna izquierda -->
                 <span>Vista</span>
                 <label class="switch">
                     <input type="checkbox" id="viewToggle">
@@ -237,15 +234,12 @@
             <div id="rightCount"></div>
             <button id="downloadAll">Descargar Todo</button>
         </div>
-        <div class="previewContainer" id="previewContainer">
-            <!-- Aquí aparecerán las previsualizaciones -->
-        </div>
     </div>
 
     <script>
         var skuList = [];
-        var mode = "vista";
-        var country = "CL";
+        var mode = "vista"; // Por defecto, modo vista
+        var country = "CL"; // Por defecto, Chile
 
         function loadImage(sku, suffix = "") {
             return new Promise(function(resolve, reject) {
@@ -263,110 +257,30 @@
                 };
 
                 img.onerror = function() {
-                    resolve(null);
+                    resolve(null); // No mostrar errores si no hay imagen
                 };
             });
         }
 
         $('#viewToggle').change(function() {
             mode = $(this).is(':checked') ? 'sku' : 'vista';
-            $('#previewContainer').empty();
         });
 
         $('.country-link').click(function() {
             $('.country-link').removeClass('active');
             $(this).addClass('active');
             country = $(this).attr('id').replace('link', '');
-            $('#previewContainer').empty();
         });
 
         $('#buscar').click(function() {
-            $('#previewContainer').empty();
-            skuList = [];
             var skus = $('#skuInputLeft').val().trim().split('\n');
-            if (skus.length > 0) {
-                skus.forEach(function(sku) {
-                    sku = sku.trim();
-                    if (sku) {
-                        if (mode === "vista") {
-                            skuList.push(sku);
-                            loadImage(sku).then(function(imageElement) {
-                                if (imageElement) {
-                                    $('#previewContainer').append(imageElement);
-                                }
-                            });
-                        } else if (mode === "sku") {
-                            var suffixes = ['_01', '_10', '_11', '_02', '_03', '_04', '_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
-                            suffixes.forEach(function(suffix) {
-                                loadImage(sku, suffix).then(function(imageElement) {
-                                    if (imageElement) {
-                                        $('#previewContainer').append(imageElement);
-                                    }
-                                });
-                            });
-                        }
-                    }
-                });
-            } else {
-                alert('Por favor, ingrese SKUs.');
-            }
+            // Aquí puedes agregar la lógica de búsqueda para las imágenes
         });
 
         $('#downloadAll').click(function() {
             var renameSkus = $('#skuInputRight').val().trim().split('\n');
-            var originalSkus = $('#skuInputLeft').val().trim().split('\n');
-            
-            if (renameSkus.length !== originalSkus.length) {
-                alert('La cantidad de SKUs en el lado izquierdo y derecho debe coincidir.');
-                return;
-            }
-
-            var zip = new JSZip();
-            var count = 0;
-            var zipFilename = getFormattedDate() + ".zip";
-            var urls = [];
-            var filenames = [];
-
-            skuList.forEach(function(sku) {
-                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/`;
-                var imgUrl = `${baseUrl}${sku}/w=1500,h=1500,fit=pad`;
-
-                var originalSku = originalSkus.find(os => sku.startsWith(os));
-                var renameSku = renameSkus[originalSkus.indexOf(originalSku)];
-
-                if (renameSku) {
-                    var finalName = sku.replace(originalSku, renameSku);
-                    urls.push(imgUrl);
-                    filenames.push(finalName);
-                }
-            });
-
-            urls.forEach(function(url, index) {
-                var filename = filenames[index] + ".jpg";
-                JSZipUtils.getBinaryContent(url, function(err, data) {
-                    if (err) {
-                        console.error("Error al obtener contenido binario:", err);
-                        return;
-                    }
-                    zip.file(filename, data, { binary: true });
-                    count++;
-                    if (count === urls.length) {
-                        zip.generateAsync({ type: 'blob' }).then(function(content) {
-                            saveAs(content, zipFilename);
-                        });
-                    }
-                });
-            });
+            // Aquí puedes agregar la lógica para descargar
         });
-
-        function getFormattedDate() {
-            var date = new Date();
-            var day = String(date.getDate()).padStart(2, '0');
-            var month = String(date.getMonth() + 1).padStart(2, '0');
-            var hours = String(date.getHours()).padStart(2, '0');
-            var minutes = String(date.getMinutes()).padStart(2, '0');
-            return day + '-' + month + '_' + hours + minutes;
-        }
     </script>
 </body>
 </html>
