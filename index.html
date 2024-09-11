@@ -26,51 +26,28 @@
             background-color: #fff;
         }
         .container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
             height: 100%;
             width: 100%;
         }
         .leftContainer, .rightContainer {
+            width: 300px;
             padding: 20px;
             overflow-y: auto;
         }
         .leftContainer {
             border-right: 1px solid #eeeeee;
         }
-        textarea {
-            width: calc(100% - 40px);
-            margin: 20px 0;
-            padding: 10px;
-            height: 150px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-family: 'Lato', sans-serif;
-            font-size: 14px;
-            resize: none;
-        }
-        button {
-            width: calc(100% - 40px);
-            border: none;
-            margin: 20px 0;
-            background-color: #8fca00;
-            height: 50px;
-            line-height: 50px;
-            border-radius: 5px;
-            color: white;
-            font-size: 12px;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
         .imgContainer {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Distribuir las imágenes según el tamaño de la pantalla */
             gap: 10px;
             margin-top: 20px;
+            flex-grow: 1; /* Esto permitirá que las imágenes ocupen todo el espacio disponible */
         }
         .imgWrapper {
-            width: 120px;
-            height: 120px;
+            width: 100%;
+            height: 150px;
             position: relative;
             display: block;
             overflow: hidden;
@@ -93,6 +70,30 @@
             font-size: 10px;
             padding: 2px;
         }
+        textarea {
+            width: 100%;
+            margin: 20px 0;
+            padding: 10px;
+            height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Lato', sans-serif;
+            font-size: 14px;
+            resize: none;
+        }
+        button {
+            width: 100%;
+            border: none;
+            margin: 20px 0;
+            background-color: #8fca00;
+            height: 50px;
+            line-height: 50px;
+            border-radius: 5px;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
         .download-icon {
             position: absolute;
             top: 5px;
@@ -107,15 +108,27 @@
         .download-icon:hover {
             opacity: 1;
         }
+        .country-selector {
+            margin: 10px 0;
+        }
+        .country-link {
+            color: grey;
+            font-size: 14px;
+            margin-right: 10px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .country-link.active {
+            color: #333;
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 2px solid #8fca00;
+        }
         .switch-container {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .switch-container span {
-            font-size: 14px;
-            font-weight: 700;
+            margin-top: 20px;
         }
         .switch {
             position: relative;
@@ -156,23 +169,18 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
-        .country-selector {
+        .switch-container span {
+            font-size: 16px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .visualizador {
+            width: 100%;
             display: flex;
-            justify-content: center;
-            margin: 10px 0;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-        .country-flag {
-            width: 32px;
-            height: 32px;
-            margin: 0 5px;
-            cursor: pointer;
-            filter: grayscale(100%);
-            transition: filter 0.3s;
-        }
-        .country-flag.active {
-            filter: grayscale(0%);
-        }
-        /* Enlace a Visualizador */
+        /* Estilo del botón Visualizador */
         .link-visualizador {
             position: absolute;
             top: 20px;
@@ -192,6 +200,14 @@
     <div class="container">
         <div class="leftContainer">
             <h3>Buscar Imágenes</h3>
+            <div class="country-selector">
+                <a href="#" class="country-link active" id="linkCL">Chile</a>
+                <a href="#" class="country-link" id="linkPE">Perú</a>
+                <a href="#" class="country-link" id="linkCO">Colombia</a>
+            </div>
+            <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
+            <button id="buscar">Buscar</button>
+            <div id="leftCount">Total SKUs/Vistas: 0</div>
             <div class="switch-container">
                 <span>Vista</span>
                 <label class="switch">
@@ -200,24 +216,14 @@
                 </label>
                 <span>SKU</span>
             </div>
-            <div class="country-selector">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Flag_of_Chile.svg" id="flagCL" class="country-flag" alt="Chile">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/Flag_of_Peru.svg" id="flagPE" class="country-flag" alt="Perú">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Colombia.svg" id="flagCO" class="country-flag" alt="Colombia">
-            </div>
-            <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
-            <div id="leftCount"></div>
-            <button id="buscar">Buscar</button>
-            <div class="imgContainer" id="imgContainer">
-                <!-- Imágenes aparecerán aquí -->
-            </div>
         </div>
         <div class="rightContainer">
             <h3>Renombrar y Descargar</h3>
             <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
-            <div id="rightCount"></div>
+            <div id="rightCount">Total Renombres: 0</div>
             <button id="downloadAll">Descargar Todo</button>
         </div>
+        <div class="imgContainer" id="imgContainer"></div>
     </div>
 
     <script>
@@ -234,14 +240,22 @@
                 img.alt = sku + suffix;
 
                 img.onload = function() {
-                    var wrapper = $('<div class="imgWrapper"><a href="' + imgUrl + '" target="_blank"></a></div>');
-                    wrapper.find('a').append(img);
-                    wrapper.append('<div class="sku">' + sku + suffix + '</div>');
+                    var wrapper = document.createElement('div');
+                    wrapper.classList.add('imgWrapper');
+                    var link = document.createElement('a');
+                    link.href = imgUrl;
+                    link.target = '_blank';
+                    link.appendChild(img);
+                    var skuDiv = document.createElement('div');
+                    skuDiv.classList.add('sku');
+                    skuDiv.textContent = sku + suffix;
+                    wrapper.appendChild(link);
+                    wrapper.appendChild(skuDiv);
                     resolve(wrapper);
                 };
 
                 img.onerror = function() {
-                    resolve(null); // Resolviendo la promesa sin añadir la miniatura "No disponible"
+                    resolve(null);
                 };
             });
         }
@@ -253,10 +267,10 @@
             updateCounts();
         });
 
-        $('.country-flag').click(function() {
-            $('.country-flag').removeClass('active');
+        $('.country-link').click(function() {
+            $('.country-link').removeClass('active');
             $(this).addClass('active');
-            country = $(this).attr('id').replace('flag', '');
+            country = $(this).attr('id').replace('link', '');
             $('#imgContainer').empty();
             skuList = [];
             updateCounts();
@@ -264,9 +278,8 @@
 
         $('#buscar').click(function() {
             $('#imgContainer').empty();
-            skuList = [];  // Resetear la lista
+            skuList = [];
             var skus = $('#skuInputLeft').val().trim().split('\n');
-
             if (skus.length > 0) {
                 skus.forEach(function(sku) {
                     sku = sku.trim();
@@ -275,9 +288,7 @@
                             skuList.push(sku);
                             loadImage(sku).then(function(imageElement) {
                                 if (imageElement) {
-                                    $('#imgContainer').append(imageElement);
-                                } else {
-                                    alert('Imagen no disponible para SKU: ' + sku);
+                                    document.getElementById('imgContainer').appendChild(imageElement);
                                 }
                                 updateCounts();
                             });
@@ -287,7 +298,7 @@
                                 loadImage(sku, suffix).then(function(imageElement) {
                                     if (imageElement) {
                                         skuList.push(sku + suffix);
-                                        $('#imgContainer').append(imageElement);
+                                        document.getElementById('imgContainer').appendChild(imageElement);
                                     }
                                     updateCounts();
                                 });
@@ -303,7 +314,6 @@
         $('#downloadAll').click(function() {
             var renameSkus = $('#skuInputRight').val().trim().split('\n');
             var originalSkus = $('#skuInputLeft').val().trim().split('\n');
-            
             if (renameSkus.length !== originalSkus.length) {
                 alert('La cantidad de SKUs en el lado izquierdo y derecho debe coincidir.');
                 return;
@@ -315,18 +325,16 @@
             var urls = [];
             var filenames = [];
 
-            skuList.forEach(function(sku) {
-                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/`;
-                var imgUrl = `${baseUrl}${sku}/w=1500,h=1500,fit=pad`;
-
-                var originalSku = originalSkus.find(os => sku.startsWith(os));
-                var renameSku = renameSkus[originalSkus.indexOf(originalSku)];
-
-                if (renameSku) {
-                    var finalName = sku.replace(originalSku, renameSku);
-                    urls.push(imgUrl);
-                    filenames.push(finalName);
-                }
+            originalSkus.forEach(function(originalSku, index) {
+                skuList.forEach(function(sku) {
+                    if (sku.startsWith(originalSku)) {
+                        var renameSku = renameSkus[index];
+                        var finalName = sku.replace(originalSku, renameSku); // Mantener el sufijo intacto
+                        var imgUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/${sku}/w=1500,h=1500,fit=pad`;
+                        urls.push(imgUrl);
+                        filenames.push(finalName);
+                    }
+                });
             });
 
             urls.forEach(function(url, index) {
@@ -363,8 +371,7 @@
 
         $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
 
-        // Activar Chile por defecto
-        $('#flagCL').addClass('active');
+        $('#linkCL').addClass('active');
     </script>
 </body>
 </html>
