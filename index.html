@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Renombrador de Imágenes Falabella</title>
+    <title>Visualiza</title>
     <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/falabella.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
@@ -30,278 +30,276 @@
             height: 100%;
             width: 100%;
         }
-        .leftContainer, .rightContainer {
+        .leftMenu, .rightMenu {
             width: 320px;
-            padding: 20px;
+            min-width: 320px;
+            background-color: #fff;
             overflow-y: auto;
+            position: relative;
         }
-        .leftContainer {
+        .leftMenu {
             border-right: 1px solid #eeeeee;
         }
-        .imgContainer {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Distribuir imágenes automáticamente */
-            gap: 10px;
-            margin-top: 20px;
-            width: 100%;
+        .rightMenu {
+            border-left: 1px solid #eeeeee;
         }
-        #thumbnailContainer {
+        .leftMenu .intro, .rightMenu .intro {
+            font-size: 12px;
+            padding: 20px 20px 0;
+        }
+        .leftMenu textarea, .rightMenu .error-list {
+            width: calc(100% - 40px);
+            border: 1px solid #eee;
+            margin: 20px;
+            height: 400px;
+        }
+        .leftMenu button, .rightMenu button {
+            width: calc(100% - 40px);
+            border: none;
+            margin: 0 20px 20px;
+            background-color: #8fca00;
+            height: 50px;
+            line-height: 50px;
+            padding: 0;
+            border-radius: 5px;
+            color: white;
+            font-size: 12px;
+            letter-spacing: .075em;
+            cursor: pointer;
+        }
+        .rightMenu button[disabled] {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .error-list {
+            height: calc(100% - 100px);
+            padding: 20px;
+            margin: 20px;
+            border: 1px solid #eee;
+            background-color: #f9f9f9;
+            overflow-y: auto;
+        }
+        .error-list button {
+            display: block;
+            margin-bottom: 10px;
+            background-color: #ccc;
+            border: none;
+            color: white;
+            padding: 3px 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 10px;
+        }
+        .error-list button:hover {
+            background-color: #bbb;
+        }
+        .error-list button.copied {
+            background-color: #8fca00;
+        }
+        .error-list button.copied:hover {
+            background-color: #76a700;
+        }
+        .error-list div {
+            margin-bottom: 5px;
+            color: red;
+        }
+        .rightContainer {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+
+        /* Añadiendo la estructura y el estilo del contenedor de imágenes */
+        .imgContainer {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            justify-content: center;
-            max-width: 1200px;
-            margin: 0 auto;
         }
-        .thumbnail {
-            display: inline-block;
-            width: 150px;
-            height: 150px;
-            margin: 5px;
-            position: relative;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            text-align: center;
-            overflow: hidden;
-        }
-        .thumbnail img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .imgWrapper {
-            width: 150px;
-            height: 150px;
+
+        .imgContainer .imgWrapper {
+            width: 200px;
+            height: 200px;
             position: relative;
             display: block;
             overflow: hidden;
             border: 1px solid #eeeeee;
         }
-        .imgWrapper img {
+
+        .imgContainer .imgWrapper img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        .sku {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            text-align: center;
-            font-size: 10px;
-            padding: 2px;
-        }
-        textarea {
-            width: 100%;
-            margin: 20px 0;
-            padding: 10px;
-            height: 200px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-family: 'Lato', sans-serif;
-            font-size: 14px;
-            resize: none;
-        }
-        button {
-            width: 100%;
-            border: none;
-            margin: 20px 0;
-            background-color: #8fca00;
-            height: 50px;
-            line-height: 50px;
-            border-radius: 5px;
-            color: white;
-            font-size: 12px;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
+
         .download-icon {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 20px;
-            height: 20px;
+            top: 0px;
+            right: 0px;
+            width: 24px;
+            height: 24px;
             opacity: 0.8;
             cursor: pointer;
             background-image: url('https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/descarga.png');
             background-size: cover;
         }
+
         .download-icon:hover {
             opacity: 1;
         }
-        .country-selector {
-            margin: 10px 0;
-        }
-        .country-link {
-            color: grey;
-            font-size: 14px;
-            margin-right: 10px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .country-link.active {
-            color: #333;
-            font-size: 16px;
-            font-weight: bold;
-            border-bottom: 2px solid #8fca00;
-        }
-        .switch-container {
+
+        .setBar {
+            background-color: #fff;
+            padding: 20px;
+            width: 100%;
+            margin-bottom: 20px;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 20px;
+            gap: 10px;
         }
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 24px;
-        }
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 24px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider {
+
+        .setBar button {
+            padding: 0;
             background-color: #8fca00;
+            border: none;
+            font-size: 12px;
+            text-transform: uppercase;
+            line-height: 30px;
+            height: 30px;
+            padding: 0 15px;
+            color: white;
+            font-weight: 700;
+            letter-spacing: .075em;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 0;
         }
-        input:checked + .slider:before {
-            transform: translateX(26px);
+        .setBar button:hover {
+            background-color: #8fca00;
+            color: white;
         }
-        .switch-container span {
-            font-size: 16px;
-            font-weight: bold;
-            margin-right: 10px;
+
+        .pais.seleccionado {
+            font-weight: 700;
+            text-decoration: underline;
+            color: #333;
+        }
+        .pais {
+            display: inline-block;
+            padding-right: 10px;
+            cursor: pointer;
+            color: #bbbbbb;
+        }
+        .error {
+            color: red;
+            font-size: 12px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <a href="index.html" class="link-visualizador">Visualizador</a>
     <div class="container">
-        <div class="leftContainer">
-            <h3>Buscar Imágenes</h3>
-            <div class="country-selector">
-                <a href="#" class="country-link active" id="linkCL">Chile</a>
-                <a href="#" class="country-link" id="linkPE">Perú</a>
-                <a href="#" class="country-link" id="linkCO">Colombia</a>
-            </div>
-            <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
-            <button id="buscar">Buscar</button>
-            <div id="leftCount">Total SKUs/Vistas: 0</div>
-            <div class="switch-container">
-                <span>Vista</span>
-                <label class="switch">
-                    <input type="checkbox" id="viewToggle">
-                    <span class="slider"></span>
-                </label>
-                <span>SKU</span>
+        <div class="leftMenu">
+            <div class="skus-container">
+                <textarea name="skus" id="skus" cols="30" rows="15" placeholder="Ingrese los SKUs uno por línea..."></textarea>
+                <button id="buscar">BUSCAR</button>
             </div>
         </div>
         <div class="rightContainer">
-            <h3>Renombrar y Descargar</h3>
-            <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
-            <div id="rightCount">Total Renombres: 0</div>
-            <button id="downloadAll">Descargar Todo</button>
+            <div class="setBar">
+                <button id="descargartodo">DESCARGAR TODO</button>
+                <button id="ordenarVistas" disabled>ORDENAR VISTAS</button>
+            </div>
+
+            <!-- Contenedor de las imágenes -->
+            <div class="imgContainer"></div>
+
+            <!-- Contenedor de miniaturas -->
+            <div id="thumbnailContainer" style="display:none;">
+                <!-- Las miniaturas aparecerán aquí -->
+            </div>
         </div>
-        <div class="imgContainer"></div>
-        <div id="thumbnailContainer" style="display:none;"></div>
     </div>
 
     <script>
-        var skuList = [];
-        var mode = "vista"; // Por defecto, modo vista
-        var country = "CL"; // Por defecto, Chile
+        $('#buscar').click(function() {
+            $('#ordenarVistas').attr('disabled', true);
+            buscarPorVista();
+        });
 
-        function loadImage(sku, suffix = "") {
+        async function buscarPorVista() {
+            $('.imgContainer').empty();
+            var skus = $('#skus').val().split('\n');
+            var promises = [];
+
+            for (let sku of skus) {
+                sku = sku.trim();
+                if (sku !== "") {
+                    promises.push(loadImage(sku));
+                }
+            }
+
+            const images = await Promise.all(promises);
+
+            images.forEach(image => {
+                if (image && !image.error) {
+                    $('.imgContainer').append(image.element);
+                }
+            });
+
+            $('#ordenarVistas').removeAttr('disabled');
+        }
+
+        function loadImage(sku) {
             return new Promise(function(resolve, reject) {
-                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/`;
-                var imgUrl = `${baseUrl}${sku}${suffix}/w=1500,h=1500,fit=pad`;
+                var baseUrl = 'https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella';
+                var imgUrl = `${baseUrl}/${sku}/public`;
+                var downloadUrl = `${baseUrl}/${sku}/w=1500,h=1500`;
+
                 var img = new Image();
                 img.src = imgUrl;
-                img.alt = sku + suffix;
+                img.alt = sku;
+                img.setAttribute('data-download-src', downloadUrl);
 
                 img.onload = function() {
-                    var wrapper = document.createElement('div');
-                    wrapper.classList.add('imgWrapper');
-                    var link = document.createElement('a');
-                    link.href = imgUrl;
-                    link.target = '_blank';
-                    link.appendChild(img);
-                    var skuDiv = document.createElement('div');
-                    skuDiv.classList.add('sku');
-                    skuDiv.textContent = sku + suffix;
-                    wrapper.appendChild(link);
-                    wrapper.appendChild(skuDiv);
-                    resolve(wrapper);
+                    var wrapper = $('<div class="imgWrapper"><a href="' + imgUrl + '" target="_blank"></a></div>');
+                    wrapper.find('a').append(img);
+                    resolve({ element: wrapper, sku: sku });
                 };
 
                 img.onerror = function() {
-                    resolve(null);
+                    resolve({ error: true, sku: sku });
                 };
             });
         }
 
-        document.getElementById('buscar').addEventListener('click', async function() {
-            var input = document.getElementById('skuInputLeft').value.trim();
-            skuList = input.split('\n').map(sku => sku.trim());
-            document.getElementById('leftCount').textContent = "Total SKUs/Vistas: " + skuList.length;
-            document.querySelector('.imgContainer').innerHTML = ''; // Limpiar contenedor de imágenes
+        $('#descargartodo').click(function() {
+            var zip = new JSZip();
+            var count = 0;
+            var zipFilename = "imagenes.zip";
+            var urls = [];
+            var skuNames = [];
 
-            for (let sku of skuList) {
-                let imageElement = await loadImage(sku);
-                if (imageElement) {
-                    document.querySelector('.imgContainer').appendChild(imageElement);
-                }
-            }
+            $(".imgWrapper img").each(function() {
+                urls.push($(this).attr('data-download-src'));
+                skuNames.push($(this).attr('alt'));
+            });
+
+            urls.forEach(function(url, index) {
+                var filename = skuNames[index] + ".jpg";
+                JSZipUtils.getBinaryContent(url, function (err, data) {
+                    if (err) {
+                        throw err;
+                    }
+                    zip.file(filename, data, { binary: true });
+                    count++;
+                    if (count === urls.length) {
+                        zip.generateAsync({ type: 'blob' }).then(function (content) {
+                            saveAs(content, zipFilename);
+                        });
+                    }
+                });
+            });
         });
-
-        document.getElementById('viewToggle').addEventListener('change', function() {
-            mode = this.checked ? 'sku' : 'vista';
-        });
-
-        document.getElementById('linkCL').addEventListener('click', function() {
-            country = "CL";
-            setActiveCountry(this);
-        });
-
-        document.getElementById('linkPE').addEventListener('click', function() {
-            country = "PE";
-            setActiveCountry(this);
-        });
-
-        document.getElementById('linkCO').addEventListener('click', function() {
-            country = "CO";
-            setActiveCountry(this);
-        });
-
-        function setActiveCountry(element) {
-            document.querySelectorAll('.country-link').forEach(link => link.classList.remove('active'));
-            element.classList.add('active');
-        }
     </script>
 </body>
 </html>
