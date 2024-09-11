@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Visualiza</title>
+    <title>Renombrador de Imágenes Falabella</title>
     <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/falabella.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
@@ -30,276 +30,349 @@
             height: 100%;
             width: 100%;
         }
-        .leftMenu, .rightMenu {
-            width: 320px;
-            min-width: 320px;
-            background-color: #fff;
+        .leftContainer, .rightContainer {
+            width: 350px; /* Ancho específico */
+            height: 900px; /* Alto específico */
+            padding: 20px;
             overflow-y: auto;
-            position: relative;
         }
-        .leftMenu {
+        .leftContainer {
             border-right: 1px solid #eeeeee;
         }
-        .rightMenu {
-            border-left: 1px solid #eeeeee;
+        textarea {
+            width: 100%;
+            margin: 20px 0;
+            padding: 10px;
+            height: 600px; /* Dejar suficiente espacio para escribir */
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Lato', sans-serif;
+            font-size: 14px;
+            resize: none;
         }
-        .leftMenu .intro, .rightMenu .intro {
-            font-size: 12px;
-            padding: 20px 20px 0;
-        }
-        .leftMenu textarea, .rightMenu .error-list {
-            width: calc(100% - 40px);
-            border: 1px solid #eee;
-            margin: 20px;
-            height: 400px;
-        }
-        .leftMenu button, .rightMenu button {
-            width: calc(100% - 40px);
+        button {
+            width: 100%;
             border: none;
-            margin: 0 20px 20px;
+            margin: 20px 0;
             background-color: #8fca00;
             height: 50px;
             line-height: 50px;
-            padding: 0;
             border-radius: 5px;
             color: white;
             font-size: 12px;
-            letter-spacing: .075em;
             cursor: pointer;
+            text-transform: uppercase;
         }
-        .rightMenu button[disabled] {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        .error-list {
-            height: calc(100% - 100px);
-            padding: 20px;
-            margin: 20px;
-            border: 1px solid #eee;
-            background-color: #f9f9f9;
-            overflow-y: auto;
-        }
-        .error-list button {
-            display: block;
-            margin-bottom: 10px;
-            background-color: #ccc;
-            border: none;
-            color: white;
-            padding: 3px 5px;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 10px;
-        }
-        .error-list button:hover {
-            background-color: #bbb;
-        }
-        .error-list button.copied {
-            background-color: #8fca00;
-        }
-        .error-list button.copied:hover {
-            background-color: #76a700;
-        }
-        .error-list div {
-            margin-bottom: 5px;
-            color: red;
-        }
-        .rightContainer {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 20px;
-            background-color: #fff;
-        }
-
-        /* Añadiendo la estructura y el estilo del contenedor de imágenes */
         .imgContainer {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
         }
-
-        .imgContainer .imgWrapper {
-            width: 200px;
-            height: 200px;
+        .imgWrapper {
+            width: 120px;
+            height: 120px;
             position: relative;
             display: block;
             overflow: hidden;
             border: 1px solid #eeeeee;
+            text-align: center;
         }
-
-        .imgContainer .imgWrapper img {
+        .imgWrapper img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-
+        .sku {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            text-align: center;
+            font-size: 10px;
+            padding: 2px;
+        }
         .download-icon {
             position: absolute;
-            top: 0px;
-            right: 0px;
-            width: 24px;
-            height: 24px;
+            top: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
             opacity: 0.8;
             cursor: pointer;
             background-image: url('https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/descarga.png');
             background-size: cover;
         }
-
         .download-icon:hover {
             opacity: 1;
         }
 
-        .setBar {
-            background-color: #fff;
-            padding: 20px;
-            width: 100%;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .setBar button {
-            padding: 0;
-            background-color: #8fca00;
-            border: none;
-            font-size: 12px;
-            text-transform: uppercase;
-            line-height: 30px;
-            height: 30px;
-            padding: 0 15px;
-            color: white;
-            font-weight: 700;
-            letter-spacing: .075em;
-            cursor: pointer;
-            border-radius: 5px;
-            margin: 0;
-        }
-        .setBar button:hover {
-            background-color: #8fca00;
-            color: white;
-        }
-
-        .pais.seleccionado {
-            font-weight: 700;
-            text-decoration: underline;
-            color: #333;
-        }
-        .pais {
+        .switch {
+            position: relative;
             display: inline-block;
-            padding-right: 10px;
-            cursor: pointer;
-            color: #bbbbbb;
+            width: 50px;
+            height: 24px;
         }
-        .error {
-            color: red;
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #8fca00;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Nueva Estilización de Países */
+        .country-selector {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .country-link {
+            color: grey;
             font-size: 12px;
-            margin-top: 10px;
+            margin-right: 10px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .country-link.active {
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
+            border-bottom: 2px solid #8fca00;
+        }
+        .country-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Estilo del switch para "Vista" y "SKU" */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-top: 20px;
+            margin-left: 20px;
+        }
+
+        /* Enlace a Visualizador */
+        .link-visualizador {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #8fca00;
+            padding: 5px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
+    <a href="index.html" class="link-visualizador">Visualizador</a> <!-- Enlace al Visualizador -->
     <div class="container">
-        <div class="leftMenu">
-            <div class="skus-container">
-                <textarea name="skus" id="skus" cols="30" rows="15" placeholder="Ingrese los SKUs uno por línea..."></textarea>
-                <button id="buscar">BUSCAR</button>
+        <div class="leftContainer">
+            <h3>Buscar Imágenes</h3>
+            <div class="country-selector">
+                <a href="#" class="country-link active" id="linkCL">Chile</a>
+                <a href="#" class="country-link" id="linkPE">Perú</a>
+                <a href="#" class="country-link" id="linkCO">Colombia</a>
+            </div>
+            <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
+            <div id="leftCount"></div>
+            <button id="buscar">Buscar</button>
+            <div class="imgContainer" id="imgContainer">
+                <!-- Imágenes aparecerán aquí -->
+            </div>
+            <div class="switch-container"> <!-- Switch justo debajo de la columna izquierda -->
+                <span>Vista</span>
+                <label class="switch">
+                    <input type="checkbox" id="viewToggle">
+                    <span class="slider"></span>
+                </label>
+                <span>SKU</span>
             </div>
         </div>
         <div class="rightContainer">
-            <div class="setBar">
-                <button id="descargartodo">DESCARGAR TODO</button>
-                <button id="ordenarVistas" disabled>ORDENAR VISTAS</button>
-            </div>
-
-            <!-- Contenedor de las imágenes -->
-            <div class="imgContainer"></div>
-
-            <!-- Contenedor de miniaturas -->
-            <div id="thumbnailContainer" style="display:none;">
-                <!-- Las miniaturas aparecerán aquí -->
-            </div>
+            <h3>Renombrar y Descargar</h3>
+            <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+            <div id="rightCount"></div>
+            <button id="downloadAll">Descargar Todo</button>
         </div>
     </div>
 
     <script>
-        $('#buscar').click(function() {
-            $('#ordenarVistas').attr('disabled', true);
-            buscarPorVista();
-        });
+        var skuList = [];
+        var mode = "vista"; // Por defecto, modo vista
+        var country = "CL"; // Por defecto, Chile
 
-        async function buscarPorVista() {
-            $('.imgContainer').empty();
-            var skus = $('#skus').val().split('\n');
-            var promises = [];
-
-            for (let sku of skus) {
-                sku = sku.trim();
-                if (sku !== "") {
-                    promises.push(loadImage(sku));
-                }
-            }
-
-            const images = await Promise.all(promises);
-
-            images.forEach(image => {
-                if (image && !image.error) {
-                    $('.imgContainer').append(image.element);
-                }
-            });
-
-            $('#ordenarVistas').removeAttr('disabled');
-        }
-
-        function loadImage(sku) {
+        function loadImage(sku, suffix = "") {
             return new Promise(function(resolve, reject) {
-                var baseUrl = 'https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella';
-                var imgUrl = `${baseUrl}/${sku}/public`;
-                var downloadUrl = `${baseUrl}/${sku}/w=1500,h=1500`;
-
+                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/`;
+                var imgUrl = `${baseUrl}${sku}${suffix}/w=1500,h=1500,fit=pad`;
                 var img = new Image();
                 img.src = imgUrl;
-                img.alt = sku;
-                img.setAttribute('data-download-src', downloadUrl);
+                img.alt = sku + suffix;
 
                 img.onload = function() {
                     var wrapper = $('<div class="imgWrapper"><a href="' + imgUrl + '" target="_blank"></a></div>');
                     wrapper.find('a').append(img);
-                    resolve({ element: wrapper, sku: sku });
+                    wrapper.append('<div class="sku">' + sku + suffix + '</div>');
+                    resolve(wrapper);
                 };
 
                 img.onerror = function() {
-                    resolve({ error: true, sku: sku });
+                    resolve(null); // Resolviendo la promesa sin añadir la miniatura "No disponible"
                 };
             });
         }
 
-        $('#descargartodo').click(function() {
+        $('#viewToggle').change(function() {
+            mode = $(this).is(':checked') ? 'sku' : 'vista';
+            $('#imgContainer').empty();
+            skuList = [];
+            updateCounts();
+        });
+
+        $('.country-link').click(function() {
+            $('.country-link').removeClass('active');
+            $(this).addClass('active');
+            country = $(this).attr('id').replace('link', '');
+            $('#imgContainer').empty();
+            skuList = [];
+            updateCounts();
+        });
+
+        $('#buscar').click(function() {
+            $('#imgContainer').empty();
+            skuList = [];  // Resetear la lista
+            var skus = $('#skuInputLeft').val().trim().split('\n');
+
+            if (skus.length > 0) {
+                skus.forEach(function(sku) {
+                    sku = sku.trim();
+                    if (sku) {
+                        if (mode === "vista") {
+                            skuList.push(sku);
+                            loadImage(sku).then(function(imageElement) {
+                                if (imageElement) {
+                                    $('#imgContainer').append(imageElement);
+                                } else {
+                                    alert('Imagen no disponible para SKU: ' + sku);
+                                }
+                                updateCounts();
+                            });
+                        } else if (mode === "sku") {
+                            var suffixes = ['_01', '_10', '_11', '_02', '_03', '_04', '_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
+                            suffixes.forEach(function(suffix) {
+                                loadImage(sku, suffix).then(function(imageElement) {
+                                    if (imageElement) {
+                                        skuList.push(sku + suffix);
+                                        $('#imgContainer').append(imageElement);
+                                    }
+                                    updateCounts();
+                                });
+                            });
+                        }
+                    }
+                });
+            } else {
+                alert('Por favor, ingrese SKUs.');
+            }
+        });
+
+        $('#downloadAll').click(function() {
+            var renameSkus = $('#skuInputRight').val().trim().split('\n');
+            var originalSkus = $('#skuInputLeft').val().trim().split('\n');
+            
+            if (renameSkus.length !== originalSkus.length) {
+                alert('La cantidad de SKUs en el lado izquierdo y derecho debe coincidir.');
+                return;
+            }
+
             var zip = new JSZip();
             var count = 0;
-            var zipFilename = "imagenes.zip";
+            var zipFilename = getFormattedDate() + ".zip";
             var urls = [];
-            var skuNames = [];
+            var filenames = [];
 
-            $(".imgWrapper img").each(function() {
-                urls.push($(this).attr('data-download-src'));
-                skuNames.push($(this).attr('alt'));
+            skuList.forEach(function(sku) {
+                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/`;
+                var imgUrl = `${baseUrl}${sku}/w=1500,h=1500,fit=pad`;
+
+                var originalSku = originalSkus.find(os => sku.startsWith(os));
+                var renameSku = renameSkus[originalSkus.indexOf(originalSku)];
+
+                if (renameSku) {
+                    var finalName = sku.replace(originalSku, renameSku);
+                    urls.push(imgUrl);
+                    filenames.push(finalName);
+                }
             });
 
             urls.forEach(function(url, index) {
-                var filename = skuNames[index] + ".jpg";
-                JSZipUtils.getBinaryContent(url, function (err, data) {
+                var filename = filenames[index] + ".jpg";
+                JSZipUtils.getBinaryContent(url, function(err, data) {
                     if (err) {
-                        throw err;
+                        console.error("Error al obtener contenido binario:", err);
+                        return;
                     }
                     zip.file(filename, data, { binary: true });
                     count++;
                     if (count === urls.length) {
-                        zip.generateAsync({ type: 'blob' }).then(function (content) {
+                        zip.generateAsync({ type: 'blob' }).then(function(content) {
                             saveAs(content, zipFilename);
                         });
                     }
                 });
             });
         });
+
+        function getFormattedDate() {
+            var date = new Date();
+            var day = String(date.getDate()).padStart(2, '0');
+            var month = String(date.getMonth() + 1).padStart(2, '0');
+            var hours = String(date.getHours()).padStart(2, '0');
+            var minutes = String(date.getMinutes()).padStart(2, '0');
+            return day + '-' + month + '_' + hours + minutes;
+        }
+
+        function updateCounts() {
+            $('#leftCount').text('Total SKUs/Vistas: ' + skuList.length);
+            $('#rightCount').text('Total Renombres: ' + $('#skuInputRight').val().trim().split('\n').length);
+        }
+
+        $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
+
+        // Activar Chile por defecto
+        $('#linkCL').addClass('active');
     </script>
 </body>
 </html>
