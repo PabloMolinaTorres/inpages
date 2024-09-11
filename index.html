@@ -39,6 +39,9 @@
         .leftContainer {
             border-right: 1px solid #eeeeee;
         }
+        .rightContainer {
+            margin-top: 30px; /* Bajar la columna derecha */
+        }
         textarea {
             width: 100%;
             margin: 20px 0;
@@ -107,21 +110,12 @@
         .download-icon:hover {
             opacity: 1;
         }
-        .switch-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .switch-container span {
-            font-size: 14px;
-            font-weight: 700;
-        }
+
         .switch {
             position: relative;
             display: inline-block;
-            width: 50px;
-            height: 24px;
+            width: 60px;
+            height: 30px;
         }
         .switch input {
             opacity: 0;
@@ -137,13 +131,13 @@
             bottom: 0;
             background-color: #ccc;
             transition: .4s;
-            border-radius: 24px;
+            border-radius: 30px;
         }
         .slider:before {
             position: absolute;
             content: "";
-            height: 18px;
-            width: 18px;
+            height: 24px;
+            width: 24px;
             left: 3px;
             bottom: 3px;
             background-color: white;
@@ -154,7 +148,7 @@
             background-color: #8fca00;
         }
         input:checked + .slider:before {
-            transform: translateX(26px);
+            transform: translateX(30px);
         }
 
         /* Nueva Estilización de Países */
@@ -180,6 +174,31 @@
             text-decoration: underline;
         }
 
+        /* Estilo del switch para "Vista" y "SKU" */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-top: 20px;
+            margin-left: 20px;
+        }
+        .switch-container span {
+            font-size: 16px;
+            font-weight: 700;
+            margin-right: 15px; /* Añadir más espacio entre el texto y el switch */
+        }
+
+        /* Contenedor para la previsualización de imágenes */
+        .previewContainer {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-start;
+        }
+
         /* Enlace a Visualizador */
         .link-visualizador {
             position: absolute;
@@ -200,14 +219,6 @@
     <div class="container">
         <div class="leftContainer">
             <h3>Buscar Imágenes</h3>
-            <div class="switch-container">
-                <span>Vista</span>
-                <label class="switch">
-                    <input type="checkbox" id="viewToggle">
-                    <span class="slider"></span>
-                </label>
-                <span>SKU</span>
-            </div>
             <div class="country-selector">
                 <a href="#" class="country-link active" id="linkCL">Chile</a>
                 <a href="#" class="country-link" id="linkPE">Perú</a>
@@ -216,8 +227,13 @@
             <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
             <div id="leftCount"></div>
             <button id="buscar">Buscar</button>
-            <div class="imgContainer" id="imgContainer">
-                <!-- Imágenes aparecerán aquí -->
+            <div class="switch-container"> <!-- Switch justo debajo de la columna izquierda -->
+                <span>Vista</span>
+                <label class="switch">
+                    <input type="checkbox" id="viewToggle">
+                    <span class="slider"></span>
+                </label>
+                <span>SKU</span>
             </div>
         </div>
         <div class="rightContainer">
@@ -225,6 +241,10 @@
             <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
             <div id="rightCount"></div>
             <button id="downloadAll">Descargar Todo</button>
+        </div>
+        <!-- Contenedor para las previsualizaciones de imágenes -->
+        <div class="previewContainer" id="previewContainer">
+            <!-- Aquí aparecerán las previsualizaciones -->
         </div>
     </div>
 
@@ -249,55 +269,41 @@
                 };
 
                 img.onerror = function() {
-                    resolve(null); // Resolviendo la promesa sin añadir la miniatura "No disponible"
+                    resolve(null); // No mostrar errores si no hay imagen
                 };
             });
         }
 
         $('#viewToggle').change(function() {
             mode = $(this).is(':checked') ? 'sku' : 'vista';
-            $('#imgContainer').empty();
-            skuList = [];
-            updateCounts();
         });
 
         $('.country-link').click(function() {
             $('.country-link').removeClass('active');
             $(this).addClass('active');
             country = $(this).attr('id').replace('link', '');
-            $('#imgContainer').empty();
-            skuList = [];
-            updateCounts();
         });
 
         $('#buscar').click(function() {
-            $('#imgContainer').empty();
-            skuList = [];  // Resetear la lista
+            $('#previewContainer').empty();
             var skus = $('#skuInputLeft').val().trim().split('\n');
-
             if (skus.length > 0) {
                 skus.forEach(function(sku) {
                     sku = sku.trim();
                     if (sku) {
                         if (mode === "vista") {
-                            skuList.push(sku);
                             loadImage(sku).then(function(imageElement) {
                                 if (imageElement) {
-                                    $('#imgContainer').append(imageElement);
-                                } else {
-                                    alert('Imagen no disponible para SKU: ' + sku);
+                                    $('#previewContainer').append(imageElement);
                                 }
-                                updateCounts();
                             });
                         } else if (mode === "sku") {
                             var suffixes = ['_01', '_10', '_11', '_02', '_03', '_04', '_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
                             suffixes.forEach(function(suffix) {
                                 loadImage(sku, suffix).then(function(imageElement) {
                                     if (imageElement) {
-                                        skuList.push(sku + suffix);
-                                        $('#imgContainer').append(imageElement);
+                                        $('#previewContainer').append(imageElement);
                                     }
-                                    updateCounts();
                                 });
                             });
                         }
@@ -364,15 +370,6 @@
             return day + '-' + month + '_' + hours + minutes;
         }
 
-        function updateCounts() {
-            $('#leftCount').text('Total SKUs/Vistas: ' + skuList.length);
-            $('#rightCount').text('Total Renombres: ' + $('#skuInputRight').val().trim().split('\n').length);
-        }
-
-        $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
-
-        // Activar Chile por defecto
-        $('#linkCL').addClass('active');
     </script>
 </body>
 </html>
