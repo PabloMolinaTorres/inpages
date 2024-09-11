@@ -27,53 +27,24 @@
         }
         .container {
             display: flex;
-            flex-direction: row;
-            justify-content: flex-start;
+            justify-content: space-between;
             height: 100%;
             width: 100%;
         }
         .leftContainer, .rightContainer {
-            width: 350px; /* Ancho específico */
-            height: 900px; /* Alto específico */
+            width: 300px;
             padding: 20px;
+            overflow-y: auto;
         }
         .leftContainer {
             border-right: 1px solid #eeeeee;
         }
-        .previewContainer {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-x: auto; /* Ajuste para que la previsualización sea horizontal */
-            white-space: nowrap; /* Permitir que las imágenes se muestren en una fila */
-        }
-        textarea {
-            width: 100%;
-            margin: 20px 0;
-            padding: 10px;
-            height: 600px; /* Dejar suficiente espacio para escribir */
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-family: 'Lato', sans-serif;
-            font-size: 14px;
-            resize: none;
-        }
-        button {
-            width: 100%;
-            border: none;
-            margin: 20px 0;
-            background-color: #8fca00;
-            height: 50px;
-            line-height: 50px;
-            border-radius: 5px;
-            color: white;
-            font-size: 12px;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
         .imgContainer {
-            display: inline-block;
-            vertical-align: top;
-            margin-right: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
         }
         .imgWrapper {
             width: 120px;
@@ -100,6 +71,30 @@
             font-size: 10px;
             padding: 2px;
         }
+        textarea {
+            width: 100%;
+            margin: 20px 0;
+            padding: 10px;
+            height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Lato', sans-serif;
+            font-size: 14px;
+            resize: none;
+        }
+        button {
+            width: 100%;
+            border: none;
+            margin: 20px 0;
+            background-color: #8fca00;
+            height: 50px;
+            line-height: 50px;
+            border-radius: 5px;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
         .download-icon {
             position: absolute;
             top: 5px;
@@ -114,12 +109,33 @@
         .download-icon:hover {
             opacity: 1;
         }
-
+        .country-selector {
+            margin: 10px 0;
+        }
+        .country-link {
+            color: grey;
+            font-size: 14px;
+            margin-right: 10px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .country-link.active {
+            color: #333;
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 2px solid #8fca00;
+        }
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
         .switch {
             position: relative;
             display: inline-block;
-            width: 60px;
-            height: 30px;
+            width: 50px;
+            height: 24px;
         }
         .switch input {
             opacity: 0;
@@ -135,13 +151,13 @@
             bottom: 0;
             background-color: #ccc;
             transition: .4s;
-            border-radius: 30px;
+            border-radius: 24px;
         }
         .slider:before {
             position: absolute;
             content: "";
-            height: 24px;
-            width: 24px;
+            height: 18px;
+            width: 18px;
             left: 3px;
             bottom: 3px;
             background-color: white;
@@ -152,47 +168,20 @@
             background-color: #8fca00;
         }
         input:checked + .slider:before {
-            transform: translateX(30px);
-        }
-
-        /* Nueva Estilización de Países */
-        .country-selector {
-            display: flex;
-            justify-content: center;
-            margin: 10px 0;
-        }
-        .country-link {
-            color: grey;
-            font-size: 12px;
-            margin-right: 10px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .country-link.active {
-            color: #333;
-            font-size: 14px;
-            font-weight: bold;
-            border-bottom: 2px solid #8fca00;
-        }
-        .country-link:hover {
-            text-decoration: underline;
-        }
-
-        /* Estilo del switch para "Vista" y "SKU" */
-        .switch-container {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            margin-top: 20px;
-            margin-left: 20px;
+            transform: translateX(26px);
         }
         .switch-container span {
             font-size: 16px;
-            font-weight: 700;
-            margin-right: 15px; /* Añadir más espacio entre el texto y el switch */
+            font-weight: bold;
+            margin-right: 10px;
         }
-
-        /* Enlace a Visualizador */
+        .visualizador {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        /* Estilo del botón Visualizador */
         .link-visualizador {
             position: absolute;
             top: 20px;
@@ -208,7 +197,7 @@
     </style>
 </head>
 <body>
-    <a href="index.html" class="link-visualizador">Visualizador</a> <!-- Enlace al Visualizador -->
+    <a href="index.html" class="link-visualizador">Visualizador</a>
     <div class="container">
         <div class="leftContainer">
             <h3>Buscar Imágenes</h3>
@@ -218,9 +207,9 @@
                 <a href="#" class="country-link" id="linkCO">Colombia</a>
             </div>
             <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
-            <div id="leftCount"></div>
             <button id="buscar">Buscar</button>
-            <div class="switch-container"> <!-- Switch justo debajo de la columna izquierda -->
+            <div id="leftCount">Total SKUs/Vistas: 0</div>
+            <div class="switch-container">
                 <span>Vista</span>
                 <label class="switch">
                     <input type="checkbox" id="viewToggle">
@@ -229,18 +218,13 @@
                 <span>SKU</span>
             </div>
         </div>
-        
         <div class="rightContainer">
             <h3>Renombrar y Descargar</h3>
             <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
-            <div id="rightCount"></div>
+            <div id="rightCount">Total Renombres: 0</div>
             <button id="downloadAll">Descargar Todo</button>
         </div>
-
-        <!-- Sección para la previsualización de imágenes -->
-        <div class="previewContainer" id="imgPreviewContainer">
-            <!-- Aquí aparecerán las imágenes previsualizadas -->
-        </div>
+        <div class="visualizador" id="imgContainer"></div>
     </div>
 
     <script>
@@ -257,39 +241,42 @@
                 img.alt = sku + suffix;
 
                 img.onload = function() {
-                    var wrapper = $('<div class="imgContainer"><div class="imgWrapper"><a href="' + imgUrl + '" target="_blank"></a></div></div>');
-                    wrapper.find('a').append(img);
-                    wrapper.append('<div class="sku">' + sku + suffix + '</div>');
+                    var wrapper = document.createElement('div');
+                    wrapper.classList.add('imgWrapper');
+                    var link = document.createElement('a');
+                    link.href = imgUrl;
+                    link.target = '_blank';
+                    link.appendChild(img);
+                    var skuDiv = document.createElement('div');
+                    skuDiv.classList.add('sku');
+                    skuDiv.textContent = sku + suffix;
+                    wrapper.appendChild(link);
+                    wrapper.appendChild(skuDiv);
                     resolve(wrapper);
                 };
 
                 img.onerror = function() {
-                    resolve(null); // Resolviendo la promesa sin añadir la miniatura "No disponible"
+                    resolve(null); // No mostrar errores ni alertas si no se encuentra la imagen
                 };
             });
         }
 
         $('#viewToggle').change(function() {
             mode = $(this).is(':checked') ? 'sku' : 'vista';
-            $('#imgPreviewContainer').empty();
-            skuList = [];
-            updateCounts();
         });
 
         $('.country-link').click(function() {
             $('.country-link').removeClass('active');
             $(this).addClass('active');
             country = $(this).attr('id').replace('link', '');
-            $('#imgPreviewContainer').empty();
+            $('#imgContainer').empty();
             skuList = [];
-            updateCounts();
         });
 
         $('#buscar').click(function() {
-            $('#imgPreviewContainer').empty();
-            skuList = [];  // Resetear la lista
+            $('#imgContainer').empty();
+            skuList = [];
             var skus = $('#skuInputLeft').val().trim().split('\n');
-
             if (skus.length > 0) {
                 skus.forEach(function(sku) {
                     sku = sku.trim();
@@ -298,7 +285,7 @@
                             skuList.push(sku);
                             loadImage(sku).then(function(imageElement) {
                                 if (imageElement) {
-                                    $('#imgPreviewContainer').append(imageElement);
+                                    document.getElementById('imgContainer').appendChild(imageElement);
                                 }
                                 updateCounts();
                             });
@@ -308,7 +295,7 @@
                                 loadImage(sku, suffix).then(function(imageElement) {
                                     if (imageElement) {
                                         skuList.push(sku + suffix);
-                                        $('#imgPreviewContainer').append(imageElement);
+                                        document.getElementById('imgContainer').appendChild(imageElement);
                                     }
                                     updateCounts();
                                 });
@@ -324,7 +311,6 @@
         $('#downloadAll').click(function() {
             var renameSkus = $('#skuInputRight').val().trim().split('\n');
             var originalSkus = $('#skuInputLeft').val().trim().split('\n');
-            
             if (renameSkus.length !== originalSkus.length) {
                 alert('La cantidad de SKUs en el lado izquierdo y derecho debe coincidir.');
                 return;
@@ -384,7 +370,6 @@
 
         $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
 
-        // Activar Chile por defecto
         $('#linkCL').addClass('active');
     </script>
 </body>
