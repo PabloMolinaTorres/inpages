@@ -27,6 +27,8 @@
         }
         .container {
             display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
             height: 100%;
             width: 100%;
         }
@@ -34,10 +36,14 @@
             width: 350px; /* Ancho específico */
             height: 900px; /* Alto específico */
             padding: 20px;
-            overflow-y: auto;
         }
         .leftContainer {
             border-right: 1px solid #eeeeee;
+        }
+        .previewContainer {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
         }
         textarea {
             width: 100%;
@@ -213,9 +219,6 @@
             <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
             <div id="leftCount"></div>
             <button id="buscar">Buscar</button>
-            <div class="imgContainer" id="imgContainer">
-                <!-- Imágenes aparecerán aquí -->
-            </div>
             <div class="switch-container"> <!-- Switch justo debajo de la columna izquierda -->
                 <span>Vista</span>
                 <label class="switch">
@@ -225,11 +228,17 @@
                 <span>SKU</span>
             </div>
         </div>
+        
         <div class="rightContainer">
             <h3>Renombrar y Descargar</h3>
             <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
             <div id="rightCount"></div>
             <button id="downloadAll">Descargar Todo</button>
+        </div>
+
+        <!-- Sección para la previsualización de imágenes -->
+        <div class="previewContainer" id="imgPreviewContainer">
+            <!-- Aquí aparecerán las imágenes previsualizadas -->
         </div>
     </div>
 
@@ -261,7 +270,7 @@
 
         $('#viewToggle').change(function() {
             mode = $(this).is(':checked') ? 'sku' : 'vista';
-            $('#imgContainer').empty();
+            $('#imgPreviewContainer').empty();
             skuList = [];
             updateCounts();
         });
@@ -270,13 +279,13 @@
             $('.country-link').removeClass('active');
             $(this).addClass('active');
             country = $(this).attr('id').replace('link', '');
-            $('#imgContainer').empty();
+            $('#imgPreviewContainer').empty();
             skuList = [];
             updateCounts();
         });
 
         $('#buscar').click(function() {
-            $('#imgContainer').empty();
+            $('#imgPreviewContainer').empty();
             skuList = [];  // Resetear la lista
             var skus = $('#skuInputLeft').val().trim().split('\n');
 
@@ -288,7 +297,7 @@
                             skuList.push(sku);
                             loadImage(sku).then(function(imageElement) {
                                 if (imageElement) {
-                                    $('#imgContainer').append(imageElement);
+                                    $('#imgPreviewContainer').append(imageElement);
                                 }
                                 updateCounts();
                             });
@@ -298,7 +307,7 @@
                                 loadImage(sku, suffix).then(function(imageElement) {
                                     if (imageElement) {
                                         skuList.push(sku + suffix);
-                                        $('#imgContainer').append(imageElement);
+                                        $('#imgPreviewContainer').append(imageElement);
                                     }
                                     updateCounts();
                                 });
