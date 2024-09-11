@@ -39,9 +39,6 @@
         .leftContainer {
             border-right: 1px solid #eeeeee;
         }
-        .rightContainer {
-            margin-top: 30px; /* Bajar la columna derecha */
-        }
         textarea {
             width: 100%;
             margin: 20px 0;
@@ -188,17 +185,6 @@
             margin-right: 15px; /* Añadir más espacio entre el texto y el switch */
         }
 
-        /* Contenedor para la previsualización de imágenes */
-        .previewContainer {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: flex-start;
-        }
-
         /* Enlace a Visualizador */
         .link-visualizador {
             position: absolute;
@@ -227,6 +213,9 @@
             <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
             <div id="leftCount"></div>
             <button id="buscar">Buscar</button>
+            <div class="imgContainer" id="imgContainer">
+                <!-- Imágenes aparecerán aquí -->
+            </div>
             <div class="switch-container"> <!-- Switch justo debajo de la columna izquierda -->
                 <span>Vista</span>
                 <label class="switch">
@@ -241,10 +230,6 @@
             <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
             <div id="rightCount"></div>
             <button id="downloadAll">Descargar Todo</button>
-        </div>
-        <!-- Contenedor para las previsualizaciones de imágenes -->
-        <div class="previewContainer" id="previewContainer">
-            <!-- Aquí aparecerán las previsualizaciones -->
         </div>
     </div>
 
@@ -269,41 +254,53 @@
                 };
 
                 img.onerror = function() {
-                    resolve(null); // No mostrar errores si no hay imagen
+                    resolve(null); // Resolviendo la promesa sin añadir la miniatura "No disponible"
                 };
             });
         }
 
         $('#viewToggle').change(function() {
             mode = $(this).is(':checked') ? 'sku' : 'vista';
+            $('#imgContainer').empty();
+            skuList = [];
+            updateCounts();
         });
 
         $('.country-link').click(function() {
             $('.country-link').removeClass('active');
             $(this).addClass('active');
             country = $(this).attr('id').replace('link', '');
+            $('#imgContainer').empty();
+            skuList = [];
+            updateCounts();
         });
 
         $('#buscar').click(function() {
-            $('#previewContainer').empty();
+            $('#imgContainer').empty();
+            skuList = [];  // Resetear la lista
             var skus = $('#skuInputLeft').val().trim().split('\n');
+
             if (skus.length > 0) {
                 skus.forEach(function(sku) {
                     sku = sku.trim();
                     if (sku) {
                         if (mode === "vista") {
+                            skuList.push(sku);
                             loadImage(sku).then(function(imageElement) {
                                 if (imageElement) {
-                                    $('#previewContainer').append(imageElement);
+                                    $('#imgContainer').append(imageElement);
                                 }
+                                updateCounts();
                             });
                         } else if (mode === "sku") {
                             var suffixes = ['_01', '_10', '_11', '_02', '_03', '_04', '_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
                             suffixes.forEach(function(suffix) {
                                 loadImage(sku, suffix).then(function(imageElement) {
                                     if (imageElement) {
-                                        $('#previewContainer').append(imageElement);
+                                        skuList.push(sku + suffix);
+                                        $('#imgContainer').append(imageElement);
                                     }
+                                    updateCounts();
                                 });
                             });
                         }
@@ -370,6 +367,15 @@
             return day + '-' + month + '_' + hours + minutes;
         }
 
+        function updateCounts() {
+            $('#leftCount').text('Total SKUs/Vistas: ' + skuList.length);
+            $('#rightCount').text('Total Renombres: ' + $('#skuInputRight').val().trim().split('\n').length);
+        }
+
+        $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
+
+        // Activar Chile por defecto
+        $('#linkCL').addClass('active');
     </script>
 </body>
 </html>
