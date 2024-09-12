@@ -31,7 +31,7 @@
             width: 100%;
         }
         .leftContainer {
-            width: 600px; /* Se amplía para que contenga ambas columnas */
+            width: 600px;
             padding: 20px;
             overflow-y: auto;
             border-right: 1px solid #eeeeee;
@@ -48,6 +48,8 @@
             flex-grow: 1;
             padding: 20px;
             overflow-y: auto;
+        }
+        .imgContainer {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             gap: 10px;
@@ -199,9 +201,11 @@
             </div>
         </div>
 
-        <!-- Contenedor de imágenes renombrado a rightContainer -->
+        <!-- Nuevo rightContainer que contiene imgContainer -->
         <div class="rightContainer" id="rightContainer">
-            <!-- Aquí se mostrarán las imágenes -->
+            <div class="imgContainer" id="imgContainer">
+                <!-- Aquí se mostrarán las imágenes -->
+            </div>
         </div>
     </div>
 
@@ -241,7 +245,7 @@
 
         $('#viewToggle').change(function() {
             mode = $(this).is(':checked') ? 'sku' : 'vista';
-            $('#rightContainer').empty();
+            $('#imgContainer').empty();
             skuList = [];
             updateCounts();
         });
@@ -250,13 +254,13 @@
             $('.country-link').removeClass('active');
             $(this).addClass('active');
             country = $(this).attr('id').replace('link', '');
-            $('#rightContainer').empty();
+            $('#imgContainer').empty();
             skuList = [];
             updateCounts();
         });
 
         $('#buscar').click(function() {
-            $('#rightContainer').empty();
+            $('#imgContainer').empty();
             skuList = [];
             var skus = $('#skuInputLeft').val().trim().split('\n');
             if (skus.length > 0) {
@@ -267,7 +271,7 @@
                             skuList.push(sku);
                             loadImage(sku).then(function(imageElement) {
                                 if (imageElement) {
-                                    document.getElementById('rightContainer').appendChild(imageElement);
+                                    document.getElementById('imgContainer').appendChild(imageElement);
                                 }
                                 updateCounts();
                             });
@@ -277,7 +281,7 @@
                                 loadImage(sku, suffix).then(function(imageElement) {
                                     if (imageElement) {
                                         skuList.push(sku + suffix);
-                                        document.getElementById('rightContainer').appendChild(imageElement);
+                                        document.getElementById('imgContainer').appendChild(imageElement);
                                     }
                                     updateCounts();
                                 });
