@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Renombrador de Imágenes</title>
+    <title>Renombrador de Imágenes Falabella</title>
     <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
@@ -214,7 +214,7 @@
             </div>
 
             <!-- Country Selector centered below the icons -->
-            <div class="country-selector" id="countrySelector">
+            <div class="country-selector">
                 <a href="#" class="country-link active" id="linkCL">Chile</a>
                 <a href="#" class="country-link" id="linkPE">Perú</a>
                 <a href="#" class="country-link" id="linkCO">Colombia</a>
@@ -256,6 +256,18 @@
         var mode = "vista"; // Por defecto, modo vista
         var country = "CL"; // Por defecto, Chile
         var activeLogic = "falabella"; // Falabella activa por defecto
+
+        // Sufijos específicos por lógica
+        var falabellaTottusSuffixes = ['_001', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_1', '_10', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
+        var sodimacSuffixes = ['_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_12', '_13', '_14', '_15', '_17', '_18', '_19', '_20', '_21', '_22', '_23', '_24', '_25', '_26', '_27', '_28', '_SEC', '_EFI'];
+
+        function getSuffixes() {
+            if (activeLogic === 'sodimac') {
+                return sodimacSuffixes;
+            } else {
+                return falabellaTottusSuffixes;
+            }
+        }
 
         function loadImage(sku, suffix = "") {
             return new Promise(function(resolve, reject) {
@@ -302,39 +314,9 @@
             updateCounts();
         });
 
-        // Función para actualizar los países según la marca seleccionada
-        function updateCountries(brand) {
-            const countryOptions = {
-                falabella: ['Chile', 'Perú', 'Colombia'],
-                sodimac: ['Chile', 'Argentina', 'Colombia', 'Perú', 'Brasil', 'México', 'Uruguay'],
-                tottus: ['Perú', 'Chile']
-            };
-
-            const countryCodes = {
-                Chile: 'CL',
-                Argentina: 'AR',
-                Colombia: 'CO',
-                Perú: 'PE',
-                Brasil: 'BR',
-                México: 'MX',
-                Uruguay: 'UY'
-            };
-
-            $('#countrySelector').empty(); // Limpiar selector de países
-
-            countryOptions[brand].forEach(function(country) {
-                $('#countrySelector').append(`<a href="#" class="country-link" id="link${countryCodes[country]}">${country}</a>`);
-            });
-
-            // Selecciona el primer país por defecto
-            $('#countrySelector a').first().addClass('active');
-            country = countryCodes[countryOptions[brand][0]];
-        }
-
         // Cambiar la lógica activa al hacer clic en los íconos
         $('#falabellaIcon').click(function() {
             activeLogic = "falabella";
-            updateCountries(activeLogic);
             $('#falabellaIcon').removeClass('inactive').addClass('active');
             $('#sodimacIcon').addClass('inactive');
             $('#tottusIcon').addClass('inactive');
@@ -346,7 +328,6 @@
 
         $('#sodimacIcon').click(function() {
             activeLogic = "sodimac";
-            updateCountries(activeLogic);
             $('#falabellaIcon').addClass('inactive');
             $('#sodimacIcon').removeClass('inactive').addClass('active');
             $('#tottusIcon').addClass('inactive');
@@ -358,7 +339,6 @@
 
         $('#tottusIcon').click(function() {
             activeLogic = "tottus";
-            updateCountries(activeLogic);
             $('#falabellaIcon').addClass('inactive');
             $('#sodimacIcon').addClass('inactive');
             $('#tottusIcon').removeClass('inactive').addClass('active');
@@ -385,7 +365,7 @@
                                 updateCounts();
                             });
                         } else if (mode === "sku") {
-                            var suffixes = ['_01', '_10', '_11', '_02', '_03', '_04', '_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
+                            var suffixes = getSuffixes();
                             suffixes.forEach(function(suffix) {
                                 loadImage(sku, suffix).then(function(imageElement) {
                                     if (imageElement) {
