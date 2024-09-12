@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Renombrador de Imágenes</title>
-    <link rel="icon" href="https://raw.githubusercontent.com/tu-github/falabella.png" type="image/png">
+    <title>Renombrador de Imágenes Falabella</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/falabella.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
@@ -31,24 +31,28 @@
             width: 100%;
         }
         .leftContainer {
+            width: 35%;
+            display: flex;
+            padding: 20px;
+            box-sizing: border-box;
+            flex-direction: column;
+        }
+        .columns {
             display: flex;
             justify-content: space-between;
-            width: 35%;
-            padding: 20px;
-            border-right: 1px solid #eeeeee;
+        }
+        .column {
+            width: 48%; /* Ajustamos cada columna al 48% del ancho */
         }
         .rightContainer {
             width: 60%;
             padding: 20px;
             overflow-y: auto;
-        }
-        .visualizadorContainer {
-            width: 5%;
-            padding: 20px;
+            box-sizing: border-box;
         }
         .imgContainer {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
             gap: 10px;
         }
         .imgWrapper {
@@ -57,42 +61,49 @@
             position: relative;
             display: block;
             overflow: hidden;
+            border: 1px solid #eeeeee;
             text-align: center;
         }
         .imgWrapper img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            margin-bottom: 5px;
         }
         .sku {
-            color: #333;
-            font-size: 12px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
             text-align: center;
+            font-size: 10px;
+            padding: 2px;
         }
-        .country-selector {
+        .visualizadorContainer {
+            width: 5%;
             display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding: 10px;
+            box-sizing: border-box;
         }
-        .country-link {
-            color: grey;
-            font-size: 14px;
-            margin-right: 10px;
-            cursor: pointer;
+        .visualizadorContainer a {
+            background-color: #8fca00;
+            padding: 5px 15px; /* Ajustamos el tamaño del botón */
+            border-radius: 5px;
+            color: white;
             text-decoration: none;
-        }
-        .country-link.active {
-            color: #333;
-            font-size: 16px;
+            font-size: 12px; /* Reducción del tamaño de la fuente */
             font-weight: bold;
-            border-bottom: 2px solid #8fca00;
+            white-space: nowrap; /* Evitamos que el texto se divida en dos líneas */
+            display: inline-block; /* Hacemos que el botón solo ocupe el espacio que necesita */
         }
         textarea {
             width: 100%;
             margin: 20px 0;
             padding: 10px;
-            height: 150px;
+            height: 200px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
@@ -112,72 +123,255 @@
             cursor: pointer;
             text-transform: uppercase;
         }
-        .visualizador-button {
-            width: 80px;
-            height: 40px;
-            background-color: #8fca00;
-            color: white;
-            border: none;
-            border-radius: 5px;
+        .country-selector {
+            margin: 10px 0;
+        }
+        .country-link {
+            color: grey;
+            font-size: 14px;
+            margin-right: 10px;
             cursor: pointer;
+            text-decoration: none;
+        }
+        .country-link.active {
+            color: #333;
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 2px solid #8fca00;
+        }
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #8fca00;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Left Container -->
         <div class="leftContainer">
-            <div>
-                <div class="country-selector">
-                    <img id="falabellaIcon" src="https://tu-github/falabella-bn.png" alt="Falabella" width="50" />
-                    <img id="sodimacIcon" src="https://tu-github/sodimac-bn.png" alt="Sodimac" width="50" />
-                    <img id="tottusIcon" src="https://tu-github/tottus-bn.png" alt="Tottus" width="50" />
+            <div class="country-selector">
+                <a href="#" class="country-link active" id="linkCL">Chile</a>
+                <a href="#" class="country-link" id="linkPE">Perú</a>
+                <a href="#" class="country-link" id="linkCO">Colombia</a>
+            </div>
+            <div class="columns">
+                <div class="column">
+                    <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
+                    <button id="buscar">Buscar</button>
                 </div>
-                <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
-                <button id="buscar">Buscar</button>
-                <div id="leftCount">Total SKUs/Vistas: 0</div>
+                <div class="column">
+                    <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+                    <button id="downloadAll">Descargar Todo</button>
+                </div>
             </div>
-            <div>
-                <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
-                <button id="downloadAll">Descargar Todo</button>
+            <div class="switch-container">
+                <span>Vista</span>
+                <label class="switch">
+                    <input type="checkbox" id="viewToggle">
+                    <span class="slider"></span>
+                </label>
+                <span>SKU</span>
             </div>
         </div>
 
+        <!-- Right Container -->
         <div class="rightContainer">
-            <div id="imgContainer"></div>
+            <div class="imgContainer" id="imgContainer"></div>
         </div>
 
+        <!-- Visualizador Container -->
         <div class="visualizadorContainer">
-            <button class="visualizador-button">Visualizador</button>
+            <a href="index.html">Visualizador</a>
         </div>
     </div>
 
     <script>
-        var currentBU = "falabella"; // default BU is Falabella
+        var skuList = [];
+        var mode = "vista"; // Por defecto, modo vista
+        var country = "CL"; // Por defecto, Chile
 
-        function updateIcons() {
-            document.getElementById('falabellaIcon').src = currentBU === 'falabella' ? 'https://tu-github/falabella.png' : 'https://tu-github/falabella-bn.png';
-            document.getElementById('sodimacIcon').src = currentBU === 'sodimac' ? 'https://tu-github/sodimac.png' : 'https://tu-github/sodimac-bn.png';
-            document.getElementById('tottusIcon').src = currentBU === 'tottus' ? 'https://tu-github/tottus.png' : 'https://tu-github/tottus-bn.png';
+        function loadImage(sku, suffix = "") {
+            return new Promise(function(resolve, reject) {
+                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/`;
+                var imgUrl = `${baseUrl}${sku}${suffix}/w=120,h=120,fit=pad`; // Miniaturas de 120x120
+                var img = new Image();
+                img.src = imgUrl;
+                img.alt = sku + suffix;
+
+                img.onload = function() {
+                    var wrapper = document.createElement('div');
+                    wrapper.classList.add('imgWrapper');
+                    var link = document.createElement('a');
+                    link.href = `${baseUrl}${sku}${suffix}/w=1500,h=1500,fit=pad`; // Enlace a la imagen completa
+                    link.target = '_blank';
+                    link.appendChild(img);
+                    var skuDiv = document.createElement('div');
+                    skuDiv.classList.add('sku');
+                    skuDiv.textContent = sku + suffix;
+                    wrapper.appendChild(link);
+                    wrapper.appendChild(skuDiv);
+                    resolve(wrapper);
+                };
+
+                img.onerror = function() {
+                    resolve(null); // No mostrar imágenes 404 en modo SKU
+                };
+            });
         }
 
-        // Falabella is active initially
-        updateIcons();
-
-        // Set current BU based on user click
-        document.getElementById('falabellaIcon').addEventListener('click', function() {
-            currentBU = 'falabella';
-            updateIcons();
+        $('#viewToggle').change(function() {
+            mode = $(this).is(':checked') ? 'sku' : 'vista';
+            $('#imgContainer').empty();
+            skuList = [];
+            updateCounts();
         });
 
-        document.getElementById('sodimacIcon').addEventListener('click', function() {
-            currentBU = 'sodimac';
-            updateIcons();
+        $('.country-link').click(function() {
+            $('.country-link').removeClass('active');
+            $(this).addClass('active');
+            country = $(this).attr('id').replace('link', '');
+            $('#imgContainer').empty();
+            skuList = [];
+            updateCounts();
         });
 
-        document.getElementById('tottusIcon').addEventListener('click', function() {
-            currentBU = 'tottus';
-            updateIcons();
+        $('#buscar').click(function() {
+            $('#imgContainer').empty();
+            skuList = [];
+            var skus = $('#skuInputLeft').val().trim().split('\n');
+            if (skus.length > 0) {
+                skus.forEach(function(sku) {
+                    sku = sku.trim();
+                    if (sku) {
+                        if (mode === "vista") {
+                            skuList.push(sku);
+                            loadImage(sku).then(function(imageElement) {
+                                if (imageElement) {
+                                    document.getElementById('imgContainer').appendChild(imageElement);
+                                }
+                                updateCounts();
+                            });
+                        } else if (mode === "sku") {
+                            var suffixes = ['_01', '_10', '_11', '_02', '_03', '_04', '_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
+                            suffixes.forEach(function(suffix) {
+                                loadImage(sku, suffix).then(function(imageElement) {
+                                    if (imageElement) {
+                                        skuList.push(sku + suffix);
+                                        document.getElementById('imgContainer').appendChild(imageElement);
+                                    }
+                                    updateCounts();
+                                });
+                            });
+                        }
+                    }
+                });
+            } else {
+                alert('Por favor, ingrese SKUs.');
+            }
         });
+
+        $('#downloadAll').click(function() {
+            var renameSkus = $('#skuInputRight').val().trim().split('\n');
+            var originalSkus = $('#skuInputLeft').val().trim().split('\n');
+            if (renameSkus.length !== originalSkus.length) {
+                alert('La cantidad de SKUs en el lado izquierdo y derecho debe coincidir.');
+                return;
+            }
+
+            var zip = new JSZip();
+            var count = 0;
+            var zipFilename = getFormattedDate() + ".zip";
+            var urls = [];
+            var filenames = [];
+
+            originalSkus.forEach(function(originalSku, index) {
+                skuList.forEach(function(sku) {
+                    if (sku.startsWith(originalSku)) {
+                        var renameSku = renameSkus[index];
+                        var finalName = sku.replace(originalSku, renameSku); // Mantener el sufijo intacto
+                        var imgUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/${sku}/w=1500,h=1500,fit=pad`;
+                        urls.push(imgUrl);
+                        filenames.push(finalName);
+                    }
+                });
+            });
+
+            urls.forEach(function(url, index) {
+                var filename = filenames[index] + ".jpg";
+                JSZipUtils.getBinaryContent(url, function(err, data) {
+                    if (err) {
+                        console.error("Error al obtener contenido binario:", err);
+                        return;
+                    }
+                    zip.file(filename, data, { binary: true });
+                    count++;
+                    if (count === urls.length) {
+                        zip.generateAsync({ type: 'blob' }).then(function(content) {
+                            saveAs(content, zipFilename);
+                        });
+                    }
+                });
+            });
+        });
+
+        function getFormattedDate() {
+            var date = new Date();
+            var day = String(date.getDate()).padStart(2, '0');
+            var month = String(date.getMonth() + 1).padStart(2, '0');
+            var hours = String(date.getHours()).padStart(2, '0');
+            var minutes = String(date.getMinutes()).padStart(2, '0');
+            return day + '-' + month + '_' + hours + minutes;
+        }
+
+        function updateCounts() {
+            $('#leftCount').text('Total SKUs/Vistas: ' + skuList.length);
+            $('#rightCount').text('Total Renombres: ' + $('#skuInputRight').val().trim().split('\n').length);
+        }
+
+        $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
+
+        $('#linkCL').addClass('active');
     </script>
 </body>
 </html>
