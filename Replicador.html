@@ -33,7 +33,13 @@
         .leftContainer {
             width: 60%;
             padding: 20px;
-            border-right: 1px solid #eeeeee;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .searchColumn {
+            display: flex;
+            flex-direction: column;
         }
         .rightContainer {
             width: 30%;
@@ -169,15 +175,23 @@
 <body>
     <div class="container">
         <div class="leftContainer">
-            <h3>Buscar Imágenes</h3>
-            <div class="country-selector">
-                <a href="#" class="country-link active" id="linkCL">Chile</a>
-                <a href="#" class="country-link" id="linkPE">Perú</a>
-                <a href="#" class="country-link" id="linkCO">Colombia</a>
+            <div class="searchColumn">
+                <h3>Buscar Imágenes</h3>
+                <div class="country-selector">
+                    <a href="#" class="country-link active" id="linkCL">Chile</a>
+                    <a href="#" class="country-link" id="linkPE">Perú</a>
+                    <a href="#" class="country-link" id="linkCO">Colombia</a>
+                </div>
+                <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
+                <button id="buscar">Buscar</button>
+                <div id="leftCount">Total SKUs/Vistas: 0</div>
             </div>
-            <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
-            <button id="buscar">Buscar</button>
-            <div id="leftCount">Total SKUs/Vistas: 0</div>
+            <div class="searchColumn">
+                <h3>Renombrar y Descargar</h3>
+                <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+                <div id="rightCount">Total Renombres: 0</div>
+                <button id="downloadAll">Descargar Todo</button>
+            </div>
             <div class="switch-container">
                 <span>Vista</span>
                 <label class="switch">
@@ -186,16 +200,12 @@
                 </label>
                 <span>SKU</span>
             </div>
-            <div class="imgContainer" id="imgContainer"></div>
         </div>
         <div class="rightContainer">
-            <h3>Renombrar y Descargar</h3>
-            <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
-            <div id="rightCount">Total Renombres: 0</div>
-            <button id="downloadAll">Descargar Todo</button>
+            <div class="imgContainer" id="imgContainer"></div>
         </div>
         <div class="visualizadorContainer">
-            <a href="index.html" class="visualizador-btn">Volver al Index</a>
+            <a href="index.html" class="visualizador-btn">Visualizador</a>
         </div>
     </div>
 
