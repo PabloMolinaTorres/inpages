@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Renombrador de Imágenes Falabella</title>
-    <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/falabella.png" type="image/png">
+    <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
@@ -184,10 +184,31 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
+        /* Styles for the icons */
+        .icon-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .icon-selector img {
+            width: 50px;
+            height: 50px;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+        .icon-selector img.inactive {
+            filter: grayscale(100%);
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Icon Selector -->
+        <div class="icon-selector">
+            <img src="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" id="falabellaIcon" class="active" alt="Falabella">
+            <img src="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png" id="sodimacIcon" class="inactive" alt="Sodimac">
+            <img src="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png" id="tottusIcon" class="inactive" alt="Tottus">
+        </div>
         <!-- Left Container -->
         <div class="leftContainer">
             <div class="country-selector">
@@ -230,10 +251,11 @@
         var skuList = [];
         var mode = "vista"; // Por defecto, modo vista
         var country = "CL"; // Por defecto, Chile
+        var activeLogic = "falabella"; // Falabella activa por defecto
 
         function loadImage(sku, suffix = "") {
             return new Promise(function(resolve, reject) {
-                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/`;
+                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country}/`;
                 var imgUrl = `${baseUrl}${sku}${suffix}/w=120,h=120,fit=pad`; // Miniaturas de 120x120
                 var img = new Image();
                 img.src = imgUrl;
@@ -259,6 +281,40 @@
                 };
             });
         }
+
+        // Cambiar la lógica activa al hacer clic en los íconos
+        $('#falabellaIcon').click(function() {
+            activeLogic = "falabella";
+            $('#falabellaIcon').removeClass('inactive').addClass('active');
+            $('#sodimacIcon').addClass('inactive');
+            $('#tottusIcon').addClass('inactive');
+            $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png');
+            $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
+            $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
+            $('#imgContainer').empty(); // Limpiar imágenes
+        });
+
+        $('#sodimacIcon').click(function() {
+            activeLogic = "sodimac";
+            $('#falabellaIcon').addClass('inactive');
+            $('#sodimacIcon').removeClass('inactive').addClass('active');
+            $('#tottusIcon').addClass('inactive');
+            $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
+            $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac.png');
+            $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
+            $('#imgContainer').empty(); // Limpiar imágenes
+        });
+
+        $('#tottusIcon').click(function() {
+            activeLogic = "tottus";
+            $('#falabellaIcon').addClass('inactive');
+            $('#sodimacIcon').addClass('inactive');
+            $('#tottusIcon').removeClass('inactive').addClass('active');
+            $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
+            $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
+            $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus.png');
+            $('#imgContainer').empty(); // Limpiar imágenes
+        });
 
         $('#viewToggle').change(function() {
             mode = $(this).is(':checked') ? 'sku' : 'vista';
@@ -330,7 +386,7 @@
                     if (sku.startsWith(originalSku)) {
                         var renameSku = renameSkus[index];
                         var finalName = sku.replace(originalSku, renameSku); // Mantener el sufijo intacto
-                        var imgUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/${sku}/w=1500,h=1500,fit=pad`;
+                        var imgUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country}/${sku}/w=1500,h=1500,fit=pad`;
                         urls.push(imgUrl);
                         filenames.push(finalName);
                     }
