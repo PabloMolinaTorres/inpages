@@ -40,21 +40,22 @@
         }
         .imgContainer {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Distribuir las imágenes en columnas de 200px */
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Ajustar a 120px */
             gap: 10px;
             margin-top: 20px;
             width: 100%;
         }
         .imgWrapper {
-            width: 100%;
+            width: 120px; /* Ajuste a 120px */
+            height: 120px; /* Ajuste a 120px */
             position: relative;
             display: block;
             overflow: hidden;
             text-align: center;
         }
         .imgWrapper img {
-            width: 200px;
-            height: 200px;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             margin-bottom: 5px; /* Espacio entre la imagen y el texto */
         }
@@ -208,7 +209,7 @@
         function loadImage(sku, suffix = "") {
             return new Promise(function(resolve, reject) {
                 var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/`;
-                var imgUrl = `${baseUrl}${sku}${suffix}/w=200,h=200,fit=pad`; // Miniaturas de 200x200
+                var imgUrl = `${baseUrl}${sku}${suffix}/w=120,h=120,fit=pad`; // Miniaturas de 120x120
                 var img = new Image();
                 img.src = imgUrl;
                 img.alt = sku + suffix;
