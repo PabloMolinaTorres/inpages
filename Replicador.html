@@ -30,32 +30,44 @@
             height: 100%;
             width: 100%;
         }
-        .leftContainer {
+        .leftContainer, .rightContainer {
             width: 300px;
             padding: 20px;
             overflow-y: auto;
+        }
+        .leftContainer {
             border-right: 1px solid #eeeeee;
         }
-        .mainContainer {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
+        .imgContainer {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Distribuir las imágenes en columnas de 200px */
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
         }
-        .rightContainer {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
+        .imgWrapper {
+            width: 100%;
+            position: relative;
+            display: block;
+            overflow: hidden;
+            text-align: center;
         }
-        .right-margin {
-            width: 300px;
-            margin-left: 20px;
+        .imgWrapper img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            margin-bottom: 5px; /* Espacio entre la imagen y el texto */
+        }
+        .sku {
+            color: #333;
+            font-size: 12px;
+            text-align: center;
         }
         textarea {
             width: 100%;
             margin: 20px 0;
             padding: 10px;
-            height: 150px;
+            height: 200px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
@@ -74,50 +86,6 @@
             font-size: 12px;
             cursor: pointer;
             text-transform: uppercase;
-        }
-        .imgContainer {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .imgWrapper {
-            width: 120px;
-            height: 120px;
-            position: relative;
-            display: block;
-            overflow: hidden;
-            border: 1px solid #eeeeee;
-            text-align: center;
-        }
-        .imgWrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .sku {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            text-align: center;
-            font-size: 10px;
-            padding: 2px;
-        }
-        .download-icon {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 20px;
-            height: 20px;
-            opacity: 0.8;
-            cursor: pointer;
-            background-image: url('https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/descarga.png');
-            background-size: cover;
-        }
-        .download-icon:hover {
-            opacity: 1;
         }
         .country-selector {
             margin: 10px 0;
@@ -180,11 +148,6 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
-        .switch-container span {
-            font-size: 16px;
-            font-weight: bold;
-            margin-right: 10px;
-        }
     </style>
 </head>
 <body>
@@ -208,18 +171,13 @@
                 <span>SKU</span>
             </div>
         </div>
-        <div class="mainContainer">
-            <div class="rightContainer">
-                <h3>Renombrar y Descargar</h3>
-                <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
-                <div id="rightCount">Total Renombres: 0</div>
-                <button id="downloadAll">Descargar Todo</button>
-                <div class="imgContainer" id="imgContainer"></div>
-            </div>
-            <div class="right-margin">
-                <!-- Este es el espacio reservado para futuros elementos -->
-            </div>
+        <div class="rightContainer">
+            <h3>Renombrar y Descargar</h3>
+            <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+            <div id="rightCount">Total Renombres: 0</div>
+            <button id="downloadAll">Descargar Todo</button>
         </div>
+        <div class="imgContainer" id="imgContainer"></div>
     </div>
 
     <script>
@@ -230,7 +188,7 @@
         function loadImage(sku, suffix = "") {
             return new Promise(function(resolve, reject) {
                 var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/`;
-                var imgUrl = `${baseUrl}${sku}${suffix}/w=120,h=120,fit=pad`;
+                var imgUrl = `${baseUrl}${sku}${suffix}/w=200,h=200,fit=pad`; // Miniaturas de 200x200
                 var img = new Image();
                 img.src = imgUrl;
                 img.alt = sku + suffix;
@@ -239,7 +197,7 @@
                     var wrapper = document.createElement('div');
                     wrapper.classList.add('imgWrapper');
                     var link = document.createElement('a');
-                    link.href = imgUrl.replace("w=120,h=120", "w=1500,h=1500");
+                    link.href = `${baseUrl}${sku}${suffix}/w=1500,h=1500,fit=pad`; // Enlace a la imagen completa
                     link.target = '_blank';
                     link.appendChild(img);
                     var skuDiv = document.createElement('div');
@@ -251,7 +209,7 @@
                 };
 
                 img.onerror = function() {
-                    resolve(null);
+                    resolve(null); // No mostrar imágenes 404 en modo SKU
                 };
             });
         }
@@ -325,7 +283,7 @@
                 skuList.forEach(function(sku) {
                     if (sku.startsWith(originalSku)) {
                         var renameSku = renameSkus[index];
-                        var finalName = sku.replace(originalSku, renameSku);
+                        var finalName = sku.replace(originalSku, renameSku); // Mantener el sufijo intacto
                         var imgUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/${sku}/w=1500,h=1500,fit=pad`;
                         urls.push(imgUrl);
                         filenames.push(finalName);
