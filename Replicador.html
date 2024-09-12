@@ -36,10 +36,20 @@
             overflow-y: auto;
             border-right: 1px solid #eeeeee;
         }
+        .mainContainer {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+        }
         .rightContainer {
             flex-grow: 1;
             padding: 20px;
             overflow-y: auto;
+        }
+        .right-margin {
+            width: 300px;
+            margin-left: 20px;
         }
         textarea {
             width: 100%;
@@ -175,11 +185,6 @@
             font-weight: bold;
             margin-right: 10px;
         }
-        /* Espacio de margen para futuros elementos */
-        .right-margin {
-            width: 300px;
-            margin-left: 20px;
-        }
     </style>
 </head>
 <body>
@@ -203,15 +208,17 @@
                 <span>SKU</span>
             </div>
         </div>
-        <div class="rightContainer">
-            <h3>Renombrar y Descargar</h3>
-            <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
-            <div id="rightCount">Total Renombres: 0</div>
-            <button id="downloadAll">Descargar Todo</button>
-            <div class="imgContainer" id="imgContainer"></div>
-        </div>
-        <div class="right-margin">
-            <!-- Este es el espacio reservado para futuros elementos -->
+        <div class="mainContainer">
+            <div class="rightContainer">
+                <h3>Renombrar y Descargar</h3>
+                <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+                <div id="rightCount">Total Renombres: 0</div>
+                <button id="downloadAll">Descargar Todo</button>
+                <div class="imgContainer" id="imgContainer"></div>
+            </div>
+            <div class="right-margin">
+                <!-- Este es el espacio reservado para futuros elementos -->
+            </div>
         </div>
     </div>
 
