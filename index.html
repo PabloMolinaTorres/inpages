@@ -209,10 +209,7 @@
                 };
 
                 img.onerror = function() {
-                    var errorWrapper = document.createElement('div');
-                    errorWrapper.classList.add('imgWrapper');
-                    errorWrapper.innerHTML = "<p>Imagen no disponible</p>"; // Fallback visual si no se carga la imagen
-                    resolve(errorWrapper);
+                    resolve(null); // No mostrar imágenes 404 en modo SKU
                 };
             });
         }
