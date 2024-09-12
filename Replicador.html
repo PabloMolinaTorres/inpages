@@ -31,57 +31,76 @@
             width: 100%;
         }
         .leftContainer {
-            width: 40%;
+            width: 35%;
+            display: flex;
             padding: 20px;
-            display: flex;
-            gap: 20px; /* Espacio entre las dos columnas */
-            flex-direction: row; /* Las columnas estarán lado a lado */
-        }
-        .searchColumn {
-            width: 50%; /* Cada columna ocupa el 50% del leftContainer */
-            display: flex;
+            box-sizing: border-box;
             flex-direction: column;
         }
+        .columns {
+            display: flex;
+            justify-content: space-between;
+        }
+        .column {
+            width: 48%; /* Ajustamos cada columna al 48% del ancho */
+        }
         .rightContainer {
-            width: 55%;
+            width: 60%;
             padding: 20px;
             overflow-y: auto;
-        }
-        .visualizadorContainer {
-            width: 5%;
-            padding: 20px;
-            text-align: center;
+            box-sizing: border-box;
         }
         .imgContainer {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
             gap: 10px;
-            margin-top: 20px;
-            width: 100%;
         }
         .imgWrapper {
-            width: 100%;
+            width: 120px;
+            height: 120px;
             position: relative;
             display: block;
             overflow: hidden;
+            border: 1px solid #eeeeee;
             text-align: center;
         }
         .imgWrapper img {
-            width: 120px;
-            height: 120px;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            margin-bottom: 5px;
         }
         .sku {
-            color: #333;
-            font-size: 12px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
             text-align: center;
+            font-size: 10px;
+            padding: 2px;
+        }
+        .visualizadorContainer {
+            width: 5%;
+            display: flex;
+            justify-content: flex-end;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .visualizadorContainer a {
+            background-color: #8fca00;
+            padding: 10px 20px;
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
         }
         textarea {
             width: 100%;
             margin: 20px 0;
             padding: 10px;
-            height: 150px;
+            height: 200px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
@@ -122,7 +141,6 @@
             align-items: center;
             justify-content: space-between;
             margin-top: 20px;
-            grid-column: span 2;
         }
         .switch {
             position: relative;
@@ -163,43 +181,46 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
-        .visualizador-btn {
-            background-color: #8fca00;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Left Container -->
         <div class="leftContainer">
-            <div class="searchColumn">
-                <h3>Buscar Imágenes</h3>
-                <div class="country-selector">
-                    <a href="#" class="country-link active" id="linkCL">Chile</a>
-                    <a href="#" class="country-link" id="linkPE">Perú</a>
-                    <a href="#" class="country-link" id="linkCO">Colombia</a>
-                </div>
-                <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
-                <button id="buscar">Buscar</button>
-                <div id="leftCount">Total SKUs/Vistas: 0</div>
+            <h3>Buscar Imágenes</h3>
+            <div class="country-selector">
+                <a href="#" class="country-link active" id="linkCL">Chile</a>
+                <a href="#" class="country-link" id="linkPE">Perú</a>
+                <a href="#" class="country-link" id="linkCO">Colombia</a>
             </div>
-            <div class="searchColumn">
-                <h3>Renombrar y Descargar</h3>
-                <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
-                <div id="rightCount">Total Renombres: 0</div>
-                <button id="downloadAll">Descargar Todo</button>
+            <div class="columns">
+                <div class="column">
+                    <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
+                    <button id="buscar">Buscar</button>
+                </div>
+                <div class="column">
+                    <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+                    <button id="downloadAll">Descargar Todo</button>
+                </div>
+            </div>
+            <div class="switch-container">
+                <span>Vista</span>
+                <label class="switch">
+                    <input type="checkbox" id="viewToggle">
+                    <span class="slider"></span>
+                </label>
+                <span>SKU</span>
             </div>
         </div>
+
+        <!-- Right Container -->
         <div class="rightContainer">
             <div class="imgContainer" id="imgContainer"></div>
         </div>
+
+        <!-- Visualizador Container -->
         <div class="visualizadorContainer">
-            <a href="index.html" class="visualizador-btn">Visualizador</a>
+            <a href="index.html">Visualizador</a>
         </div>
     </div>
 
@@ -232,7 +253,7 @@
                 };
 
                 img.onerror = function() {
-                    resolve(null);
+                    resolve(null); // No mostrar imágenes 404 en modo SKU
                 };
             });
         }
