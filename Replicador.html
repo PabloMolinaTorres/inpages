@@ -19,9 +19,9 @@
             font-family: 'Lato', sans-serif;
         }
         html, body {
+            height: 100%;
             margin: 0;
             padding: 0;
-            height: 100%;
             color: #333;
             background-color: #fff;
         }
@@ -31,60 +31,50 @@
             width: 100%;
         }
         .leftContainer {
-            width: 600px;
+            width: 60%;
             padding: 20px;
-            overflow-y: auto;
             border-right: 1px solid #eeeeee;
-            display: flex;
-            gap: 20px;
-        }
-        .column {
-            width: 50%;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
         }
         .rightContainer {
-            flex-grow: 1;
+            width: 30%;
             padding: 20px;
             overflow-y: auto;
+        }
+        .visualizadorContainer {
+            width: 10%;
+            padding: 20px;
+            text-align: center;
         }
         .imgContainer {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             gap: 10px;
+            margin-top: 20px;
             width: 100%;
         }
         .imgWrapper {
-            width: 120px;
-            height: 120px;
+            width: 100%;
             position: relative;
             display: block;
             overflow: hidden;
-            border: 1px solid #eeeeee;
             text-align: center;
         }
         .imgWrapper img {
-            width: 100%;
-            height: 100%;
+            width: 120px;
+            height: 120px;
             object-fit: cover;
+            margin-bottom: 5px;
         }
         .sku {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
+            color: #333;
+            font-size: 12px;
             text-align: center;
-            font-size: 10px;
-            padding: 2px;
         }
         textarea {
             width: 100%;
             margin: 20px 0;
             padding: 10px;
-            height: 150px;
+            height: 200px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
@@ -94,7 +84,7 @@
         button {
             width: 100%;
             border: none;
-            margin-top: 10px;
+            margin: 20px 0;
             background-color: #8fca00;
             height: 50px;
             line-height: 50px;
@@ -165,47 +155,47 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
+        .visualizador-btn {
+            background-color: #8fca00;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
-    <a href="index.html" class="link-visualizador">Volver al Index</a>
     <div class="container">
         <div class="leftContainer">
-            <!-- Primera columna -->
-            <div class="column">
-                <h3>Buscar Imágenes</h3>
-                <div class="country-selector">
-                    <a href="#" class="country-link active" id="linkCL">Chile</a>
-                    <a href="#" class="country-link" id="linkPE">Perú</a>
-                    <a href="#" class="country-link" id="linkCO">Colombia</a>
-                </div>
-                <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
-                <button id="buscar">Buscar</button>
-                <div id="leftCount">Total SKUs/Vistas: 0</div>
-                <div class="switch-container">
-                    <span>Vista</span>
-                    <label class="switch">
-                        <input type="checkbox" id="viewToggle">
-                        <span class="slider"></span>
-                    </label>
-                    <span>SKU</span>
-                </div>
+            <h3>Buscar Imágenes</h3>
+            <div class="country-selector">
+                <a href="#" class="country-link active" id="linkCL">Chile</a>
+                <a href="#" class="country-link" id="linkPE">Perú</a>
+                <a href="#" class="country-link" id="linkCO">Colombia</a>
             </div>
-
-            <!-- Segunda columna -->
-            <div class="column">
-                <h3>Renombrar y Descargar</h3>
-                <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
-                <div id="rightCount">Total Renombres: 0</div>
-                <button id="downloadAll">Descargar Todo</button>
+            <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
+            <button id="buscar">Buscar</button>
+            <div id="leftCount">Total SKUs/Vistas: 0</div>
+            <div class="switch-container">
+                <span>Vista</span>
+                <label class="switch">
+                    <input type="checkbox" id="viewToggle">
+                    <span class="slider"></span>
+                </label>
+                <span>SKU</span>
             </div>
+            <div class="imgContainer" id="imgContainer"></div>
         </div>
-
-        <!-- Nuevo rightContainer que contiene imgContainer -->
-        <div class="rightContainer" id="rightContainer">
-            <div class="imgContainer" id="imgContainer">
-                <!-- Aquí se mostrarán las imágenes -->
-            </div>
+        <div class="rightContainer">
+            <h3>Renombrar y Descargar</h3>
+            <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+            <div id="rightCount">Total Renombres: 0</div>
+            <button id="downloadAll">Descargar Todo</button>
+        </div>
+        <div class="visualizadorContainer">
+            <a href="index.html" class="visualizador-btn">Volver al Index</a>
         </div>
     </div>
 
@@ -238,7 +228,7 @@
                 };
 
                 img.onerror = function() {
-                    resolve(null); // No mostrar imágenes 404 en modo SKU
+                    resolve(null);
                 };
             });
         }
