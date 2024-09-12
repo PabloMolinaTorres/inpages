@@ -286,6 +286,22 @@
             });
         }
 
+        $('#viewToggle').change(function() {
+            mode = $(this).is(':checked') ? 'sku' : 'vista';
+            $('#imgContainer').empty();
+            skuList = [];
+            updateCounts();
+        });
+
+        $('.country-link').click(function() {
+            $('.country-link').removeClass('active');
+            $(this).addClass('active');
+            country = $(this).attr('id').replace('link', '');
+            $('#imgContainer').empty();
+            skuList = [];
+            updateCounts();
+        });
+
         // Cambiar la lógica activa al hacer clic en los íconos
         $('#falabellaIcon').click(function() {
             activeLogic = "falabella";
@@ -295,7 +311,7 @@
             $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png');
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
-            $('#imgContainer').empty(); // Limpiar imágenes
+            $('#imgContainer').empty();
         });
 
         $('#sodimacIcon').click(function() {
@@ -306,7 +322,7 @@
             $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
-            $('#imgContainer').empty(); // Limpiar imágenes
+            $('#imgContainer').empty();
         });
 
         $('#tottusIcon').click(function() {
@@ -317,7 +333,7 @@
             $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus.png');
-            $('#imgContainer').empty(); // Limpiar imágenes
+            $('#imgContainer').empty();
         });
 
         $('#buscar').click(function() {
@@ -373,7 +389,7 @@
                 skuList.forEach(function(sku) {
                     if (sku.startsWith(originalSku)) {
                         var renameSku = renameSkus[index];
-                        var finalName = sku.replace(originalSku, renameSku); // Mantener el sufijo intacto
+                        var finalName = sku.replace(originalSku, renameSku);
                         var imgUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country}/${sku}/w=1500,h=1500,fit=pad`;
                         urls.push(imgUrl);
                         filenames.push(finalName);
