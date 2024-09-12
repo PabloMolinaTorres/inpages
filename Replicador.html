@@ -31,23 +31,24 @@
             width: 100%;
         }
         .leftContainer {
-            width: 60%;
+            width: 40%;
             padding: 20px;
             display: flex;
-            flex-direction: column;
-            gap: 20px;
+            gap: 20px; /* Espacio entre las dos columnas */
+            flex-direction: row; /* Las columnas estarán lado a lado */
         }
         .searchColumn {
+            width: 50%; /* Cada columna ocupa el 50% del leftContainer */
             display: flex;
             flex-direction: column;
         }
         .rightContainer {
-            width: 30%;
+            width: 55%;
             padding: 20px;
             overflow-y: auto;
         }
         .visualizadorContainer {
-            width: 10%;
+            width: 5%;
             padding: 20px;
             text-align: center;
         }
@@ -80,7 +81,7 @@
             width: 100%;
             margin: 20px 0;
             padding: 10px;
-            height: 200px;
+            height: 150px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
@@ -121,6 +122,7 @@
             align-items: center;
             justify-content: space-between;
             margin-top: 20px;
+            grid-column: span 2;
         }
         .switch {
             position: relative;
@@ -191,14 +193,6 @@
                 <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
                 <div id="rightCount">Total Renombres: 0</div>
                 <button id="downloadAll">Descargar Todo</button>
-            </div>
-            <div class="switch-container">
-                <span>Vista</span>
-                <label class="switch">
-                    <input type="checkbox" id="viewToggle">
-                    <span class="slider"></span>
-                </label>
-                <span>SKU</span>
             </div>
         </div>
         <div class="rightContainer">
