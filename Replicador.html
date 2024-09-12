@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Renombrador de Imágenes Falabella</title>
+    <title>Renombrador de Imágenes</title>
     <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
@@ -214,10 +214,8 @@
             </div>
 
             <!-- Country Selector centered below the icons -->
-            <div class="country-selector">
-                <a href="#" class="country-link active" id="linkCL">Chile</a>
-                <a href="#" class="country-link" id="linkPE">Perú</a>
-                <a href="#" class="country-link" id="linkCO">Colombia</a>
+            <div class="country-selector" id="countrySelector">
+                <!-- Los países se agregarán dinámicamente según la lógica activa -->
             </div>
 
             <div class="columns">
@@ -254,19 +252,52 @@
     <script>
         var skuList = [];
         var mode = "vista"; // Por defecto, modo vista
-        var country = "CL"; // Por defecto, Chile
         var activeLogic = "falabella"; // Falabella activa por defecto
+        var country = "CL"; // Chile por defecto
 
-        // Sufijos específicos por lógica
-        var falabellaTottusSuffixes = ['_001', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_1', '_10', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
-        var sodimacSuffixes = ['_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_12', '_13', '_14', '_15', '_17', '_18', '_19', '_20', '_21', '_22', '_23', '_24', '_25', '_26', '_27', '_28', '_SEC', '_EFI'];
+        // Lógica de países por cada icono
+        var countries = {
+            falabella: ["CL", "PE", "CO"],
+            sodimac: ["CL", "AR", "CO", "PE", "BR", "MX", "UY"],
+            tottus: ["CL", "PE"]
+        };
 
-        function getSuffixes() {
-            if (activeLogic === 'sodimac') {
-                return sodimacSuffixes;
-            } else {
-                return falabellaTottusSuffixes;
-            }
+        // Función para actualizar la lista de países
+        function updateCountries() {
+            var countryList = countries[activeLogic];
+            var countrySelector = $('#countrySelector');
+            countrySelector.empty();
+
+            countryList.forEach(function(code) {
+                var link = $('<a href="#" class="country-link"></a>').text(getCountryName(code)).attr('id', 'link' + code);
+                if (code === country) {
+                    link.addClass('active');
+                }
+                countrySelector.append(link);
+            });
+
+            $('.country-link').click(function() {
+                $('.country-link').removeClass('active');
+                $(this).addClass('active');
+                country = $(this).attr('id').replace('link', '');
+                $('#imgContainer').empty();
+                skuList = [];
+                updateCounts();
+            });
+        }
+
+        // Función para obtener el nombre del país según su código
+        function getCountryName(code) {
+            var names = {
+                CL: "Chile",
+                PE: "Perú",
+                CO: "Colombia",
+                AR: "Argentina",
+                BR: "Brasil",
+                MX: "México",
+                UY: "Uruguay"
+            };
+            return names[code];
         }
 
         function loadImage(sku, suffix = "") {
@@ -305,49 +336,6 @@
             updateCounts();
         });
 
-        $('.country-link').click(function() {
-            $('.country-link').removeClass('active');
-            $(this).addClass('active');
-            country = $(this).attr('id').replace('link', '');
-            $('#imgContainer').empty();
-            skuList = [];
-            updateCounts();
-        });
-
-        // Cambiar la lógica activa al hacer clic en los íconos
-        $('#falabellaIcon').click(function() {
-            activeLogic = "falabella";
-            $('#falabellaIcon').removeClass('inactive').addClass('active');
-            $('#sodimacIcon').addClass('inactive');
-            $('#tottusIcon').addClass('inactive');
-            $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png');
-            $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
-            $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
-            $('#imgContainer').empty();
-        });
-
-        $('#sodimacIcon').click(function() {
-            activeLogic = "sodimac";
-            $('#falabellaIcon').addClass('inactive');
-            $('#sodimacIcon').removeClass('inactive').addClass('active');
-            $('#tottusIcon').addClass('inactive');
-            $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
-            $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac.png');
-            $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
-            $('#imgContainer').empty();
-        });
-
-        $('#tottusIcon').click(function() {
-            activeLogic = "tottus";
-            $('#falabellaIcon').addClass('inactive');
-            $('#sodimacIcon').addClass('inactive');
-            $('#tottusIcon').removeClass('inactive').addClass('active');
-            $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
-            $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
-            $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus.png');
-            $('#imgContainer').empty();
-        });
-
         $('#buscar').click(function() {
             $('#imgContainer').empty();
             skuList = [];
@@ -365,7 +353,12 @@
                                 updateCounts();
                             });
                         } else if (mode === "sku") {
-                            var suffixes = getSuffixes();
+                            var suffixes;
+                            if (activeLogic === "falabella" || activeLogic === "tottus") {
+                                suffixes = ['_001', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_1', '_10', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
+                            } else if (activeLogic === "sodimac") {
+                                suffixes = ['_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_12', '_13', '_14', '_15', '_17', '_18', '_19', '_20', '_21', '_22', '_23', '_24', '_25', '_26', '_27', '_28', '_SEC', '_EFI'];
+                            }
                             suffixes.forEach(function(suffix) {
                                 loadImage(sku, suffix).then(function(imageElement) {
                                     if (imageElement) {
@@ -443,7 +436,48 @@
 
         $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
 
-        $('#linkCL').addClass('active');
+        // Actualizar los países y la lógica activa al hacer clic en los íconos
+        $('#falabellaIcon').click(function() {
+            activeLogic = "falabella";
+            $('#falabellaIcon').removeClass('inactive').addClass('active');
+            $('#sodimacIcon').addClass('inactive');
+            $('#tottusIcon').addClass('inactive');
+            $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png');
+            $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
+            $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
+            country = "CL"; // Por defecto, Chile
+            updateCountries();
+            $('#imgContainer').empty();
+        });
+
+        $('#sodimacIcon').click(function() {
+            activeLogic = "sodimac";
+            $('#falabellaIcon').addClass('inactive');
+            $('#sodimacIcon').removeClass('inactive').addClass('active');
+            $('#tottusIcon').addClass('inactive');
+            $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
+            $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac.png');
+            $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
+            country = "CL"; // Por defecto, Chile
+            updateCountries();
+            $('#imgContainer').empty();
+        });
+
+        $('#tottusIcon').click(function() {
+            activeLogic = "tottus";
+            $('#falabellaIcon').addClass('inactive');
+            $('#sodimacIcon').addClass('inactive');
+            $('#tottusIcon').removeClass('inactive').addClass('active');
+            $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
+            $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
+            $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus.png');
+            country = "PE"; // Por defecto, Perú
+            updateCountries();
+            $('#imgContainer').empty();
+        });
+
+        // Inicializar con Falabella y los países
+        updateCountries();
     </script>
 </body>
 </html>
