@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Visualiza</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/falabella.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Last-Modified" content="0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js?v=1.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js?v=1.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.1.0/jszip-utils.min.js?v=1.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js?v=1.0"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Lato', sans-serif;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #fff;
+        }
+        .container {
+            display: flex;
+            height: 100%;
+            width: 100%;
+        }
+        .leftMenu, .rightMenu {
+            width: 320px;
+            min-width: 320px;
+            background-color: #fff;
+            overflow-y: auto;
+            position: relative;
+        }
+        .leftMenu {
+            border-right: 1px solid #eeeeee;
+        }
+        .rightMenu {
+            border-left: 1px solid #eeeeee;
+        }
+        .leftMenu .intro, .rightMenu .intro {
+            font-size: 12px;
+            padding: 20px 20px 0;
+        }
+        .leftMenu textarea, .rightMenu .error-list {
+            width: calc(100% - 40px);
+            border: 1px solid #eee;
+            margin: 20px;
+            height: 400px;
+        }
+        .leftMenu button, .rightMenu button {
+            width: calc(100% - 40px);
+            border: none;
+            margin: 0 20px 20px;
+            background-color: #8fca00;
+            height: 50px;
+            line-height: 50px;
+            padding: 0;
+            border-radius: 5px;
+            color: white;
+            font-size: 12px;
+            letter-spacing: .075em;
+            cursor: pointer;
+        }
+        .rightMenu button[disabled] {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .error-list {
+            height: calc(100% - 100px);
+            padding: 20px;
+            margin: 20px;
+            border: 1px solid #eee;
+            background-color: #f9f9f9;
+            overflow-y: auto;
+        }
+        .error-list button {
+            display: block;
+            margin-bottom: 10px;
+            background-color: #ccc;
+            border: none;
+            color: white;
+            padding: 3px 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 10px;
+        }
+        .error-list button:hover {
+            background-color: #bbb;
+        }
+        .error-list button.copied {
+            background-color: #8fca00;
+        }
+        .error-list button.copied:hover {
+            background-color: #76a700;
+        }
+        .error-list div {
+            margin-bottom: 5px;
+            color: red;
+        }
+        .rightContainer {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .imgContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .imgContainer .imgWrapper {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            display: block;
+            overflow: hidden;
+            border: 1px solid #eeeeee;
+        }
+        .imgContainer .imgWrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .download-icon {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            width: 24px;
+            height: 24px;
+            opacity: 0.8;
+            cursor: pointer;
+            background-image: url('https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/descarga.png');
+            background-size: cover;
+        }
+        .download-icon:hover {
+            opacity: 1;
+        }
+        .setBar {
+            background-color: #fff;
+            padding: 20px;
+            width: 100%;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .setBar button {
+            padding: 0;
+            background-color: #8fca00;
+            border: none;
+            font-size: 12px;
+            text-transform: uppercase;
+            line-height: 30px;
+            height: 30px;
+            padding: 0 15px;
+            color: white;
+            font-weight: 700;
+            letter-spacing: .075em;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 0;
+        }
+        .setBar button:hover {
+            background-color: #8fca00;
+            color: white;
+        }
+        .pais.seleccionado {
+            font-weight: 700;
+            text-decoration: underline;
+            color: #333;
+        }
+        .pais {
+            display: inline-block;
+            padding-right: 10px;
+            cursor: pointer;
+            color: #bbbbbb;
+        }
+        .error {
+            color: red;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        .icon-switch {
+            display: flex;
+            align-items: center;
+            margin: 20px;
+        }
+        .icon-switch img {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .icon-switch img.inactive {
+            filter: grayscale(100%);
+        }
+        .skus-container {
+            padding: 20px;
+        }
+        .thumbnail-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .thumbnail {
+            display: inline-block;
+            width: 120px;
+            height: 140px;
+            margin: 5px;
+            position: relative;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            text-align: center;
+            overflow: hidden;
+        }
+        .thumbnail img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            cursor: zoom-in;
+        }
+        .zoom {
+            position: absolute;
+            display: none;
+            width: 500px;
+            height: 500px;
+            border: 2px solid #8fca00;
+            background-repeat: no-repeat;
+            z-index: 10;
+        }
+        .thumbnail .sku {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            text-align: center;
+            font-size: 10px; /* Tamaño de la letra reducido */
+            padding: 2px;
+            height: 18px; /* Ajuste del alto del contenedor gris */
+        }
+        .thumbnail .no-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100px;
+            background-color: #e0e0e0;
+            color: #888;
+            font-size: 14px;
+            text-align: center;
+        }
+        .divider {
+            width: 100%;
+            height: 1px;
+            background-color: #ccc;
+            margin: 20px 0;
+        }
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: calc(100% - 40px);
+        }
+        .toggle-switch span {
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #8fca00;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .replica-renombre-link {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #8fca00;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            z-index: 1000;
+        }
+        .replica-renombre-link:hover {
+            background-color: #76a700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="Replicador.html" class="replica-renombre-link">Replica y Renombre</a>
+        <div class="leftMenu">
+            <div class="icon-switch">
+                <img src="https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/falabella.png" id="falabellaIcon" class="active">
+                <img src="https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/sodimac-bn.png" id="sodimacIcon" class="inactive">
+                <img src="https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/tottus-bn.png" id="tottusIcon" class="inactive">
+            </div>
+            <div class="intro paises" id="paisesContainer">
+                <div>Descargar imágenes desde:</div><br>
+                <div class="pais seleccionado" data-pais="CL">Chile</div>
+                <div class="pais" data-pais="CO">Colombia</div>
+                <div class="pais" data-pais="PE">Perú</div>
+            </div>
+            <div class="skus-container">
+                <textarea name="skus" id="skus" cols="30" rows="15" placeholder="Seleccione VISTA e ingrese SKU_VISTA, uno debajo del otro sin comas. Seleccione SKU e ingrese los SKUs uno debajo del otro sin comas"></textarea>
+                <button id="buscar">BUSCAR</button>
+            </div>
+            <div class="toggle-switch">
+                <span>Vista</span>
+                <label class="switch">
+                    <input type="checkbox" id="viewToggle">
+                    <span class="slider"></span>
+                </label>
+                <span>SKU</span>
+            </div>
+            <div class="error" id="error"></div>
+        </div>
+        <div class="rightContainer">
+            <div class="setBar">
+                <button id="descargartodo">DESCARGAR TODO</button>
+                <button id="ordenarVistas" disabled>ORDENAR VISTAS</button>
+            </div>
+            <div class="imgContainer"></div>
+            <div id="thumbnailContainer" style="display:none;">
+                <!-- Thumbnails will be displayed here -->
+            </div>
+        </div>
+        <div class="rightMenu">
+            <div class="intro">No tiene foto:</div>
+            <div class="error-list" id="errorList">
+                <button id="copyErrors">Copiar</button>
+                <!-- Errores 404 aparecerán aquí -->
+            </div>
+        </div>
+    </div>
+    <script>
+        var pais = "CL";  // Por defecto, Chile
+        var useFalabella = true;  // Estado inicial: usar Falabella
+        var useSodimac = false;
+        var useTottus = false;
+        var viewMode = "vista";  // Estado inicial: por vista
+
+        const paisesFalabella = [
+            { nombre: 'Chile', codigo: 'CL' },
+            { nombre: 'Colombia', codigo: 'CO' },
+            { nombre: 'Perú', codigo: 'PE' }
+        ];
+
+        const paisesSodimac = [
+            { nombre: 'Chile', codigo: 'CL' },
+            { nombre: 'Argentina', codigo: 'AR' },
+            { nombre: 'Colombia', codigo: 'CO' },
+            { nombre: 'Perú', codigo: 'PE' },
+            { nombre: 'Brasil', codigo: 'BR' },
+            { nombre: 'México', codigo: 'MX' },
+            { nombre: 'Uruguay', codigo: 'UY' }
+        ];
+
+        const paisesTottus = [
+            { nombre: 'Chile', codigo: 'CL' },
+            { nombre: 'Perú', codigo: 'PE' }
+        ];
+
+        function actualizarPaises() {
+            const contenedor = $('#paisesContainer');
+            contenedor.empty();
+            contenedor.append('<div>Descargar imágenes desde:</div><br>');
+            let paises;
+            if (useFalabella) {
+                paises = paisesFalabella;
+            } else if (useSodimac) {
+                paises = paisesSodimac;
+            } else {
+                paises = paisesTottus;
+            }
+            paises.forEach(p => {
+                const div = $('<div>').addClass('pais').attr('data-pais', p.codigo).text(p.nombre);
+                if (p.codigo === pais) div.addClass('seleccionado');
+                contenedor.append(div);
+            });
+            $('.pais').click(function() {
+                pais = $(this).data('pais');
+                $('.pais').removeClass('seleccionado');
+                $(this).addClass('seleccionado');
+            });
+        }
+
+        $('#falabellaIcon').click(function() {
+            useFalabella = true;
+            useSodimac = false;
+            useTottus = false;
+            $('#falabellaIcon').removeClass('inactive').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/falabella.png');
+            $('#sodimacIcon').addClass('inactive').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/sodimac-bn.png');
+            $('#tottusIcon').addClass('inactive').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/tottus-bn.png');
+            actualizarPaises();
+        });
+
+        $('#sodimacIcon').click(function() {
+            useFalabella = false;
+            useSodimac = true;
+            useTottus = false;
+            $('#sodimacIcon').removeClass('inactive').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/sodimac.png');
+            $('#falabellaIcon').addClass('inactive').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/falabella-bn.png');
+            $('#tottusIcon').addClass('inactive').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/tottus-bn.png');
+            actualizarPaises();
+        });
+
+        $('#tottusIcon').click(function() {
+            useFalabella = false;
+            useSodimac = false;
+            useTottus = true;
+            $('#tottusIcon').removeClass('inactive').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/tottus.png');
+            $('#falabellaIcon').addClass('inactive').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/falabella-bn.png');
+            $('#sodimacIcon').addClass('inactive').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/sodimac-bn.png');
+            actualizarPaises();
+        });
+
+        $('#viewToggle').change(function() {
+            viewMode = $(this).is(':checked') ? 'sku' : 'vista';
+            if (viewMode === 'vista') {
+                $('.imgContainer').show();
+                $('#thumbnailContainer').hide();
+            } else {
+                $('.imgContainer').hide();
+                $('#thumbnailContainer').show();
+            }
+        });
+
+        $('#buscar').click(function() {
+            $('#ordenarVistas').attr('disabled', true);  // Deshabilitar botón de ordenar
+            if (viewMode === "vista") {
+                buscarPorVista();
+            } else {
+                buscarPorSKU();
+            }
+        });
+
+        $('#ordenarVistas').click(function() {
+            $('#buscar').trigger('click');  // Hacer que el botón "Ordenar Vistas" dispare el evento click de "Buscar"
+        });
+
+        async function buscarPorVista() {
+            $('.imgContainer').empty();
+            $('#error').text('');
+            $('#errorList').empty(); // Limpiar lista de errores
+            $('#errorList').append('<button id="copyErrors">Copiar</button>');
+            var skus = $('#skus').val().split('\n');
+            var promises = [];
+
+            for (let sku of skus) {
+                sku = sku.trim();
+                if (sku !== "") {
+                    promises.push(loadImage(sku));
+                }
+            }
+
+            const images = await Promise.all(promises);
+
+            images.forEach(image => {
+                if (image && !image.error) {
+                    $('.imgContainer').append(image.element);
+                }
+                if (image && image.error) {
+                    $('#errorList').append('<div>' + image.sku + '</div>');
+                }
+            });
+
+            $('#ordenarVistas').removeAttr('disabled');  // Habilitar botón de ordenar
+        }
+
+        function buscarPorSKU() {
+            $('#thumbnailContainer').empty();
+            var skus = $('#skus').val().split('\n');
+            var promises = [];
+
+            skus.forEach(function(sku, index) {
+                sku = sku.trim();
+                if (sku !== "") {
+                    var row = $('<div class="thumbnail-row"></div>');
+                    if (index > 0) {
+                        $('#thumbnailContainer').append('<div class="divider"></div>');
+                    }
+                    $('#thumbnailContainer').append(row);
+
+                    var variants;
+                    if (useFalabella) {
+                        variants = ['_01', '_02', '_03', '_1', '_10', '_11', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
+                    } else if (useSodimac) {
+                        variants = ['_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_12', '_13', '_14', '_15', '_17', '_18', '_19', '_20', '_21', '_22', '_23', '_24', '_25', '_26', '_27', '_28', '_SEC', '_EFI'];
+                    } else if (useTottus) {
+                        variants = ['_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9'];
+                    }
+
+                    promises.push(displayThumbnailsInOrder(sku, variants, row));
+                }
+            });
+
+            Promise.all(promises).then(() => {
+                $('#ordenarVistas').removeAttr('disabled');  // Habilitar botón de ordenar
+            });
+        }
+
+        async function displayThumbnailsInOrder(sku, variants, row) {
+            const promises = variants.map(variant => createThumbnail(sku + variant, row));
+            await Promise.all(promises);
+        }
+
+        function createThumbnail(sku, row) {
+            return new Promise((resolve) => {
+                var baseUrl;
+                if (useFalabella) {
+                    baseUrl = 'https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella';
+                } else if (useSodimac) {
+                    baseUrl = 'https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/sodimac';
+                } else {
+                    baseUrl = 'https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/tottus';
+                }
+                let thumbnailUrl = `${baseUrl}${pais}/${sku}/w=400,h=400,fit=pad`;
+                let originalUrl = `${baseUrl}${pais}/${sku}/w=1500,h=1500,fit=pad`;
+                var img = new Image();
+                img.src = thumbnailUrl;
+                img.alt = sku;
+                img.onload = function() {
+                    var thumbnail = $('<div class="thumbnail"></div>');
+                    var link = $('<a href="' + originalUrl + '" data-lightbox="image-gallery" data-title="' + sku + '"></a>');
+                    link.append(img);
+                    var downloadIcon = $('<div class="download-icon"></div>');
+                    downloadIcon.click(function() {
+                        downloadImage(originalUrl, sku);
+                    });
+                    thumbnail.append(link);
+                    thumbnail.append('<div class="sku">' + sku + '</div>');
+                    thumbnail.append(downloadIcon);
+                    thumbnail.mouseenter(function() {
+                        var zoom = $('<div class="zoom"></div>');
+                        zoom.css({
+                            'background-image': 'url(' + originalUrl + ')',
+                            'background-size': '500px 500px'
+                        });
+                        $('body').append(zoom);
+                        zoom.fadeIn(200);
+                        thumbnail.on('mousemove', function(e) {
+                            var offset = thumbnail.offset();
+                            var posX = e.pageX - offset.left;
+                            var posY = e.pageY - offset.top;
+                            zoom.css({
+                                'left': e.pageX + 10,
+                                'top': e.pageY + 10,
+                                'background-position': '-' + (posX * 1 - zoom.width() / 2) + 'px -' + (posY * 1 - zoom.height() / 2) + 'px'
+                            });
+                        });
+                    });
+                    thumbnail.mouseleave(function() {
+                        var zoom = $('body').find('.zoom');
+                        zoom.fadeOut(200, function() {
+                            zoom.remove();
+                        });
+                    });
+                    row.append(thumbnail);
+                    resolve();
+                };
+                img.onerror = function() {
+                    resolve(); // Resolviendo la promesa sin añadir la miniatura "No disponible"
+                };
+            });
+        }
+
+        function downloadImage(url, sku) {
+            JSZipUtils.getBinaryContent(url, function (err, data) {
+                if (err) {
+                    throw err;
+                }
+                saveAs(new Blob([data], { type: 'image/jpeg' }), sku + ".jpg");
+            });
+        }
+
+        function loadImage(sku) {
+            return new Promise(function(resolve, reject) {
+                var baseUrl;
+                if (useFalabella) {
+                    baseUrl = 'https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella';
+                } else if (useSodimac) {
+                    baseUrl = 'https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/sodimac';
+                } else {
+                    baseUrl = 'https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/tottus';
+                }
+                var primaryUrl = `${baseUrl}${pais}/${sku}/public`;
+                var downloadUrl = `${baseUrl}${pais}/${sku}/w=1500,h=1500`;
+                var alternateUrl = `${baseUrl}${pais}/inpage_media/${sku}/public`;
+
+                console.log("Loading image for SKU: " + sku + " from URL: " + primaryUrl);
+                var img = new Image();
+                img.src = primaryUrl;
+                img.alt = sku;
+                img.setAttribute('data-download-src', downloadUrl);
+
+                img.onload = function() {
+                    var wrapper = $('<div class="imgWrapper"><a href="' + primaryUrl + '" target="_blank"></a></div>');
+                    wrapper.find('a').append(img);
+                    resolve({ element: wrapper, sku: sku });
+                };
+
+                img.onerror = function() {
+                    if (sku.includes('-')) {
+                        console.log("Trying alternate URL for SKU: " + sku);
+                        img.src = alternateUrl;
+                        img.setAttribute('data-download-src', alternateUrl);
+                        img.onload = function() {
+                            var wrapper = $('<div class="imgWrapper"><a href="' + alternateUrl + '" target="_blank"></a></div>');
+                            wrapper.find('a').append(img);
+                            resolve({ element: wrapper, sku: sku });
+                        };
+                        img.onerror = function() {
+                            console.log("Error loading image for SKU: " + sku);
+                            resolve({ error: true, sku: sku });
+                        };
+                    } else {
+                        console.log("Error loading image for SKU: " + sku);
+                        resolve({ error: true, sku: sku });
+                    }
+                };
+            });
+        }
+
+        $('#descargartodo').click(function() {
+            var zip = new JSZip();
+            var count = 0;
+            var zipFilename = getFormattedDate() + ".zip";
+            var urls = [];
+            var skuNames = [];
+            if (viewMode === "vista") {
+                $(".imgWrapper img").each(function() {
+                    urls.push($(this).attr('data-download-src'));
+                    skuNames.push($(this).attr('alt'));
+                });
+            } else {
+                $(".thumbnail img").each(function() {
+                    var originalUrl = $(this).parent().attr('href');
+                    urls.push(originalUrl);
+                    skuNames.push($(this).attr('alt'));
+                });
+            }
+
+            urls.forEach(function(url, index) {
+                var filename = skuNames[index] + ".jpg";
+                JSZipUtils.getBinaryContent(url, function (err, data) {
+                    if (err) {
+                        throw err;
+                    }
+                    zip.file(filename, data, { binary: true });
+                    count++;
+                    if (count === urls.length) {
+                        zip.generateAsync({ type: 'blob' }).then(function (content) {
+                            saveAs(content, zipFilename);
+                        });
+                    }
+                });
+            });
+        });
+
+        function getFormattedDate() {
+            var date = new Date();
+            var day = String(date.getDate()).padStart(2, '0');
+            var month = String(date.getMonth() + 1).padStart(2, '0');
+            var hours = String(date.getHours()).padStart(2, '0');
+            var minutes = String(date.getMinutes()).padStart(2, '0');
+            return day + '/' + month + '_' + hours + minutes;
+        }
+
+        $(document).on('click', '#copyErrors', function() {
+            var errors = [];
+            $('#errorList div').each(function() {
+                errors.push($(this).text());
+            });
+            var tempInput = $('<textarea>');
+            $('body').append(tempInput);
+            tempInput.val(errors.join('\n')).select();
+            document.execCommand('copy');
+            tempInput.remove();
+            $(this).text('Copiado').addClass('copied');
+            setTimeout(function() {
+                $('#copyErrors').text('Copiar').removeClass('copied');
+            }, 2000);
+        });
+
+        actualizarPaises();
+    </script>
+</body>
+</html>
