@@ -40,24 +40,24 @@
         }
         .imgContainer {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Ajustar a 120px */
+            grid-template-columns: repeat(auto-fill, minmax(120px, 120px)); /* Cada columna será de 120px */
             gap: 10px;
             margin-top: 20px;
-            width: 100%;
+            justify-content: start; /* Alinea las miniaturas a la izquierda */
         }
         .imgWrapper {
-            width: 120px; /* Ajuste a 120px */
-            height: 120px; /* Ajuste a 120px */
+            width: 120px;
+            height: 120px;
             position: relative;
             display: block;
             overflow: hidden;
             text-align: center;
         }
         .imgWrapper img {
-            width: 100%;
+            width: 100%; /* Mantener el ancho de la imagen dentro del wrapper */
             height: 100%;
-            object-fit: cover;
-            margin-bottom: 5px; /* Espacio entre la imagen y el texto */
+            object-fit: cover; /* Evitar que la imagen se deforme */
+            margin-bottom: 5px;
         }
         .sku {
             color: #333;
@@ -149,29 +149,34 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
-
-        /* Botón de redireccionamiento en la parte superior derecha */
-        .link-to-index {
+        .switch-container span {
+            font-size: 16px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .visualizador {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        /* Estilo del botón Visualizador */
+        .link-visualizador {
             position: absolute;
             top: 20px;
             right: 20px;
             background-color: #8fca00;
-            color: white;
-            padding: 10px 20px;
+            padding: 5px 15px;
             border-radius: 5px;
             text-decoration: none;
+            color: white;
             font-weight: bold;
             font-size: 12px;
         }
-        .link-to-index:hover {
-            background-color: #75a300;
-        }
-
     </style>
 </head>
 <body>
-    <a href="index.html" class="link-to-index">Volver al Index</a> <!-- Botón de redirección -->
-
+    <a href="index.html" class="link-visualizador">Volver al Index</a> <!-- Enlace al Index -->
     <div class="container">
         <div class="leftContainer">
             <h3>Buscar Imágenes</h3>
