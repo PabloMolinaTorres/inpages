@@ -40,35 +40,28 @@
         }
         .imgContainer {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Distribuir las imágenes según el tamaño de la pantalla */
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Distribuir las imágenes en columnas de 200px */
             gap: 10px;
             margin-top: 20px;
-            flex-grow: 1; /* Esto permitirá que las imágenes ocupen todo el espacio disponible */
+            width: 100%;
         }
         .imgWrapper {
             width: 100%;
-            height: 150px;
             position: relative;
             display: block;
             overflow: hidden;
-            border: 1px solid #eeeeee;
             text-align: center;
         }
         .imgWrapper img {
-            width: 100%;
-            height: 100%;
+            width: 200px;
+            height: 200px;
             object-fit: cover;
+            margin-bottom: 5px; /* Espacio entre la imagen y el texto */
         }
         .sku {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
+            color: #333;
+            font-size: 12px;
             text-align: center;
-            font-size: 10px;
-            padding: 2px;
         }
         textarea {
             width: 100%;
@@ -93,20 +86,6 @@
             font-size: 12px;
             cursor: pointer;
             text-transform: uppercase;
-        }
-        .download-icon {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 20px;
-            height: 20px;
-            opacity: 0.8;
-            cursor: pointer;
-            background-image: url('https://raw.githubusercontent.com/PabloMolinaTorres/Visualiza2/main/descarga.png');
-            background-size: cover;
-        }
-        .download-icon:hover {
-            opacity: 1;
         }
         .country-selector {
             margin: 10px 0;
@@ -169,34 +148,9 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
-        .switch-container span {
-            font-size: 16px;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        .visualizador {
-            width: 100%;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        /* Estilo del botón Visualizador */
-        .link-visualizador {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: #8fca00;
-            padding: 5px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
-            font-size: 12px;
-        }
     </style>
 </head>
 <body>
-    <a href="index.html" class="link-visualizador">Visualizador</a>
     <div class="container">
         <div class="leftContainer">
             <h3>Buscar Imágenes</h3>
@@ -234,7 +188,7 @@
         function loadImage(sku, suffix = "") {
             return new Promise(function(resolve, reject) {
                 var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabella${country}/`;
-                var imgUrl = `${baseUrl}${sku}${suffix}/w=1500,h=1500,fit=pad`;
+                var imgUrl = `${baseUrl}${sku}${suffix}/w=200,h=200,fit=pad`; // Miniaturas de 200x200
                 var img = new Image();
                 img.src = imgUrl;
                 img.alt = sku + suffix;
@@ -243,7 +197,7 @@
                     var wrapper = document.createElement('div');
                     wrapper.classList.add('imgWrapper');
                     var link = document.createElement('a');
-                    link.href = imgUrl;
+                    link.href = `${baseUrl}${sku}${suffix}/w=1500,h=1500,fit=pad`; // Enlace a la imagen completa
                     link.target = '_blank';
                     link.appendChild(img);
                     var skuDiv = document.createElement('div');
@@ -255,7 +209,10 @@
                 };
 
                 img.onerror = function() {
-                    resolve(null);
+                    var errorWrapper = document.createElement('div');
+                    errorWrapper.classList.add('imgWrapper');
+                    errorWrapper.innerHTML = "<p>Imagen no disponible</p>"; // Fallback visual si no se carga la imagen
+                    resolve(errorWrapper);
                 };
             });
         }
