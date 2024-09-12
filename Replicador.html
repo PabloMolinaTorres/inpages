@@ -148,9 +148,29 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
+
+        /* Botón de redireccionamiento en la parte superior derecha */
+        .link-to-index {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #8fca00;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .link-to-index:hover {
+            background-color: #75a300;
+        }
+
     </style>
 </head>
 <body>
+    <a href="index.html" class="link-to-index">Volver al Index</a> <!-- Botón de redirección -->
+
     <div class="container">
         <div class="leftContainer">
             <h3>Buscar Imágenes</h3>
