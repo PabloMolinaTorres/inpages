@@ -31,15 +31,20 @@
             width: 100%;
         }
         .leftContainer {
-            width: 300px;
+            width: 600px; /* Se amplía para que contenga ambas columnas */
             padding: 20px;
             overflow-y: auto;
             border-right: 1px solid #eeeeee;
             display: flex;
+            gap: 20px;
+        }
+        .column {
+            width: 50%;
+            display: flex;
             flex-direction: column;
             gap: 20px;
         }
-        .imgContainer {
+        .rightContainer {
             flex-grow: 1;
             padding: 20px;
             overflow-y: auto;
@@ -164,29 +169,38 @@
     <a href="index.html" class="link-visualizador">Volver al Index</a>
     <div class="container">
         <div class="leftContainer">
-            <h3>Buscar Imágenes</h3>
-            <div class="country-selector">
-                <a href="#" class="country-link active" id="linkCL">Chile</a>
-                <a href="#" class="country-link" id="linkPE">Perú</a>
-                <a href="#" class="country-link" id="linkCO">Colombia</a>
+            <!-- Primera columna -->
+            <div class="column">
+                <h3>Buscar Imágenes</h3>
+                <div class="country-selector">
+                    <a href="#" class="country-link active" id="linkCL">Chile</a>
+                    <a href="#" class="country-link" id="linkPE">Perú</a>
+                    <a href="#" class="country-link" id="linkCO">Colombia</a>
+                </div>
+                <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
+                <button id="buscar">Buscar</button>
+                <div id="leftCount">Total SKUs/Vistas: 0</div>
+                <div class="switch-container">
+                    <span>Vista</span>
+                    <label class="switch">
+                        <input type="checkbox" id="viewToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span>SKU</span>
+                </div>
             </div>
-            <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
-            <button id="buscar">Buscar</button>
-            <div id="leftCount">Total SKUs/Vistas: 0</div>
-            <div class="switch-container">
-                <span>Vista</span>
-                <label class="switch">
-                    <input type="checkbox" id="viewToggle">
-                    <span class="slider"></span>
-                </label>
-                <span>SKU</span>
+
+            <!-- Segunda columna -->
+            <div class="column">
+                <h3>Renombrar y Descargar</h3>
+                <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+                <div id="rightCount">Total Renombres: 0</div>
+                <button id="downloadAll">Descargar Todo</button>
             </div>
-            <h3>Renombrar y Descargar</h3>
-            <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
-            <div id="rightCount">Total Renombres: 0</div>
-            <button id="downloadAll">Descargar Todo</button>
         </div>
-        <div class="imgContainer" id="imgContainer">
+
+        <!-- Contenedor de imágenes renombrado a rightContainer -->
+        <div class="rightContainer" id="rightContainer">
             <!-- Aquí se mostrarán las imágenes -->
         </div>
     </div>
@@ -227,7 +241,7 @@
 
         $('#viewToggle').change(function() {
             mode = $(this).is(':checked') ? 'sku' : 'vista';
-            $('#imgContainer').empty();
+            $('#rightContainer').empty();
             skuList = [];
             updateCounts();
         });
@@ -236,13 +250,13 @@
             $('.country-link').removeClass('active');
             $(this).addClass('active');
             country = $(this).attr('id').replace('link', '');
-            $('#imgContainer').empty();
+            $('#rightContainer').empty();
             skuList = [];
             updateCounts();
         });
 
         $('#buscar').click(function() {
-            $('#imgContainer').empty();
+            $('#rightContainer').empty();
             skuList = [];
             var skus = $('#skuInputLeft').val().trim().split('\n');
             if (skus.length > 0) {
@@ -253,7 +267,7 @@
                             skuList.push(sku);
                             loadImage(sku).then(function(imageElement) {
                                 if (imageElement) {
-                                    document.getElementById('imgContainer').appendChild(imageElement);
+                                    document.getElementById('rightContainer').appendChild(imageElement);
                                 }
                                 updateCounts();
                             });
@@ -263,7 +277,7 @@
                                 loadImage(sku, suffix).then(function(imageElement) {
                                     if (imageElement) {
                                         skuList.push(sku + suffix);
-                                        document.getElementById('imgContainer').appendChild(imageElement);
+                                        document.getElementById('rightContainer').appendChild(imageElement);
                                     }
                                     updateCounts();
                                 });
