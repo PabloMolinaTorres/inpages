@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Renombrador de Imágenes</title>
+    <title>Renombrador de Imágenes Falabella</title>
     <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
@@ -212,9 +212,9 @@
 </head>
 <body>
     <div class="container">
-        <!-- Left Container -->
         <div class="leftContainer">
             <div class="title">Renombre</div>
+
             <div class="icon-selector">
                 <img src="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" id="falabellaIcon" class="active" alt="Falabella">
                 <img src="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png" id="sodimacIcon" class="inactive" alt="Sodimac">
@@ -247,7 +247,6 @@
             </div>
         </div>
 
-        <!-- Right Container -->
         <div class="rightContainer">
             <div class="title">Previsualizar</div>
             <div class="imgContainer" id="imgContainer"></div>
@@ -303,11 +302,10 @@
         $('.country-link').click(function() {
             $('.country-link').removeClass('active');
             $(this).addClass('active');
-            $(this).css('font-size', '16px').css('font-weight', 'bold').css('border-bottom', '2px solid #8fca00');
             country = $(this).attr('id').replace('link', '');
-            $('#skuInputLeft').val('');
             $('#imgContainer').empty();
             skuList = [];
+            $('#skuInputLeft').val(''); // Limpia el cuadro de texto al cambiar de país
             updateCounts();
         });
 
@@ -320,8 +318,8 @@
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
             updateCountrySelector(["Chile", "Perú", "Colombia"]);
-            $('#skuInputLeft').val('');
             $('#imgContainer').empty();
+            $('#skuInputLeft').val(''); // Limpia el cuadro de texto al cambiar de marca
         });
 
         $('#sodimacIcon').click(function() {
@@ -333,8 +331,8 @@
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
             updateCountrySelector(["Chile", "Argentina", "Colombia", "Perú", "Brasil", "México", "Uruguay"]);
-            $('#skuInputLeft').val('');
             $('#imgContainer').empty();
+            $('#skuInputLeft').val(''); // Limpia el cuadro de texto al cambiar de marca
         });
 
         $('#tottusIcon').click(function() {
@@ -346,8 +344,8 @@
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus.png');
             updateCountrySelector(["Chile", "Perú"]);
-            $('#skuInputLeft').val('');
             $('#imgContainer').empty();
+            $('#skuInputLeft').val(''); // Limpia el cuadro de texto al cambiar de marca
         });
 
         $('#buscar').click(function() {
@@ -384,6 +382,14 @@
                 alert('Por favor, ingrese SKUs.');
             }
         });
+
+        function getSuffixes(logic) {
+            if (logic === "falabella" || logic === "tottus") {
+                return ['_001', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_1', '_10', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
+            } else if (logic === "sodimac") {
+                return ['_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_12', '_13', '_14', '_15', '_17', '_18', '_19', '_20', '_21', '_22', '_23', '_24', '_25', '_26', '_27', '_28', '_SEC', '_EFI'];
+            }
+        }
 
         $('#downloadAll').click(function() {
             var renameSkus = $('#skuInputRight').val().trim().split('\n');
@@ -438,29 +444,31 @@
             return day + '-' + month + '_' + hours + minutes;
         }
 
-        function getSuffixes(logic) {
-            if (logic === "falabella" || logic === "tottus") {
-                return ['_001', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_1', '_10', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
-            } else if (logic === "sodimac") {
-                return ['_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_12', '_13', '_14', '_15', '_17', '_18', '_19', '_20', '_21', '_22', '_23', '_24', '_25', '_26', '_27', '_28', '_SEC', '_EFI'];
-            }
-        }
-
         function updateCountrySelector(countries) {
             var countrySelector = $('#countrySelector');
             countrySelector.empty();
             countries.forEach(function(countryName) {
                 var countryLink = $('<a href="#" class="country-link">' + countryName + '</a>');
+                countryLink.click(function() {
+                    $('.country-link').removeClass('active');
+                    $(this).addClass('active');
+                    country = countryName.slice(0, 2); 
+                    $('#imgContainer').empty();
+                    $('#skuInputLeft').val(''); 
+                    skuList = [];
+                    updateCounts();
+                });
                 countrySelector.append(countryLink);
             });
+            $('#countrySelector .country-link:first').addClass('active');
         }
-
-        $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
 
         function updateCounts() {
             $('#leftCount').text('Total SKUs/Vistas: ' + skuList.length);
             $('#rightCount').text('Total Renombres: ' + $('#skuInputRight').val().trim().split('\n').length);
         }
+
+        $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
 
         $('#linkCL').addClass('active');
     </script>
