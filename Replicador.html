@@ -331,7 +331,27 @@
             var countrySelector = $('#countrySelector');
             countrySelector.empty();
             countries.forEach(function(countryName) {
-                var countryCode = countryName.slice(0, 2).toUpperCase(); // Solo los dos primeros caracteres en mayúscula
+                var countryCode;
+                
+                // Asignar códigos manualmente
+                if (countryName === "Uruguay") {
+                    countryCode = "UY";
+                } else if (countryName === "México") {
+                    countryCode = "MX";
+                } else if (countryName === "Perú") {
+                    countryCode = "PE";
+                } else if (countryName === "Argentina") {
+                    countryCode = "AR";
+                } else if (countryName === "Chile") {
+                    countryCode = "CL";
+                } else if (countryName === "Colombia") {
+                    countryCode = "CO";
+                } else if (countryName === "Brasil") {
+                    countryCode = "BR";
+                } else {
+                    countryCode = countryName.slice(0, 2).toUpperCase(); // Por defecto
+                }
+
                 var countryLink = $('<a href="#" class="country-link">' + countryName + '</a>');
                 countryLink.attr('id', `link${countryCode}`);
                 countryLink.click(function() {
