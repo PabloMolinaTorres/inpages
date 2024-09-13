@@ -31,7 +31,7 @@
             width: 100%;
         }
         .leftContainer {
-            width: 35%;
+            width: 30%; /* Ajustado de 35% a 30% */
             display: flex;
             padding: 20px;
             box-sizing: border-box;
@@ -305,6 +305,7 @@
         $('.country-link').click(function() {
             $('.country-link').removeClass('active');
             $(this).addClass('active');
+            $(this).css('font-size', '16px').css('font-weight', 'bold').css('border-bottom', '2px solid #8fca00');
             country = $(this).attr('id').replace('link', '');
             $('#imgContainer').empty();
             skuList = [];
@@ -396,8 +397,24 @@
             countrySelector.empty();
             countries.forEach(function(countryName) {
                 var countryLink = $('<a href="#" class="country-link">' + countryName + '</a>');
+                countryLink.click(function() {
+                    $('.country-link').removeClass('active');
+                    $(this).addClass('active');
+                    $(this).css('font-size', '16px').css('font-weight', 'bold').css('border-bottom', '2px solid #8fca00');
+                    country = countryName.slice(0, 2); // Tomar los primeros dos caracteres
+                    $('#imgContainer').empty();
+                    skuList = [];
+                    updateCounts();
+                });
                 countrySelector.append(countryLink);
             });
+            // Subrayar el país por defecto
+            $('#countrySelector .country-link:first').addClass('active').css('font-size', '16px').css('font-weight', 'bold').css('border-bottom', '2px solid #8fca00');
+        }
+
+        function updateCounts() {
+            $('#leftCount').text('Total SKUs/Vistas: ' + skuList.length);
+            $('#rightCount').text('Total Renombres: ' + $('#skuInputRight').val().trim().split('\n').length);
         }
 
         $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
