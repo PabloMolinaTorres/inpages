@@ -201,6 +201,7 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
+        /* Títulos añadidos */
         .title {
             font-size: 18px;
             font-weight: bold;
@@ -212,15 +213,19 @@
 </head>
 <body>
     <div class="container">
+        <!-- Left Container -->
         <div class="leftContainer">
+            <!-- Título Renombre -->
             <div class="title">Renombre</div>
 
+            <!-- Icon Selector -->
             <div class="icon-selector">
                 <img src="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" id="falabellaIcon" class="active" alt="Falabella">
                 <img src="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png" id="sodimacIcon" class="inactive" alt="Sodimac">
                 <img src="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png" id="tottusIcon" class="inactive" alt="Tottus">
             </div>
 
+            <!-- Country Selector centered below the icons -->
             <div class="country-selector" id="countrySelector">
                 <a href="#" class="country-link active" id="linkCL">Chile</a>
                 <a href="#" class="country-link" id="linkPE">Perú</a>
@@ -247,11 +252,15 @@
             </div>
         </div>
 
+        <!-- Right Container -->
         <div class="rightContainer">
+            <!-- Título Previsualizar -->
             <div class="title">Previsualizar</div>
+            
             <div class="imgContainer" id="imgContainer"></div>
         </div>
 
+        <!-- Visualizador Container -->
         <div class="visualizadorContainer">
             <a href="index.html">Visualizador</a>
         </div>
@@ -259,14 +268,14 @@
 
     <script>
         var skuList = [];
-        var mode = "vista";
-        var country = "CL";
-        var activeLogic = "falabella";
+        var mode = "vista"; // Por defecto, modo vista
+        var country = "CL"; // Por defecto, Chile
+        var activeLogic = "falabella"; // Falabella activa por defecto
 
         function loadImage(sku, suffix = "") {
             return new Promise(function(resolve, reject) {
                 var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country}/`;
-                var imgUrl = `${baseUrl}${sku}${suffix}/w=120,h=120,fit=pad`;
+                var imgUrl = `${baseUrl}${sku}${suffix}/w=120,h=120,fit=pad`; // Miniaturas de 120x120
                 var img = new Image();
                 img.src = imgUrl;
                 img.alt = sku + suffix;
@@ -275,7 +284,7 @@
                     var wrapper = document.createElement('div');
                     wrapper.classList.add('imgWrapper');
                     var link = document.createElement('a');
-                    link.href = `${baseUrl}${sku}${suffix}/w=1500,h=1500,fit=pad`;
+                    link.href = `${baseUrl}${sku}${suffix}/w=1500,h=1500,fit=pad`; // Enlace a la imagen completa
                     link.target = '_blank';
                     link.appendChild(img);
                     var skuDiv = document.createElement('div');
@@ -287,7 +296,7 @@
                 };
 
                 img.onerror = function() {
-                    resolve(null);
+                    resolve(null); // No mostrar imágenes 404 en modo SKU
                 };
             });
         }
@@ -302,50 +311,48 @@
         $('.country-link').click(function() {
             $('.country-link').removeClass('active');
             $(this).addClass('active');
+            $(this).css('font-size', '16px').css('font-weight', 'bold').css('border-bottom', '2px solid #8fca00');
             country = $(this).attr('id').replace('link', '');
             $('#imgContainer').empty();
             skuList = [];
-            $('#skuInputLeft').val(''); // Limpia el cuadro de texto al cambiar de país
             updateCounts();
         });
 
+        // Cambiar la lógica activa al hacer clic en los íconos
         $('#falabellaIcon').click(function() {
             activeLogic = "falabella";
+            resetCountrySelector(["Chile", "Perú", "Colombia"]);
             $('#falabellaIcon').removeClass('inactive').addClass('active');
             $('#sodimacIcon').addClass('inactive');
             $('#tottusIcon').addClass('inactive');
             $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png');
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
-            updateCountrySelector(["Chile", "Perú", "Colombia"]);
             $('#imgContainer').empty();
-            $('#skuInputLeft').val(''); // Limpia el cuadro de texto al cambiar de marca
         });
 
         $('#sodimacIcon').click(function() {
             activeLogic = "sodimac";
+            resetCountrySelector(["Chile", "Argentina", "Colombia", "Perú", "Brasil", "México", "Uruguay"]);
             $('#falabellaIcon').addClass('inactive');
             $('#sodimacIcon').removeClass('inactive').addClass('active');
             $('#tottusIcon').addClass('inactive');
             $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
-            updateCountrySelector(["Chile", "Argentina", "Colombia", "Perú", "Brasil", "México", "Uruguay"]);
             $('#imgContainer').empty();
-            $('#skuInputLeft').val(''); // Limpia el cuadro de texto al cambiar de marca
         });
 
         $('#tottusIcon').click(function() {
             activeLogic = "tottus";
+            resetCountrySelector(["Chile", "Perú"]);
             $('#falabellaIcon').addClass('inactive');
             $('#sodimacIcon').addClass('inactive');
             $('#tottusIcon').removeClass('inactive').addClass('active');
             $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus.png');
-            updateCountrySelector(["Chile", "Perú"]);
             $('#imgContainer').empty();
-            $('#skuInputLeft').val(''); // Limpia el cuadro de texto al cambiar de marca
         });
 
         $('#buscar').click(function() {
@@ -382,14 +389,6 @@
                 alert('Por favor, ingrese SKUs.');
             }
         });
-
-        function getSuffixes(logic) {
-            if (logic === "falabella" || logic === "tottus") {
-                return ['_001', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_1', '_10', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
-            } else if (logic === "sodimac") {
-                return ['_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_12', '_13', '_14', '_15', '_17', '_18', '_19', '_20', '_21', '_22', '_23', '_24', '_25', '_26', '_27', '_28', '_SEC', '_EFI'];
-            }
-        }
 
         $('#downloadAll').click(function() {
             var renameSkus = $('#skuInputRight').val().trim().split('\n');
@@ -444,7 +443,20 @@
             return day + '-' + month + '_' + hours + minutes;
         }
 
-        function updateCountrySelector(countries) {
+        function updateCounts() {
+            $('#leftCount').text('Total SKUs/Vistas: ' + skuList.length);
+            $('#rightCount').text('Total Renombres: ' + $('#skuInputRight').val().trim().split('\n').length);
+        }
+
+        function getSuffixes(logic) {
+            if (logic === "falabella" || logic === "tottus") {
+                return ['_001', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_1', '_10', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
+            } else if (logic === "sodimac") {
+                return ['_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_12', '_13', '_14', '_15', '_17', '_18', '_19', '_20', '_21', '_22', '_23', '_24', '_25', '_26', '_27', '_28', '_SEC', '_EFI'];
+            }
+        }
+
+        function resetCountrySelector(countries) {
             var countrySelector = $('#countrySelector');
             countrySelector.empty();
             countries.forEach(function(countryName) {
@@ -452,20 +464,16 @@
                 countryLink.click(function() {
                     $('.country-link').removeClass('active');
                     $(this).addClass('active');
-                    country = countryName.slice(0, 2); 
+                    $(this).css('font-size', '16px').css('font-weight', 'bold').css('border-bottom', '2px solid #8fca00');
+                    country = countryName.slice(0, 2); // Usar los primeros dos caracteres del nombre para definir el país
                     $('#imgContainer').empty();
-                    $('#skuInputLeft').val(''); 
                     skuList = [];
                     updateCounts();
                 });
                 countrySelector.append(countryLink);
             });
-            $('#countrySelector .country-link:first').addClass('active');
-        }
-
-        function updateCounts() {
-            $('#leftCount').text('Total SKUs/Vistas: ' + skuList.length);
-            $('#rightCount').text('Total Renombres: ' + $('#skuInputRight').val().trim().split('\n').length);
+            // Subrayar el primer país por defecto
+            $('#countrySelector .country-link:first').addClass('active').css('font-size', '16px').css('font-weight', 'bold').css('border-bottom', '2px solid #8fca00');
         }
 
         $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
