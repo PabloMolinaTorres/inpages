@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Renombrador de Imágenes Falabella</title>
+    <title>Renombrador de Imágenes</title>
     <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
@@ -54,7 +54,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 20px; /* Ajuste para bajar el imgContainer */
         }
         .imgWrapper {
             width: 120px;
@@ -104,7 +104,7 @@
             width: 100%;
             margin: 20px 0;
             padding: 10px;
-            height: 250px;
+            height: 250px; /* Hacemos más largas las columnas */
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
@@ -274,7 +274,7 @@
 
         function loadImage(sku, suffix = "") {
             return new Promise(function(resolve, reject) {
-                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country}/`;
+                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country.toUpperCase()}/`;
                 var imgUrl = `${baseUrl}${sku}${suffix}/w=120,h=120,fit=pad`; // Miniaturas de 120x120
                 var img = new Image();
                 img.src = imgUrl;
@@ -311,8 +311,7 @@
         $('.country-link').click(function() {
             $('.country-link').removeClass('active');
             $(this).addClass('active');
-            $(this).css('font-size', '16px').css('font-weight', 'bold').css('border-bottom', '2px solid #8fca00');
-            country = $(this).attr('id').replace('link', '');
+            country = $(this).attr('id').replace('link', '').toUpperCase(); // Convertir el país a mayúsculas
             $('#imgContainer').empty();
             skuList = [];
             updateCounts();
@@ -321,37 +320,37 @@
         // Cambiar la lógica activa al hacer clic en los íconos
         $('#falabellaIcon').click(function() {
             activeLogic = "falabella";
-            resetCountrySelector(["Chile", "Perú", "Colombia"]);
             $('#falabellaIcon').removeClass('inactive').addClass('active');
             $('#sodimacIcon').addClass('inactive');
             $('#tottusIcon').addClass('inactive');
             $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png');
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
+            updateCountrySelector(["Chile", "Perú", "Colombia"]);
             $('#imgContainer').empty();
         });
 
         $('#sodimacIcon').click(function() {
             activeLogic = "sodimac";
-            resetCountrySelector(["Chile", "Argentina", "Colombia", "Perú", "Brasil", "México", "Uruguay"]);
             $('#falabellaIcon').addClass('inactive');
             $('#sodimacIcon').removeClass('inactive').addClass('active');
             $('#tottusIcon').addClass('inactive');
             $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
+            updateCountrySelector(["Chile", "Argentina", "Colombia", "Perú", "Brasil", "México", "Uruguay"]);
             $('#imgContainer').empty();
         });
 
         $('#tottusIcon').click(function() {
             activeLogic = "tottus";
-            resetCountrySelector(["Chile", "Perú"]);
             $('#falabellaIcon').addClass('inactive');
             $('#sodimacIcon').addClass('inactive');
             $('#tottusIcon').removeClass('inactive').addClass('active');
             $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus.png');
+            updateCountrySelector(["Chile", "Perú"]);
             $('#imgContainer').empty();
         });
 
@@ -409,7 +408,7 @@
                     if (sku.startsWith(originalSku)) {
                         var renameSku = renameSkus[index];
                         var finalName = sku.replace(originalSku, renameSku);
-                        var imgUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country}/${sku}/w=1500,h=1500,fit=pad`;
+                        var imgUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country.toUpperCase()}/${sku}/w=1500,h=1500,fit=pad`;
                         urls.push(imgUrl);
                         filenames.push(finalName);
                     }
@@ -456,24 +455,13 @@
             }
         }
 
-        function resetCountrySelector(countries) {
+        function updateCountrySelector(countries) {
             var countrySelector = $('#countrySelector');
             countrySelector.empty();
             countries.forEach(function(countryName) {
                 var countryLink = $('<a href="#" class="country-link">' + countryName + '</a>');
-                countryLink.click(function() {
-                    $('.country-link').removeClass('active');
-                    $(this).addClass('active');
-                    $(this).css('font-size', '16px').css('font-weight', 'bold').css('border-bottom', '2px solid #8fca00');
-                    country = countryName.slice(0, 2); // Usar los primeros dos caracteres del nombre para definir el país
-                    $('#imgContainer').empty();
-                    skuList = [];
-                    updateCounts();
-                });
                 countrySelector.append(countryLink);
             });
-            // Subrayar el primer país por defecto
-            $('#countrySelector .country-link:first').addClass('active').css('font-size', '16px').css('font-weight', 'bold').css('border-bottom', '2px solid #8fca00');
         }
 
         $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
