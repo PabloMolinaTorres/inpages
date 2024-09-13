@@ -448,7 +448,7 @@
                                 if (imageElement) {
                                     document.getElementById('imgContainer').appendChild(imageElement);
                                 } else {
-                                    logError('No se encontró la vista para SKU: ' + sku + ' (vista no encontrada)');
+                                    logError(sku); // Solo el SKU que no se encontró
                                     removeNotFound(sku); // Eliminar el SKU de la caja de texto
                                 }
                                 updateCounts();
@@ -469,7 +469,7 @@
 
                             setTimeout(function() {
                                 if (!found) {
-                                    logError('No se encontró ningún SKU con sufijos para: ' + sku + ' (SKU sin ninguna vista asociada)');
+                                    logError(sku); // Solo el SKU que no se encontró
                                     removeNotFound(sku); // Eliminar el SKU de la caja de texto
                                 }
                             }, 1000); // Esperar un poco para confirmar que no se encontró ninguna imagen
