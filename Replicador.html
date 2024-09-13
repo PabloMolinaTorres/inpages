@@ -209,15 +209,19 @@
             margin-bottom: 15px;
             color: #333;
         }
-
-        /* Estilo para el log de errores */
-        #errorLog {
+        /* Error log styles */
+        .error-log {
             display: none;
-            background-color: #ffe6e6;
+            margin-top: 20px;
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
             padding: 10px;
-            border: 1px solid #ff0000;
-            border-radius: 4px;
-            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .error-log ul {
+            padding-left: 20px;
+            margin: 0;
         }
     </style>
 </head>
@@ -261,8 +265,8 @@
                 <span>SKU</span>
             </div>
 
-            <!-- Log de errores -->
-            <div id="errorLog">
+            <!-- Error Log -->
+            <div class="error-log" id="errorLog">
                 <strong>No encontrado:</strong>
                 <ul id="errorList"></ul>
             </div>
@@ -287,6 +291,16 @@
         var mode = "vista"; // Por defecto, modo vista
         var country = "CL"; // Por defecto, Chile
         var activeLogic = "falabella"; // Falabella activa por defecto
+
+        // Función para mostrar errores en el log
+        function addToErrorLog(sku) {
+            var errorLog = document.getElementById('errorLog');
+            var errorList = document.getElementById('errorList');
+            errorLog.style.display = 'block'; // Mostrar el log de errores
+            var listItem = document.createElement('li');
+            listItem.textContent = sku;
+            errorList.appendChild(listItem);
+        }
 
         // Función para cargar la imagen basada en el SKU y el sufijo
         function loadImage(sku, suffix = "") {
@@ -313,6 +327,7 @@
                 };
 
                 img.onerror = function() {
+                    addToErrorLog(sku + suffix); // Agregar el SKU al log de errores
                     resolve(null); // No mostrar imágenes 404 en modo SKU
                 };
             });
@@ -347,27 +362,7 @@
             var countrySelector = $('#countrySelector');
             countrySelector.empty();
             countries.forEach(function(countryName) {
-                var countryCode;
-                
-                // Asignar códigos manualmente
-                if (countryName === "Uruguay") {
-                    countryCode = "UY";
-                } else if (countryName === "México") {
-                    countryCode = "MX";
-                } else if (countryName === "Perú") {
-                    countryCode = "PE";
-                } else if (countryName === "Argentina") {
-                    countryCode = "AR";
-                } else if (countryName === "Chile") {
-                    countryCode = "CL";
-                } else if (countryName === "Colombia") {
-                    countryCode = "CO";
-                } else if (countryName === "Brasil") {
-                    countryCode = "BR";
-                } else {
-                    countryCode = countryName.slice(0, 2).toUpperCase(); // Por defecto
-                }
-
+                var countryCode = countryName.slice(0, 2).toUpperCase(); // Solo los dos primeros caracteres en mayúscula
                 var countryLink = $('<a href="#" class="country-link">' + countryName + '</a>');
                 countryLink.attr('id', `link${countryCode}`);
                 countryLink.click(function() {
@@ -415,28 +410,13 @@
             $('#imgContainer').empty();
         });
 
-        // Función para registrar errores en el log
-        function logError(error) {
-            $('#errorLog').show();
-            $('#errorList').append('<li>' + error + '</li>');
-        }
-
-        // Función para eliminar SKU o vista no encontrada de la caja de texto
-        function removeNotFound(sku) {
-            var skus = $('#skuInputLeft').val().trim().split('\n');
-            skus = skus.filter(function(item) {
-                return item.trim() !== sku;
-            });
-            $('#skuInputLeft').val(skus.join('\n'));
-        }
-
         // Búsqueda de SKUs o Vistas
         $('#buscar').click(function() {
             $('#imgContainer').empty();
-            $('#errorLog').hide(); // Ocultar log de errores al iniciar nueva búsqueda
-            $('#errorList').empty(); // Limpiar lista de errores
-
             skuList = [];
+            $('#errorList').empty(); // Limpiar el log de errores
+            document.getElementById('errorLog').style.display = 'none'; // Ocultar log al comenzar
+
             var skus = $('#skuInputLeft').val().trim().split('\n');
             if (skus.length > 0) {
                 skus.forEach(function(sku) {
@@ -447,32 +427,20 @@
                             loadImage(sku).then(function(imageElement) {
                                 if (imageElement) {
                                     document.getElementById('imgContainer').appendChild(imageElement);
-                                } else {
-                                    logError('No se encontró la vista para SKU: ' + sku + ' (vista no encontrada)');
-                                    removeNotFound(sku); // Eliminar el SKU de la caja de texto
                                 }
                                 updateCounts();
                             });
                         } else if (mode === "sku") {
                             var suffixes = getSuffixes(activeLogic);
-                            var found = false;
                             suffixes.forEach(function(suffix) {
                                 loadImage(sku, suffix).then(function(imageElement) {
                                     if (imageElement) {
-                                        found = true;
                                         skuList.push(sku + suffix);
                                         document.getElementById('imgContainer').appendChild(imageElement);
                                     }
                                     updateCounts();
                                 });
                             });
-
-                            setTimeout(function() {
-                                if (!found) {
-                                    logError('No se encontró ningún SKU con sufijos para: ' + sku + ' (SKU sin ninguna vista asociada)');
-                                    removeNotFound(sku); // Eliminar el SKU de la caja de texto
-                                }
-                            }, 1000); // Esperar un poco para confirmar que no se encontró ninguna imagen
                         }
                     }
                 });
