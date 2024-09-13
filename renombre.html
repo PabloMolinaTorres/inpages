@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Renombrador</title>
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -121,7 +122,7 @@
                 <h2>Instrucciones:</h2>
                 <ol>
                     <li>Selecciona las imágenes para renombrar.</li>
-                    <li>Introduce el nuevo SKU en la columna correspondiente.</li>
+                    <li>Introduce el nuevo SKU en la columna correspondiente o carga un archivo Excel.</li>
                     <li>Puedes copiar los nombres desde Excel u otro archivo.</li>
                     <li>Haz clic en "Descargar" para obtener el archivo renombrado.</li>
                 </ol>
@@ -137,6 +138,7 @@
         <!-- Right Container -->
         <div class="rightContainer">
             <input type="file" id="fileUpload" multiple accept=".jpg,.jpeg,.png">
+            <input type="file" id="excelUpload" accept=".xlsx,.xls" style="margin-top: 10px;">
             <table>
                 <thead>
                     <tr>
@@ -165,6 +167,7 @@
         const errorList = document.getElementById('errorList');
         const progressBarContainer = document.getElementById('progressBarContainer');
         const progressBar = document.getElementById('progressBar');
+        const excelUpload = document.getElementById('excelUpload');
 
         let files = [];
         let skus = {};
@@ -234,24 +237,27 @@
             checkErrors();
         });
 
-        fileTable.addEventListener('paste', function(event) {
-            const activeElement = document.activeElement;
-            if (activeElement.tagName === 'INPUT' && activeElement.type === 'text') {
-                const pastedData = event.clipboardData.getData('text');
-                const rows = pastedData.split(/\r?\n/);
+        // Función para leer Excel y cargar los valores de renombrado
+        excelUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
 
-                let currentInputIndex = Object.keys(skus).indexOf(activeElement.dataset.sku);
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
 
-                rows.forEach(row => {
-                    const input = document.querySelectorAll(`input[type="text"]`)[currentInputIndex];
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+                rows.forEach(([originalSku, newSku]) => {
+                    const input = document.querySelector(`input[data-sku="${originalSku}"]`);
                     if (input) {
-                        input.value = row.trim();
+                        input.value = newSku;
                     }
-                    currentInputIndex++;
                 });
+            };
 
-                event.preventDefault();
-            }
+            reader.readAsArrayBuffer(file);
         });
 
         renameButton.addEventListener('click', function() {
@@ -270,7 +276,7 @@
                 const newSku = input.value.trim();
                 if (newSku) {
                     skus[sku].forEach(file => {
-                        const vista = file.name.split('_')[1];
+                        const vista = file.name.split('_')[1]; // Extraer la vista
                         const newFileName = `${newSku}_${vista}`;
                         zip.file(newFileName, file);
 
