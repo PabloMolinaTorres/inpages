@@ -201,24 +201,23 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
-        /* Log de errores */
-        .error-log {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ff4d4d;
-            background-color: #ffe6e6;
-            color: #ff1a1a;
-            font-size: 12px;
-            height: 100px;
-            overflow-y: auto;
-            display: none; /* Inicialmente oculto */
-        }
+        /* Títulos añadidos */
         .title {
             font-size: 18px;
             font-weight: bold;
             text-align: center;
             margin-bottom: 15px;
             color: #333;
+        }
+        /* Log de errores */
+        .error-log {
+            color: red;
+            font-size: 12px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 100px;
+            overflow-y: auto;
         }
     </style>
 </head>
@@ -253,8 +252,6 @@
                     <button id="downloadAll">Descargar Todo</button>
                 </div>
             </div>
-
-            <!-- Switch SKU/Vista -->
             <div class="switch-container">
                 <span>Vista</span>
                 <label class="switch">
@@ -264,11 +261,8 @@
                 <span>SKU</span>
             </div>
 
-            <!-- Log de errores -->
-            <div class="error-log" id="errorLog">
-                <strong>Errores encontrados:</strong>
-                <ul id="errorList"></ul>
-            </div>
+            <!-- Error Log -->
+            <div class="error-log" id="errorLog"> <!-- Aquí se mostrará el log de errores --></div>
         </div>
 
         <!-- Right Container -->
@@ -287,26 +281,9 @@
 
     <script>
         var skuList = [];
-        var errorList = [];
         var mode = "vista"; // Por defecto, modo vista
         var country = "CL"; // Por defecto, Chile
         var activeLogic = "falabella"; // Falabella activa por defecto
-
-        function logError(error) {
-            var errorLog = document.getElementById('errorLog');
-            var errorListContainer = document.getElementById('errorList');
-            var errorItem = document.createElement('li');
-            errorItem.textContent = error;
-            errorListContainer.appendChild(errorItem);
-            errorLog.style.display = 'block';
-        }
-
-        function clearErrors() {
-            var errorLog = document.getElementById('errorLog');
-            var errorListContainer = document.getElementById('errorList');
-            errorListContainer.innerHTML = ''; // Limpiar los errores anteriores
-            errorLog.style.display = 'none';
-        }
 
         // Función para cargar la imagen basada en el SKU y el sufijo
         function loadImage(sku, suffix = "") {
@@ -343,7 +320,6 @@
             mode = $(this).is(':checked') ? 'sku' : 'vista';
             $('#imgContainer').empty();
             skuList = [];
-            clearErrors(); // Limpiar errores al cambiar de modo
             updateCounts();
         });
 
@@ -354,7 +330,6 @@
             country = countryCode;
             $('#imgContainer').empty();
             skuList = [];
-            clearErrors(); // Limpiar errores al cambiar de país
             updateCounts();
         }
 
@@ -418,46 +393,58 @@
         });
 
         // Búsqueda de SKUs o Vistas
-        $('#buscar').click(function() {
+        $('#buscar').click(function () {
             $('#imgContainer').empty();
+            $('#errorLog').empty(); // Limpiamos el log de errores
             skuList = [];
-            clearErrors(); // Limpiar errores antes de buscar
             var skus = $('#skuInputLeft').val().trim().split('\n');
+            var foundSKUs = []; // Array para almacenar SKUs encontradas
+            var notFoundSKUs = []; // Array para almacenar SKUs no encontradas (errores)
+
             if (skus.length > 0) {
-                skus.forEach(function(sku) {
+                skus.forEach(function (sku) {
                     sku = sku.trim();
                     if (sku) {
                         if (mode === "vista") {
                             skuList.push(sku);
-                            loadImage(sku).then(function(imageElement) {
+                            loadImage(sku).then(function (imageElement) {
                                 if (imageElement) {
+                                    foundSKUs.push(sku); // Añadir SKU encontrada
                                     document.getElementById('imgContainer').appendChild(imageElement);
                                 } else {
-                                    logError(`Error 404: No se encontró la vista para el SKU ${sku}`);
+                                    notFoundSKUs.push(sku); // Añadir SKU no encontrada
+                                    $('#errorLog').append('<p>No se encontró la vista: ' + sku + '</p>'); // Log de errores
                                 }
                                 updateCounts();
                             });
                         } else if (mode === "sku") {
                             var suffixes = getSuffixes(activeLogic);
-                            var foundImage = false;
-                            var suffixPromises = suffixes.map(function(suffix) {
-                                return loadImage(sku, suffix).then(function(imageElement) {
+                            var found = false;
+                            suffixes.forEach(function (suffix, index) {
+                                loadImage(sku, suffix).then(function (imageElement) {
                                     if (imageElement) {
-                                        skuList.push(sku + suffix);
+                                        found = true;
+                                        if (!foundSKUs.includes(sku)) {
+                                            foundSKUs.push(sku); // Añadir SKU encontrada
+                                        }
                                         document.getElementById('imgContainer').appendChild(imageElement);
-                                        foundImage = true;
                                     }
+                                    if (!found && index === suffixes.length - 1) {
+                                        notFoundSKUs.push(sku); // Añadir SKU no encontrada después de revisar todos los sufijos
+                                        $('#errorLog').append('<p>No se encontraron imágenes para SKU: ' + sku + '</p>'); // Log de errores
+                                    }
+                                    updateCounts();
                                 });
-                            });
-                            Promise.all(suffixPromises).then(function() {
-                                if (!foundImage) {
-                                    logError(`No se encontraron imágenes para el SKU ${sku}`);
-                                }
-                                updateCounts();
                             });
                         }
                     }
                 });
+
+                // Al final, eliminamos las SKUs no encontradas del cuadro de texto izquierdo
+                setTimeout(function () {
+                    var remainingSKUs = skus.filter(sku => !notFoundSKUs.includes(sku)).join('\n');
+                    $('#skuInputLeft').val(remainingSKUs); // Actualizamos la caja de búsqueda
+                }, 1000); // Retrasamos para asegurarnos de que la búsqueda termine
             } else {
                 alert('Por favor, ingrese SKUs.');
             }
