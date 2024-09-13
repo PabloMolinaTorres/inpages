@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Renombrador de Imágenes</title>
+    <title>Renombrador de Imágenes Falabella</title>
     <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
@@ -54,7 +54,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            margin-top: 20px; /* Ajuste para bajar el imgContainer */
+            margin-top: 20px;
         }
         .imgWrapper {
             width: 120px;
@@ -104,7 +104,7 @@
             width: 100%;
             margin: 20px 0;
             padding: 10px;
-            height: 250px; /* Hacemos más largas las columnas */
+            height: 250px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
@@ -227,7 +227,7 @@
 
             <!-- Country Selector centered below the icons -->
             <div class="country-selector" id="countrySelector">
-                <a href="#" class="country-link active" id="linkCL">Chile</a>
+                <a href="#" class="country-link" id="linkCL">Chile</a>
                 <a href="#" class="country-link" id="linkPE">Perú</a>
                 <a href="#" class="country-link" id="linkCO">Colombia</a>
             </div>
@@ -272,9 +272,10 @@
         var country = "CL"; // Por defecto, Chile
         var activeLogic = "falabella"; // Falabella activa por defecto
 
+        // Función para cargar la imagen basada en el SKU y el sufijo
         function loadImage(sku, suffix = "") {
             return new Promise(function(resolve, reject) {
-                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country.toUpperCase()}/`;
+                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country}/`;
                 var imgUrl = `${baseUrl}${sku}${suffix}/w=120,h=120,fit=pad`; // Miniaturas de 120x120
                 var img = new Image();
                 img.src = imgUrl;
@@ -301,6 +302,7 @@
             });
         }
 
+        // Manejar el cambio de modo (Vista o SKU)
         $('#viewToggle').change(function() {
             mode = $(this).is(':checked') ? 'sku' : 'vista';
             $('#imgContainer').empty();
@@ -308,16 +310,39 @@
             updateCounts();
         });
 
-        $('.country-link').click(function() {
+        // Función para actualizar el subrayado y el cambio del país activo
+        function setActiveCountry(countryCode) {
             $('.country-link').removeClass('active');
-            $(this).addClass('active');
-            country = $(this).attr('id').replace('link', '').toUpperCase(); // Convertir el país a mayúsculas
+            $(`#link${countryCode}`).addClass('active');
+            country = countryCode;
             $('#imgContainer').empty();
             skuList = [];
             updateCounts();
+        }
+
+        // Manejar el cambio de país
+        $('.country-link').click(function() {
+            var selectedCountry = $(this).attr('id').replace('link', '');
+            setActiveCountry(selectedCountry);
         });
 
-        // Cambiar la lógica activa al hacer clic en los íconos
+        // Función para actualizar el selector de países según la marca activa
+        function updateCountrySelector(countries) {
+            var countrySelector = $('#countrySelector');
+            countrySelector.empty();
+            countries.forEach(function(countryName) {
+                var countryCode = countryName.slice(0, 2).toUpperCase(); // Solo los dos primeros caracteres en mayúscula
+                var countryLink = $('<a href="#" class="country-link">' + countryName + '</a>');
+                countryLink.attr('id', `link${countryCode}`);
+                countryLink.click(function() {
+                    setActiveCountry(countryCode);
+                });
+                countrySelector.append(countryLink);
+            });
+            setActiveCountry("CL"); // Por defecto, seleccionamos Chile
+        }
+
+        // Lógica para manejar el cambio de marca
         $('#falabellaIcon').click(function() {
             activeLogic = "falabella";
             $('#falabellaIcon').removeClass('inactive').addClass('active');
@@ -354,6 +379,7 @@
             $('#imgContainer').empty();
         });
 
+        // Búsqueda de SKUs o Vistas
         $('#buscar').click(function() {
             $('#imgContainer').empty();
             skuList = [];
@@ -408,7 +434,7 @@
                     if (sku.startsWith(originalSku)) {
                         var renameSku = renameSkus[index];
                         var finalName = sku.replace(originalSku, renameSku);
-                        var imgUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country.toUpperCase()}/${sku}/w=1500,h=1500,fit=pad`;
+                        var imgUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country}/${sku}/w=1500,h=1500,fit=pad`;
                         urls.push(imgUrl);
                         filenames.push(finalName);
                     }
@@ -455,18 +481,9 @@
             }
         }
 
-        function updateCountrySelector(countries) {
-            var countrySelector = $('#countrySelector');
-            countrySelector.empty();
-            countries.forEach(function(countryName) {
-                var countryLink = $('<a href="#" class="country-link">' + countryName + '</a>');
-                countrySelector.append(countryLink);
-            });
-        }
-
         $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
 
-        $('#linkCL').addClass('active');
+        setActiveCountry("CL"); // Inicializamos con Chile activo por defecto
     </script>
 </body>
 </html>
