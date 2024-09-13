@@ -31,7 +31,7 @@
             width: 100%;
         }
         .leftContainer {
-            width: 30%; /* Ajustado de 35% a 30% */
+            width: 30%;
             display: flex;
             padding: 20px;
             box-sizing: border-box;
@@ -45,7 +45,7 @@
             width: 48%;
         }
         .rightContainer {
-            width: 60%;
+            width: 65%;
             padding: 20px;
             overflow-y: auto;
             box-sizing: border-box;
@@ -419,7 +419,60 @@
 
         $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
 
-        $('#linkCL').addClass('active');
+        // Lógica para renombrar imágenes
+        $('#downloadAll').click(function() {
+            var renameSkus = $('#skuInputRight').val().trim().split('\n');
+            var originalSkus = $('#skuInputLeft').val().trim().split('\n');
+            if (renameSkus.length !== originalSkus.length) {
+                alert('La cantidad de SKUs en el lado izquierdo y derecho debe coincidir.');
+                return;
+            }
+
+            var zip = new JSZip();
+            var count = 0;
+            var zipFilename = getFormattedDate() + ".zip";
+            var urls = [];
+            var filenames = [];
+
+            originalSkus.forEach(function(originalSku, index) {
+                skuList.forEach(function(sku) {
+                    if (sku.startsWith(originalSku)) {
+                        var renameSku = renameSkus[index];
+                        var finalName = sku.replace(originalSku, renameSku); // Mantener el sufijo intacto
+                        var imgUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country}/${sku}/w=1500,h=1500,fit=pad`;
+                        urls.push(imgUrl);
+                        filenames.push(finalName);
+                    }
+                });
+            });
+
+            urls.forEach(function(url, index) {
+                var filename = filenames[index] + ".jpg";
+                JSZipUtils.getBinaryContent(url, function(err, data) {
+                    if (err) {
+                        console.error("Error al obtener contenido binario:", err);
+                        return;
+                    }
+                    zip.file(filename, data, { binary: true });
+                    count++;
+                    if (count === urls.length) {
+                        zip.generateAsync({ type: 'blob' }).then(function(content) {
+                            saveAs(content, zipFilename);
+                        });
+                    }
+                });
+            });
+        });
+
+        function getFormattedDate() {
+            var date = new Date();
+            var day = String(date.getDate()).padStart(2, '0');
+            var month = String(date.getMonth() + 1).padStart(2, '0');
+            var hours = String(date.getHours()).padStart(2, '0');
+            var minutes = String(date.getMinutes()).padStart(2, '0');
+            return day + '-' + month + '_' + hours + minutes;
+        }
+
     </script>
 </body>
 </html>
