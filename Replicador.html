@@ -209,15 +209,15 @@
             margin-bottom: 15px;
             color: #333;
         }
-        /* Log de errores */
-        .error-log {
-            margin-top: 20px;
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            padding: 10px;
-            border-radius: 4px;
+
+        /* Estilo para el log de errores */
+        #errorLog {
             display: none;
+            background-color: #ffe6e6;
+            padding: 10px;
+            border: 1px solid #ff0000;
+            border-radius: 4px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -261,9 +261,9 @@
                 <span>SKU</span>
             </div>
 
-            <!-- Error Log -->
-            <div id="errorLog" class="error-log">
-                <strong>Errores encontrados:</strong>
+            <!-- Log de errores -->
+            <div id="errorLog">
+                <strong>No encontrado:</strong>
                 <ul id="errorList"></ul>
             </div>
         </div>
@@ -421,11 +421,11 @@
             $('#errorList').append('<li>' + error + '</li>');
         }
 
-        // Función para eliminar SKUs/Vistas no encontradas de la caja de texto
+        // Función para eliminar SKU o vista no encontrada de la caja de texto
         function removeNotFound(sku) {
             var skus = $('#skuInputLeft').val().trim().split('\n');
             skus = skus.filter(function(item) {
-                return item !== sku;
+                return item.trim() !== sku;
             });
             $('#skuInputLeft').val(skus.join('\n'));
         }
@@ -448,7 +448,7 @@
                                 if (imageElement) {
                                     document.getElementById('imgContainer').appendChild(imageElement);
                                 } else {
-                                    logError('No se encontró la vista para SKU: ' + sku);
+                                    logError('No se encontró la vista para SKU: ' + sku + ' (vista no encontrada)');
                                     removeNotFound(sku); // Eliminar el SKU de la caja de texto
                                 }
                                 updateCounts();
@@ -469,7 +469,7 @@
 
                             setTimeout(function() {
                                 if (!found) {
-                                    logError('No se encontró ningún SKU con sufijos para: ' + sku);
+                                    logError('No se encontró ningún SKU con sufijos para: ' + sku + ' (SKU sin ninguna vista asociada)');
                                     removeNotFound(sku); // Eliminar el SKU de la caja de texto
                                 }
                             }, 1000); // Esperar un poco para confirmar que no se encontró ninguna imagen
