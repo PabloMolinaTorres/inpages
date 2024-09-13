@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Renombrador</title>
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .sidebar {
+            width: 20%;
+            margin-right: 20px;
+            position: sticky;
+            top: 20px;
+        }
+        .instructions {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: left;
+            font-size: 12px;
+            color: #333;
+            line-height: 1.4;
+        }
+        .instructions h2 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #4CAF50;
+        }
+        .errors {
+            background-color: #f2f2f2;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #d9534f;
+        }
+        .file-list {
+            width: 75%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+            font-size: 12px; /* Fuente reducida para los SKUs */
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #8fca00; /* Color verde */
+            color: white;
+        }
+        input[type="file"] {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            width: calc(100% - 22px);
+            box-sizing: border-box;
+        }
+        input[type="text"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 12px; /* Fuente reducida para los inputs */
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #progressBarContainer {
+            width: 200px;
+            background-color: #ddd;
+            margin-top: 10px;
+            border-radius: 5px;
+            display: none;
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            z-index: 1000;
+        }
+        #progressBar {
+            width: 0;
+            height: 10px;
+            background-color: #4CAF50;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Renombrador</h1>
+    
+    <div class="container">
+        <div class="sidebar">
+            <div class="instructions">
+                <h2>Instrucciones:</h2>
+                <ol>
+                    <li>Haz clic en "Seleccionar archivos" para cargar las imágenes que deseas renombrar.</li>
+                    <li>Asegúrate de que los archivos estén en el orden correcto antes de asignar nuevos nombres.</li>
+                    <li>Introduce el nuevo SKU para cada grupo de imágenes en la columna "Nuevo Renombre".</li>
+                    <li>Puedes copiar y pegar los nuevos nombres desde Excel u otra fuente.</li>
+                    <li>Haz clic en "Descargar" para obtener las imágenes renombradas en un archivo .zip con la fecha y hora actuales.</li>
+                </ol>
+            </div>
+            <div class="errors" id="errorContainer">
+                <h2>Errores:</h2>
+                <ul id="errorList">
+                    <!-- Errores mostrados aquí -->
+                </ul>
+            </div>
+        </div>
+
+        <div class="file-list">
+            <input type="file" id="fileUpload" multiple accept=".jpg,.jpeg,.png">
+            <table>
+                <thead>
+                    <tr>
+                        <th>SKU Original</th>
+                        <th>Nuevo Renombre</th>
+                    </tr>
+                </thead>
+                <tbody id="fileTable">
+                    <!-- Filas generadas dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <button id="renameButton" disabled>Descargar</button>
+
+    <div id="progressBarContainer">
+        <div id="progressBar"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script>
+        const fileUpload = document.getElementById('fileUpload');
+        const fileTable = document.getElementById('fileTable');
+        const renameButton = document.getElementById('renameButton');
+        const errorContainer = document.getElementById('errorContainer');
+        const errorList = document.getElementById('errorList');
+        const progressBarContainer = document.getElementById('progressBarContainer');
+        const progressBar = document.getElementById('progressBar');
+
+        let files = [];
+        let skus = [];
+        let errors = [];
+
+        function validateSKU(fileName) {
+            const parts = fileName.split('_');
+            if (parts.length !== 2) {
+                return false;
+            }
+            const sku = parts[0];
+            const vista = parts[1];
+            if (vista.length > 3 || isNaN(vista) || Number(vista) < 1 || Number(vista) > 99) {
+                return false;
+            }
+            return true;
+        }
+
+        function checkErrors() {
+            if (errors.length > 0) {
+                errorContainer.style.display = 'block';
+                renameButton.disabled = true;
+            } else {
+                errorContainer.style.display = 'none';
+                renameButton.disabled = false;
+            }
+        }
+
+        fileUpload.addEventListener('change', function(event) {
+            files = Array.from(event.target.files);
+            fileTable.innerHTML = '';
+            errorList.innerHTML = '';
+            skus = {};
+            errors = [];
+
+            files.forEach((file, index) => {
+                const fileName = file.name.split('.')[0]; // Nombre del archivo sin la extensión
+                if (!validateSKU(fileName)) {
+                    const errorItem = document.createElement('li');
+                    errorItem.textContent = Archivo con nombre inválido: ${file.name};
+                    errorList.appendChild(errorItem);
+                    errors.push(file.name);
+                    return;
+                }
+
+                const sku = fileName.split('_')[0]; // Extraer el SKU
+                if (!skus[sku]) {
+                    skus[sku] = [];
+                }
+                skus[sku].push(file);
+
+                if (!document.querySelector(input[data-sku="${sku}"])) {
+                    const row = document.createElement('tr');
+                    const originalSkuCell = document.createElement('td');
+                    const newSkuCell = document.createElement('td');
+
+                    originalSkuCell.textContent = sku;
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.placeholder = New SKU for ${sku};
+                    input.dataset.sku = sku;
+
+                    newSkuCell.appendChild(input);
+                    row.appendChild(originalSkuCell);
+                    row.appendChild(newSkuCell);
+                    fileTable.appendChild(row);
+                }
+            });
+
+            checkErrors();
+        });
+
+        // Capturar el evento de pegar en las celdas de texto
+        fileTable.addEventListener('paste', function(event) {
+            const activeElement = document.activeElement;
+            if (activeElement.tagName === 'INPUT' && activeElement.type === 'text') {
+                const pastedData = event.clipboardData.getData('text');
+                const rows = pastedData.split(/\r?\n/); // Separar por líneas
+
+                let currentInputIndex = Object.keys(skus).indexOf(activeElement.dataset.sku);
+
+                rows.forEach(row => {
+                    const input = document.querySelectorAll(input[type="text"])[currentInputIndex];
+                    if (input) {
+                        input.value = row.trim(); // Asignar el valor pegado a la celda
+                    }
+                    currentInputIndex++;
+                });
+
+                event.preventDefault(); // Prevenir el comportamiento de pegado predeterminado
+            }
+        });
+
+        renameButton.addEventListener('click', function() {
+            progressBarContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+
+            const zip = new JSZip();
+            const date = new Date();
+            const timestamp = ${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getHours()).padStart(2, '0')}${String(date.getMinutes()).padStart(2, '0')};
+
+            let processedFiles = 0;
+            const totalFiles = files.length;
+
+            Object.keys(skus).forEach(sku => {
+                const input = document.querySelector(input[data-sku="${sku}"]);
+                const newSku = input.value.trim();
+                if (newSku) {
+                    skus[sku].forEach(file => {
+                        const vista = file.name.split('_')[1]; // Extraer la vista
+                        const newFileName = ${newSku}_${vista};
+                        zip.file(newFileName, file);
+
+                        processedFiles++;
+                        progressBar.style.width = ${(processedFiles / totalFiles) * 100}%;
+                    });
+                }
+            });
+
+            zip.generateAsync({ type: 'blob' }).then(function(content) {
+                saveAs(content, ${timestamp}.zip);
+                progressBarContainer.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
