@@ -210,13 +210,14 @@
             color: #333;
         }
         /* Log de errores */
-        .error-log {
-            color: red;
-            font-size: 12px;
-            margin-top: 10px;
-            border: 1px solid #ccc;
+        .errorLog {
+            background-color: #ffcccc;
+            color: #990000;
             padding: 10px;
-            height: 100px;
+            border: 1px solid #ff9999;
+            margin-top: 10px;
+            font-size: 12px;
+            height: 150px;
             overflow-y: auto;
         }
     </style>
@@ -260,9 +261,8 @@
                 </label>
                 <span>SKU</span>
             </div>
-
-            <!-- Error Log -->
-            <div class="error-log" id="errorLog"> <!-- Aquí se mostrará el log de errores --></div>
+            <!-- Log de errores -->
+            <div class="errorLog" id="errorLog"></div>
         </div>
 
         <!-- Right Container -->
@@ -319,6 +319,7 @@
         $('#viewToggle').change(function() {
             mode = $(this).is(':checked') ? 'sku' : 'vista';
             $('#imgContainer').empty();
+            $('#errorLog').empty();
             skuList = [];
             updateCounts();
         });
@@ -329,6 +330,7 @@
             $(`#link${countryCode}`).addClass('active');
             country = countryCode;
             $('#imgContainer').empty();
+            $('#errorLog').empty();
             skuList = [];
             updateCounts();
         }
