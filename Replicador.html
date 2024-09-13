@@ -201,7 +201,18 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
-        /* Títulos añadidos */
+        /* Log de errores */
+        .error-log {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ff4d4d;
+            background-color: #ffe6e6;
+            color: #ff1a1a;
+            font-size: 12px;
+            height: 100px;
+            overflow-y: auto;
+            display: none; /* Inicialmente oculto */
+        }
         .title {
             font-size: 18px;
             font-weight: bold;
@@ -242,6 +253,8 @@
                     <button id="downloadAll">Descargar Todo</button>
                 </div>
             </div>
+
+            <!-- Switch SKU/Vista -->
             <div class="switch-container">
                 <span>Vista</span>
                 <label class="switch">
@@ -249,6 +262,12 @@
                     <span class="slider"></span>
                 </label>
                 <span>SKU</span>
+            </div>
+
+            <!-- Log de errores -->
+            <div class="error-log" id="errorLog">
+                <strong>Errores encontrados:</strong>
+                <ul id="errorList"></ul>
             </div>
         </div>
 
@@ -268,9 +287,26 @@
 
     <script>
         var skuList = [];
+        var errorList = [];
         var mode = "vista"; // Por defecto, modo vista
         var country = "CL"; // Por defecto, Chile
         var activeLogic = "falabella"; // Falabella activa por defecto
+
+        function logError(error) {
+            var errorLog = document.getElementById('errorLog');
+            var errorListContainer = document.getElementById('errorList');
+            var errorItem = document.createElement('li');
+            errorItem.textContent = error;
+            errorListContainer.appendChild(errorItem);
+            errorLog.style.display = 'block';
+        }
+
+        function clearErrors() {
+            var errorLog = document.getElementById('errorLog');
+            var errorListContainer = document.getElementById('errorList');
+            errorListContainer.innerHTML = ''; // Limpiar los errores anteriores
+            errorLog.style.display = 'none';
+        }
 
         // Función para cargar la imagen basada en el SKU y el sufijo
         function loadImage(sku, suffix = "") {
@@ -307,6 +343,7 @@
             mode = $(this).is(':checked') ? 'sku' : 'vista';
             $('#imgContainer').empty();
             skuList = [];
+            clearErrors(); // Limpiar errores al cambiar de modo
             updateCounts();
         });
 
@@ -317,6 +354,7 @@
             country = countryCode;
             $('#imgContainer').empty();
             skuList = [];
+            clearErrors(); // Limpiar errores al cambiar de país
             updateCounts();
         }
 
@@ -331,27 +369,7 @@
             var countrySelector = $('#countrySelector');
             countrySelector.empty();
             countries.forEach(function(countryName) {
-                var countryCode;
-                
-                // Asignar códigos manualmente
-                if (countryName === "Uruguay") {
-                    countryCode = "UY";
-                } else if (countryName === "México") {
-                    countryCode = "MX";
-                } else if (countryName === "Perú") {
-                    countryCode = "PE";
-                } else if (countryName === "Argentina") {
-                    countryCode = "AR";
-                } else if (countryName === "Chile") {
-                    countryCode = "CL";
-                } else if (countryName === "Colombia") {
-                    countryCode = "CO";
-                } else if (countryName === "Brasil") {
-                    countryCode = "BR";
-                } else {
-                    countryCode = countryName.slice(0, 2).toUpperCase(); // Por defecto
-                }
-
+                var countryCode = countryName.slice(0, 2).toUpperCase(); // Solo los dos primeros caracteres en mayúscula
                 var countryLink = $('<a href="#" class="country-link">' + countryName + '</a>');
                 countryLink.attr('id', `link${countryCode}`);
                 countryLink.click(function() {
@@ -403,6 +421,7 @@
         $('#buscar').click(function() {
             $('#imgContainer').empty();
             skuList = [];
+            clearErrors(); // Limpiar errores antes de buscar
             var skus = $('#skuInputLeft').val().trim().split('\n');
             if (skus.length > 0) {
                 skus.forEach(function(sku) {
@@ -413,19 +432,28 @@
                             loadImage(sku).then(function(imageElement) {
                                 if (imageElement) {
                                     document.getElementById('imgContainer').appendChild(imageElement);
+                                } else {
+                                    logError(`Error 404: No se encontró la vista para el SKU ${sku}`);
                                 }
                                 updateCounts();
                             });
                         } else if (mode === "sku") {
                             var suffixes = getSuffixes(activeLogic);
-                            suffixes.forEach(function(suffix) {
-                                loadImage(sku, suffix).then(function(imageElement) {
+                            var foundImage = false;
+                            var suffixPromises = suffixes.map(function(suffix) {
+                                return loadImage(sku, suffix).then(function(imageElement) {
                                     if (imageElement) {
                                         skuList.push(sku + suffix);
                                         document.getElementById('imgContainer').appendChild(imageElement);
+                                        foundImage = true;
                                     }
-                                    updateCounts();
                                 });
+                            });
+                            Promise.all(suffixPromises).then(function() {
+                                if (!foundImage) {
+                                    logError(`No se encontraron imágenes para el SKU ${sku}`);
+                                }
+                                updateCounts();
                             });
                         }
                     }
