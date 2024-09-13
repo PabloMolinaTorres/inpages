@@ -36,21 +36,6 @@
             width: 75%;
             padding: 20px;
         }
-        .instructions, .errors {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            margin-bottom: 20px;
-        }
-        .instructions h2, .errors h2 {
-            font-size: 16px;
-            margin-bottom: 10px;
-            color: #8fca00;
-        }
-        .errors {
-            display: none;
-        }
         input[type="file"] {
             margin-bottom: 20px;
             padding: 10px;
@@ -110,6 +95,28 @@
             background-color: #8fca00;
             border-radius: 5px;
         }
+        /* Estilo para mostrar el contenido del Excel */
+        .excelContent {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .excelContent table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .excelContent table th, .excelContent table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .excelContent table th {
+            background-color: #8fca00;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -118,27 +125,15 @@
     <div class="container">
         <!-- Left Container -->
         <div class="leftContainer">
-            <div class="instructions">
-                <h2>Instrucciones:</h2>
-                <ol>
-                    <li>Selecciona las imágenes para renombrar.</li>
-                    <li>Introduce el nuevo SKU en la columna correspondiente o carga un archivo Excel.</li>
-                    <li>Puedes copiar los nombres desde Excel u otro archivo.</li>
-                    <li>Haz clic en "Descargar" para obtener el archivo renombrado.</li>
-                </ol>
-            </div>
-            <div class="errors" id="errorContainer">
-                <h2>Errores:</h2>
-                <ul id="errorList">
-                    <!-- Errores aquí -->
-                </ul>
+            <input type="file" id="excelUpload" accept=".xlsx,.xls">
+            <div class="excelContent" id="excelContent">
+                <!-- Aquí se mostrará el contenido del Excel -->
             </div>
         </div>
 
         <!-- Right Container -->
         <div class="rightContainer">
             <input type="file" id="fileUpload" multiple accept=".jpg,.jpeg,.png">
-            <input type="file" id="excelUpload" accept=".xlsx,.xls" style="margin-top: 10px;">
             <table>
                 <thead>
                     <tr>
@@ -163,11 +158,10 @@
         const fileUpload = document.getElementById('fileUpload');
         const fileTable = document.getElementById('fileTable');
         const renameButton = document.getElementById('renameButton');
-        const errorContainer = document.getElementById('errorContainer');
-        const errorList = document.getElementById('errorList');
         const progressBarContainer = document.getElementById('progressBarContainer');
         const progressBar = document.getElementById('progressBar');
         const excelUpload = document.getElementById('excelUpload');
+        const excelContent = document.getElementById('excelContent');
 
         let files = [];
         let skus = {};
@@ -182,32 +176,14 @@
             return true;
         }
 
-        function checkErrors() {
-            if (errors.length > 0) {
-                errorContainer.style.display = 'block';
-                renameButton.disabled = true;
-            } else {
-                errorContainer.style.display = 'none';
-                renameButton.disabled = false;
-            }
-        }
-
         fileUpload.addEventListener('change', function(event) {
             files = Array.from(event.target.files);
             fileTable.innerHTML = '';
-            errorList.innerHTML = '';
             skus = {};
-            errors = [];
 
             files.forEach((file, index) => {
                 const fileName = file.name.split('.')[0]; // Sin la extensión
-                if (!validateSKU(fileName)) {
-                    const errorItem = document.createElement('li');
-                    errorItem.textContent = `Archivo con nombre inválido: ${file.name}`;
-                    errorList.appendChild(errorItem);
-                    errors.push(file.name);
-                    return;
-                }
+                if (!validateSKU(fileName)) return;
 
                 const sku = fileName.split('_')[0]; // Extraer SKU
                 if (!skus[sku]) {
@@ -233,8 +209,6 @@
                     fileTable.appendChild(row);
                 }
             });
-
-            checkErrors();
         });
 
         // Función para leer Excel y cargar los valores de renombrado
@@ -249,7 +223,22 @@
                 const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                 const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
 
+                excelContent.innerHTML = '<table><thead><tr><th>SKU Original</th><th>Nuevo Renombre</th></tr></thead><tbody></tbody></table>';
+                const tbody = excelContent.querySelector('tbody');
+
                 rows.forEach(([originalSku, newSku]) => {
+                    const tr = document.createElement('tr');
+                    const tdSku = document.createElement('td');
+                    const tdNewSku = document.createElement('td');
+
+                    tdSku.textContent = originalSku;
+                    tdNewSku.textContent = newSku;
+
+                    tr.appendChild(tdSku);
+                    tr.appendChild(tdNewSku);
+                    tbody.appendChild(tr);
+
+                    // Llenar los inputs de renombrado con el contenido del Excel
                     const input = document.querySelector(`input[data-sku="${originalSku}"]`);
                     if (input) {
                         input.value = newSku;
