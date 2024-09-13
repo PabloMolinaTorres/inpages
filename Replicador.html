@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Renombrador de Imágenes Falabella</title>
+    <title>Renombrador de Imágenes</title>
     <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
@@ -54,7 +54,6 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            margin-top: 20px; /* Ajuste para bajar el imgContainer */
         }
         .imgWrapper {
             width: 120px;
@@ -104,7 +103,7 @@
             width: 100%;
             margin: 20px 0;
             padding: 10px;
-            height: 250px; /* Hacemos más largas las columnas */
+            height: 200px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
@@ -201,13 +200,10 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
-        /* Títulos añadidos */
         .title {
             font-size: 18px;
             font-weight: bold;
-            text-align: center;
-            margin-bottom: 15px;
-            color: #333;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -215,9 +211,7 @@
     <div class="container">
         <!-- Left Container -->
         <div class="leftContainer">
-            <!-- Título Renombre -->
             <div class="title">Renombre</div>
-
             <!-- Icon Selector -->
             <div class="icon-selector">
                 <img src="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" id="falabellaIcon" class="active" alt="Falabella">
@@ -320,37 +314,37 @@
         // Cambiar la lógica activa al hacer clic en los íconos
         $('#falabellaIcon').click(function() {
             activeLogic = "falabella";
+            updateCountrySelector(['Chile', 'Perú', 'Colombia']);
             $('#falabellaIcon').removeClass('inactive').addClass('active');
             $('#sodimacIcon').addClass('inactive');
             $('#tottusIcon').addClass('inactive');
             $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png');
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
-            updateCountrySelector(["Chile", "Perú", "Colombia"]);
             $('#imgContainer').empty();
         });
 
         $('#sodimacIcon').click(function() {
             activeLogic = "sodimac";
+            updateCountrySelector(['Chile', 'Argentina', 'Colombia', 'Perú', 'Brasil', 'México', 'Uruguay']);
             $('#falabellaIcon').addClass('inactive');
             $('#sodimacIcon').removeClass('inactive').addClass('active');
             $('#tottusIcon').addClass('inactive');
             $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
-            updateCountrySelector(["Chile", "Argentina", "Colombia", "Perú", "Brasil", "México", "Uruguay"]);
             $('#imgContainer').empty();
         });
 
         $('#tottusIcon').click(function() {
             activeLogic = "tottus";
+            updateCountrySelector(['Chile', 'Perú']);
             $('#falabellaIcon').addClass('inactive');
             $('#sodimacIcon').addClass('inactive');
             $('#tottusIcon').removeClass('inactive').addClass('active');
             $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus.png');
-            updateCountrySelector(["Chile", "Perú"]);
             $('#imgContainer').empty();
         });
 
@@ -389,68 +383,10 @@
             }
         });
 
-        $('#downloadAll').click(function() {
-            var renameSkus = $('#skuInputRight').val().trim().split('\n');
-            var originalSkus = $('#skuInputLeft').val().trim().split('\n');
-            if (renameSkus.length !== originalSkus.length) {
-                alert('La cantidad de SKUs en el lado izquierdo y derecho debe coincidir.');
-                return;
-            }
-
-            var zip = new JSZip();
-            var count = 0;
-            var zipFilename = getFormattedDate() + ".zip";
-            var urls = [];
-            var filenames = [];
-
-            originalSkus.forEach(function(originalSku, index) {
-                skuList.forEach(function(sku) {
-                    if (sku.startsWith(originalSku)) {
-                        var renameSku = renameSkus[index];
-                        var finalName = sku.replace(originalSku, renameSku);
-                        var imgUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country}/${sku}/w=1500,h=1500,fit=pad`;
-                        urls.push(imgUrl);
-                        filenames.push(finalName);
-                    }
-                });
-            });
-
-            urls.forEach(function(url, index) {
-                var filename = filenames[index] + ".jpg";
-                JSZipUtils.getBinaryContent(url, function(err, data) {
-                    if (err) {
-                        console.error("Error al obtener contenido binario:", err);
-                        return;
-                    }
-                    zip.file(filename, data, { binary: true });
-                    count++;
-                    if (count === urls.length) {
-                        zip.generateAsync({ type: 'blob' }).then(function(content) {
-                            saveAs(content, zipFilename);
-                        });
-                    }
-                });
-            });
-        });
-
-        function getFormattedDate() {
-            var date = new Date();
-            var day = String(date.getDate()).padStart(2, '0');
-            var month = String(date.getMonth() + 1).padStart(2, '0');
-            var hours = String(date.getHours()).padStart(2, '0');
-            var minutes = String(date.getMinutes()).padStart(2, '0');
-            return day + '-' + month + '_' + hours + minutes;
-        }
-
-        function updateCounts() {
-            $('#leftCount').text('Total SKUs/Vistas: ' + skuList.length);
-            $('#rightCount').text('Total Renombres: ' + $('#skuInputRight').val().trim().split('\n').length);
-        }
-
         function getSuffixes(logic) {
-            if (logic === "falabella" || logic === "tottus") {
+            if (logic === 'falabella' || logic === 'tottus') {
                 return ['_001', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_1', '_10', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
-            } else if (logic === "sodimac") {
+            } else if (logic === 'sodimac') {
                 return ['_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_12', '_13', '_14', '_15', '_17', '_18', '_19', '_20', '_21', '_22', '_23', '_24', '_25', '_26', '_27', '_28', '_SEC', '_EFI'];
             }
         }
