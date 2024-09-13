@@ -54,7 +54,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 20px; /* Ajuste para bajar el imgContainer */
         }
         .imgWrapper {
             width: 120px;
@@ -104,7 +104,7 @@
             width: 100%;
             margin: 20px 0;
             padding: 10px;
-            height: 250px;
+            height: 250px; /* Hacemos más largas las columnas */
             border: 1px solid #ddd;
             border-radius: 4px;
             font-family: 'Lato', sans-serif;
@@ -227,7 +227,7 @@
 
             <!-- Country Selector centered below the icons -->
             <div class="country-selector" id="countrySelector">
-                <a href="#" class="country-link" id="linkCL">Chile</a>
+                <a href="#" class="country-link active" id="linkCL">Chile</a>
                 <a href="#" class="country-link" id="linkPE">Perú</a>
                 <a href="#" class="country-link" id="linkCO">Colombia</a>
             </div>
@@ -272,7 +272,6 @@
         var country = "CL"; // Por defecto, Chile
         var activeLogic = "falabella"; // Falabella activa por defecto
 
-        // Función para cargar la imagen basada en el SKU y el sufijo
         function loadImage(sku, suffix = "") {
             return new Promise(function(resolve, reject) {
                 var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country}/`;
@@ -302,7 +301,6 @@
             });
         }
 
-        // Manejar el cambio de modo (Vista o SKU)
         $('#viewToggle').change(function() {
             mode = $(this).is(':checked') ? 'sku' : 'vista';
             $('#imgContainer').empty();
@@ -310,76 +308,56 @@
             updateCounts();
         });
 
-        // Función para actualizar el subrayado y el cambio del país activo
-        function setActiveCountry(countryCode) {
+        $('.country-link').click(function() {
             $('.country-link').removeClass('active');
-            $(`#link${countryCode}`).addClass('active');
-            country = countryCode;
+            $(this).addClass('active');
+            $(this).css('font-size', '16px').css('font-weight', 'bold').css('border-bottom', '2px solid #8fca00');
+            country = $(this).attr('id').replace('link', '').toUpperCase();
             $('#imgContainer').empty();
             skuList = [];
             updateCounts();
-        }
-
-        // Manejar el cambio de país
-        $('.country-link').click(function() {
-            var selectedCountry = $(this).attr('id').replace('link', '');
-            setActiveCountry(selectedCountry);
         });
 
-        // Función para actualizar el selector de países según la marca activa
-        function updateCountrySelector(countries) {
-            var countrySelector = $('#countrySelector');
-            countrySelector.empty();
-            countries.forEach(function(countryName) {
-                var countryCode = countryName.slice(0, 2).toUpperCase(); // Solo los dos primeros caracteres en mayúscula
-                var countryLink = $('<a href="#" class="country-link">' + countryName + '</a>');
-                countryLink.attr('id', `link${countryCode}`);
-                countryLink.click(function() {
-                    setActiveCountry(countryCode);
-                });
-                countrySelector.append(countryLink);
-            });
-            setActiveCountry("CL"); // Por defecto, seleccionamos Chile
-        }
-
-        // Lógica para manejar el cambio de marca
+        // Cambiar la lógica activa al hacer clic en los íconos
         $('#falabellaIcon').click(function() {
             activeLogic = "falabella";
+            updateCountrySelector(["Chile", "Perú", "Colombia"]);
+            setActiveCountry("CL");
             $('#falabellaIcon').removeClass('inactive').addClass('active');
             $('#sodimacIcon').addClass('inactive');
             $('#tottusIcon').addClass('inactive');
             $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png');
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
-            updateCountrySelector(["Chile", "Perú", "Colombia"]);
             $('#imgContainer').empty();
         });
 
         $('#sodimacIcon').click(function() {
             activeLogic = "sodimac";
+            updateCountrySelector(["Chile", "Argentina", "Colombia", "Perú", "Brasil", "México", "Uruguay"]);
+            setActiveCountry("CL");
             $('#falabellaIcon').addClass('inactive');
             $('#sodimacIcon').removeClass('inactive').addClass('active');
             $('#tottusIcon').addClass('inactive');
             $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
-            updateCountrySelector(["Chile", "Argentina", "Colombia", "Perú", "Brasil", "México", "Uruguay"]);
             $('#imgContainer').empty();
         });
 
         $('#tottusIcon').click(function() {
             activeLogic = "tottus";
+            updateCountrySelector(["Chile", "Perú"]);
+            setActiveCountry("CL");
             $('#falabellaIcon').addClass('inactive');
             $('#sodimacIcon').addClass('inactive');
             $('#tottusIcon').removeClass('inactive').addClass('active');
             $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
             $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
             $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus.png');
-            updateCountrySelector(["Chile", "Perú"]);
             $('#imgContainer').empty();
         });
 
-        // Búsqueda de SKUs o Vistas
         $('#buscar').click(function() {
             $('#imgContainer').empty();
             skuList = [];
@@ -481,9 +459,24 @@
             }
         }
 
+        function updateCountrySelector(countries) {
+            var countrySelector = $('#countrySelector');
+            countrySelector.empty();
+            countries.forEach(function(countryName) {
+                var countryLink = $('<a href="#" class="country-link">' + countryName + '</a>');
+                countrySelector.append(countryLink);
+            });
+        }
+
+        function setActiveCountry(countryCode) {
+            $('#countrySelector .country-link').removeClass('active').css('font-size', '14px').css('font-weight', 'normal').css('border-bottom', 'none');
+            $('#link' + countryCode).addClass('active').css('font-size', '16px').css('font-weight', 'bold').css('border-bottom', '2px solid #8fca00');
+            country = countryCode;
+        }
+
         $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
 
-        setActiveCountry("CL"); // Inicializamos con Chile activo por defecto
+        $('#linkCL').addClass('active');
     </script>
 </body>
 </html>
