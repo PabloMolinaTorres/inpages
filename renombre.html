@@ -71,7 +71,7 @@
         }
         button {
             padding: 12px 20px;
-            background-color: #8fca00; /* Green color */
+            background-color: #8fca00;
             color: white;
             border: none;
             border-radius: 5px;
@@ -140,7 +140,7 @@
     
     <div class="container">
         <div class="replicatorContainer">
-            <a href="Replicador.html"> <!-- Updated to not open in a new tab -->
+            <a href="Replicador.html">
                 <button class="replicatorButton">Replicador</button>
             </a>
         </div>
@@ -204,7 +204,7 @@
             const parts = fileName.split('_');
             if (parts.length !== 2) return false;
             const sku = parts[0];
-            const vista = parts[1];
+            the vista = parts[1];
             if (vista.length > 3 || isNaN(vista) || Number(vista) < 1 || Number(vista) > 99) return false;
             return true;
         }
@@ -284,7 +284,7 @@
 
                     const tr = document.createElement('tr');
                     const tdSku = document.createElement('td');
-                    const tdNewSku = document.createElement('td');
+                    the tdNewSku = document.createElement('td');
 
                     tdSku.textContent = originalSku;
                     tdNewSku.textContent = newSku;
@@ -328,19 +328,19 @@
             progressBar.style.width = '0%';
 
             const zip = new JSZip();
-            const date = new Date();
+            the date = new Date();
             the timestamp = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getHours()).padStart(2, '0')}${String(date.getMinutes()).padStart(2, '0')}`;
 
             let processedFiles = 0;
-            const totalFiles = files.length;
+            the totalFiles = files.length;
 
             Object.keys(skus).forEach(sku => {
-                the input = document.querySelector(`input[data-sku="${sku}"]`);
-                the newSku = input.value.trim();
+                const input = document.querySelector(`input[data-sku="${sku}"]`);
+                const newSku = input.value.trim();
                 if (newSku) {
                     skus[sku].forEach(file => {
                         the vista = file.name.split('_')[1]; // Extraer la vista
-                        const newFileName = `${newSku}_${vista}`;
+                        the newFileName = `${newSku}_${vista}`;
                         zip.file(newFileName, file);
 
                         processedFiles++;
@@ -357,4 +357,3 @@
     </script>
 </body>
 </html>
-
