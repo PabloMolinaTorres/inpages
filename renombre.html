@@ -224,7 +224,7 @@
                 }
                 skus[sku].push(file);
 
-                if (!document.querySelector(input[data-sku="${sku}"])) {
+                if (!document.querySelector(`input[data-sku="${sku}"]`)) {
                     const row = document.createElement('tr');
                     const originalSkuCell = document.createElement('td');
                     const newSkuCell = document.createElement('td');
@@ -233,7 +233,7 @@
 
                     const input = document.createElement('input');
                     input.type = 'text';
-                    input.placeholder = Nuevo SKU para ${sku};
+                    input.placeholder = `Nuevo SKU para ${sku}`;
                     input.dataset.sku = sku;
 
                     newSkuCell.appendChild(input);
@@ -278,7 +278,7 @@
                     const newSku = row[1];
 
                     if (!originalSku || !newSku) {
-                        errors.push(Fila ${index + 1} tiene valores vacíos. Verifique los datos.);
+                        errors.push(`Fila ${index + 1} tiene valores vacíos. Verifique los datos.`);
                         return;
                     }
 
@@ -295,9 +295,9 @@
 
                     if (!skus[originalSku]) {
                         tdSku.classList.add('missing-sku');
-                        errors.push(El SKU "${originalSku}" del Excel no tiene una imagen correspondiente.);
+                        errors.push(`El SKU "${originalSku}" del Excel no tiene una imagen correspondiente.`);
                     } else {
-                        const input = document.querySelector(input[data-sku="${originalSku}"]);
+                        const input = document.querySelector(`input[data-sku="${originalSku}"]`);
                         if (input) {
                             input.value = newSku;
                         }
@@ -329,28 +329,28 @@
 
             const zip = new JSZip();
             const date = new Date();
-            const timestamp = ${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getHours()).padStart(2, '0')}${String(date.getMinutes()).padStart(2, '0')};
+            const timestamp = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getHours()).padStart(2, '0')}${String(date.getMinutes()).padStart(2, '0')}`;
 
             let processedFiles = 0;
             const totalFiles = files.length;
 
             Object.keys(skus).forEach(sku => {
-                const input = document.querySelector(input[data-sku="${sku}"]);
+                const input = document.querySelector(`input[data-sku="${sku}"]`);
                 const newSku = input.value.trim();
                 if (newSku) {
                     skus[sku].forEach(file => {
                         const vista = file.name.split('_')[1]; // Extraer la vista
-                        const newFileName = ${newSku}_${vista};
+                        const newFileName = `${newSku}_${vista}`;
                         zip.file(newFileName, file);
 
                         processedFiles++;
-                        progressBar.style.width = ${(processedFiles / totalFiles) * 100}%;
+                        progressBar.style.width = `${(processedFiles / totalFiles) * 100}%`;
                     });
                 }
             });
 
             zip.generateAsync({ type: 'blob' }).then(function(content) {
-                saveAs(content, ${timestamp}.zip);
+                saveAs(content, `${timestamp}.zip`);
                 progressBarContainer.style.display = 'none';
             });
         });
