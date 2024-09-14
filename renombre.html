@@ -71,7 +71,7 @@
         }
         button {
             padding: 12px 20px;
-            background-color: #8fca00;
+            background-color: #8fca00; /* Green color */
             color: white;
             border: none;
             border-radius: 5px;
@@ -131,7 +131,7 @@
             right: 20px;
         }
         .replicatorButton {
-            background-color: #8fca00;
+            background-color: #8fca00; /* Green color */
         }
     </style>
 </head>
@@ -170,7 +170,7 @@
             <div id="progressBarContainer">
                 <div id="progressBar"></div>
             </div>
-            <button id="renameButton" disabled>Descargar</button> <!-- Deshabilitado inicialmente -->
+            <button id="renameButton" disabled>Descargar</button> <!-- El botón sigue inicialmente deshabilitado -->
         </div>
     </div>
 
@@ -309,9 +309,11 @@
                         return;
                     }
 
+                    // Buscar el input de renombre para el SKU y asignar el nuevo nombre
                     const input = document.querySelector(`input[data-sku="${originalSku}"]`);
                     if (input) {
                         input.value = newSku;
+                        input.dispatchEvent(new Event('input'));  // Disparar evento para actualizar el estado del botón
                     }
                 });
 
