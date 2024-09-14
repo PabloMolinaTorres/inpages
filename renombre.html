@@ -71,7 +71,7 @@
         }
         button {
             padding: 12px 20px;
-            background-color: #8fca00; /* Green color */
+            background-color: #8fca00;
             color: white;
             border: none;
             border-radius: 5px;
@@ -131,7 +131,7 @@
             right: 20px;
         }
         .replicatorButton {
-            background-color: #8fca00; /* Green color */
+            background-color: #8fca00;
         }
     </style>
 </head>
@@ -170,7 +170,7 @@
             <div id="progressBarContainer">
                 <div id="progressBar"></div>
             </div>
-            <button id="renameButton" disabled>Descargar</button> <!-- El botón sigue inicialmente deshabilitado -->
+            <button id="renameButton" disabled>Descargar</button> <!-- Deshabilitado inicialmente -->
         </div>
     </div>
 
@@ -211,29 +211,24 @@
             return true;
         }
 
-        // Función para verificar si se puede habilitar el botón de descarga
-        function checkEnableDownload() {
-            if (errors.length === 0 && Object.keys(skus).length > 0) {
-                renameButton.disabled = false;  // Habilitar el botón de descarga
-            } else {
-                renameButton.disabled = true;   // Deshabilitar si hay errores
-            }
+        // Verificar si todos los SKUs tienen un renombre
+        function allSkusRenamed() {
+            let allRenamed = true;
+            const inputs = document.querySelectorAll('input[data-sku]');
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    allRenamed = false;
+                }
+            });
+            return allRenamed;
         }
 
-        // Actualizar errores
-        function updateErrors() {
-            errorList.innerHTML = '';  // Limpiar lista de errores previa
-            if (errors.length > 0) {
-                errorLog.style.display = 'block';
-                errors.forEach(error => {
-                    const li = document.createElement('li');
-                    li.textContent = error;
-                    errorList.appendChild(li);
-                });
-                renameButton.disabled = true; // Deshabilitar botón si hay errores
+        // Habilitar o deshabilitar el botón de descarga
+        function updateDownloadButtonState() {
+            if (allSkusRenamed()) {
+                renameButton.disabled = false;
             } else {
-                errorLog.style.display = 'none';
-                checkEnableDownload(); // Verificar si se puede habilitar el botón
+                renameButton.disabled = true;
             }
         }
 
@@ -269,14 +264,18 @@
                     row.appendChild(originalSkuCell);
                     row.appendChild(newSkuCell);
                     fileTable.appendChild(row);
+
+                    // Actualizar estado del botón cuando se escribe en los campos de renombre
+                    input.addEventListener('input', updateDownloadButtonState);
                 }
             });
 
             if (files.length > 0) {
                 excelUpload.disabled = false;
                 message.textContent = "Ahora, por favor cargue el archivo Excel.";
-                checkEnableDownload(); // Verificar si el botón puede habilitarse después de cargar imágenes
             }
+
+            updateDownloadButtonState();
         });
 
         // Subir Excel
@@ -300,9 +299,6 @@
                 const tbody = document.createElement('tbody');
                 table.appendChild(tbody);
 
-                errors = []; // Limpiar lista de errores antes de comenzar a validar
-                errorList.innerHTML = ''; // Limpiar lista de errores visual
-
                 sheet.forEach((row, index) => {
                     if (index === 0) return;
                     const originalSku = row[0];
@@ -313,30 +309,14 @@
                         return;
                     }
 
-                    const tr = document.createElement('tr');
-                    const tdSku = document.createElement('td');
-                    const tdNewSku = document.createElement('td');
-
-                    tdSku.textContent = originalSku;
-                    tdNewSku.textContent = newSku;
-
-                    tr.appendChild(tdSku);
-                    tr.appendChild(tdNewSku);
-                    tbody.appendChild(tr);
-
-                    if (!skus[originalSku]) {
-                        tdSku.classList.add('missing-sku');
-                        errors.push(`El SKU "${originalSku}" del Excel no tiene una imagen correspondiente.`);
-                    } else {
-                        const input = document.querySelector(`input[data-sku="${originalSku}"]`);
-                        if (input) {
-                            input.value = newSku;
-                        }
+                    const input = document.querySelector(`input[data-sku="${originalSku}"]`);
+                    if (input) {
+                        input.value = newSku;
                     }
                 });
 
                 excelContent.appendChild(table);
-                updateErrors(); // Verificar errores y habilitar el botón si no hay
+                updateDownloadButtonState(); // Verificar si se puede habilitar el botón
             };
 
             reader.readAsArrayBuffer(file);
