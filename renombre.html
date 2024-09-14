@@ -170,7 +170,7 @@
             <div id="progressBarContainer">
                 <div id="progressBar"></div>
             </div>
-            <button id="renameButton" disabled>Descargar</button> <!-- El botón sigue inicialmente deshabilitado -->
+            <button id="renameButton" disabled>Descargar</button>
         </div>
     </div>
 
@@ -211,28 +211,7 @@
             return true;
         }
 
-        // Verificar si todos los SKUs tienen un renombre
-        function allSkusRenamed() {
-            let allRenamed = true;
-            const inputs = document.querySelectorAll('input[data-sku]');
-            inputs.forEach(input => {
-                if (!input.value.trim()) {
-                    allRenamed = false;
-                }
-            });
-            return allRenamed;
-        }
-
-        // Habilitar o deshabilitar el botón de descarga
-        function updateDownloadButtonState() {
-            if (allSkusRenamed()) {
-                renameButton.disabled = false;
-            } else {
-                renameButton.disabled = true;
-            }
-        }
-
-        // Subir imágenes
+        // Cargar imágenes
         fileUpload.addEventListener('change', function(event) {
             files = Array.from(event.target.files);
             fileTable.innerHTML = '';
@@ -248,6 +227,7 @@
                 }
                 skus[sku].push(file);
 
+                // Crear fila en la tabla con los SKUs originales y los renombres vacíos
                 if (!document.querySelector(`input[data-sku="${sku}"]`)) {
                     const row = document.createElement('tr');
                     const originalSkuCell = document.createElement('td');
@@ -264,9 +244,6 @@
                     row.appendChild(originalSkuCell);
                     row.appendChild(newSkuCell);
                     fileTable.appendChild(row);
-
-                    // Actualizar estado del botón cuando se escribe en los campos de renombre
-                    input.addEventListener('input', updateDownloadButtonState);
                 }
             });
 
@@ -274,11 +251,9 @@
                 excelUpload.disabled = false;
                 message.textContent = "Ahora, por favor cargue el archivo Excel.";
             }
-
-            updateDownloadButtonState();
         });
 
-        // Subir Excel
+        // Cargar y procesar el archivo Excel
         excelUpload.addEventListener('change', function(event) {
             const file = event.target.files[0];
             const reader = new FileReader();
@@ -294,10 +269,14 @@
                     return;
                 }
 
+                // Limpiar el contenido anterior
                 excelContent.innerHTML = '';
                 const table = document.createElement('table');
                 const tbody = document.createElement('tbody');
                 table.appendChild(tbody);
+
+                errors = []; // Limpiar errores anteriores
+                errorList.innerHTML = ''; // Limpiar la lista de errores visual
 
                 sheet.forEach((row, index) => {
                     if (index === 0) return;
@@ -309,22 +288,52 @@
                         return;
                     }
 
-                    // Buscar el input de renombre para el SKU y asignar el nuevo nombre
-                    const input = document.querySelector(`input[data-sku="${originalSku}"]`);
-                    if (input) {
-                        input.value = newSku;
-                        input.dispatchEvent(new Event('input'));  // Disparar evento para actualizar el estado del botón
+                    // Crear una fila para mostrar el SKU original y su renombre en el Excel
+                    const tr = document.createElement('tr');
+                    const tdSku = document.createElement('td');
+                    const tdNewSku = document.createElement('td');
+
+                    tdSku.textContent = originalSku;
+                    tdNewSku.textContent = newSku;
+
+                    tr.appendChild(tdSku);
+                    tr.appendChild(tdNewSku);
+                    tbody.appendChild(tr);
+
+                    // Si el SKU del Excel no coincide con las imágenes cargadas, mostrar un error
+                    if (!skus[originalSku]) {
+                        tdSku.classList.add('missing-sku');
+                        errors.push(`El SKU "${originalSku}" del Excel no tiene una imagen correspondiente.`);
+                    } else {
+                        // Asignar el nuevo SKU al campo de entrada correspondiente
+                        const input = document.querySelector(`input[data-sku="${originalSku}"]`);
+                        if (input) {
+                            input.value = newSku;
+                        }
                     }
                 });
 
                 excelContent.appendChild(table);
-                updateDownloadButtonState(); // Verificar si se puede habilitar el botón
+
+                // Mostrar errores si existen
+                if (errors.length > 0) {
+                    errorLog.style.display = 'block';
+                    errors.forEach(error => {
+                        const li = document.createElement('li');
+                        li.textContent = error;
+                        errorList.appendChild(li);
+                    });
+                    renameButton.disabled = true;
+                } else {
+                    errorLog.style.display = 'none';
+                    renameButton.disabled = false;
+                }
             };
 
             reader.readAsArrayBuffer(file);
         });
 
-        // Proceso de renombrado y descarga
+        // Renombrar y descargar archivos
         renameButton.addEventListener('click', function() {
             progressBarContainer.style.display = 'block';
             progressBar.style.width = '0%';
