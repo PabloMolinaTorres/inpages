@@ -134,8 +134,7 @@
             background-color: #ffe6e6;
             border-radius: 5px;
         }
-        /* Estilo para los SKUs sin imagen correspondiente */
-        .missing-image {
+        .missing-sku {
             color: red;
         }
     </style>
@@ -272,7 +271,7 @@
                 errors = []; // Reiniciar errores
                 errorList.innerHTML = ''; // Limpiar lista de errores
 
-                // Leer filas del Excel (empezando en A1 y B1)
+                // Leer filas del Excel
                 sheet.forEach((row, index) => {
                     if (index === 0) return; // Omitir encabezados
                     const originalSku = row[0];
@@ -285,17 +284,17 @@
                     tdSku.textContent = originalSku;
                     tdNewSku.textContent = newSku;
 
-                    // Si no se encuentra una imagen correspondiente, marcar en rojo
-                    if (!skus[originalSku]) {
-                        tdSku.classList.add('missing-image');
-                    }
-
                     tr.appendChild(tdSku);
                     tr.appendChild(tdNewSku);
                     tbody.appendChild(tr);
 
-                    // Asignar automáticamente los nuevos SKUs en los inputs de la derecha si hay imagen
-                    if (skus[originalSku]) {
+                    // Validar si el SKU del Excel tiene una imagen correspondiente
+                    if (!skus[originalSku]) {
+                        // Si no se encuentra la imagen, poner la fila en rojo
+                        tdSku.classList.add('missing-sku');
+                        errors.push(`El SKU "${originalSku}" del Excel no tiene una imagen correspondiente.`);
+                    } else {
+                        // Asignar automáticamente los nuevos SKUs en los inputs de la derecha
                         const input = document.querySelector(`input[data-sku="${originalSku}"]`);
                         if (input) {
                             input.value = newSku;
@@ -337,7 +336,7 @@
 
             Object.keys(skus).forEach(sku => {
                 const input = document.querySelector(`input[data-sku="${sku}"]`);
-                const newSku = input ? input.value.trim() : null;
+                const newSku = input.value.trim();
                 if (newSku) {
                     skus[sku].forEach(file => {
                         const vista = file.name.split('_')[1]; // Extraer la vista
