@@ -126,6 +126,14 @@
             background-color: #8fca00;
             color: white;
         }
+        .error-log {
+            color: red;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ff0000;
+            background-color: #ffe6e6;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -142,6 +150,11 @@
             <input type="file" id="excelUpload" accept=".xlsx,.xls" disabled>
             <div class="excelContent" id="excelContent">
                 <!-- Aquí se mostrará el contenido del Excel -->
+            </div>
+            <!-- Log de errores -->
+            <div id="errorLog" class="error-log" style="display:none;">
+                <strong>Errores:</strong>
+                <ul id="errorList"></ul>
             </div>
         </div>
 
@@ -177,6 +190,8 @@
         const excelUpload = document.getElementById('excelUpload');
         const excelContent = document.getElementById('excelContent');
         const message = document.getElementById('message');
+        const errorLog = document.getElementById('errorLog');
+        const errorList = document.getElementById('errorList');
 
         let files = [];
         let skus = {};
@@ -242,14 +257,23 @@
             reader.onload = function(e) {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const sheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
 
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+                excelContent.innerHTML = ''; // Limpiar el contenido anterior
+                const table = document.createElement('table');
+                const tbody = document.createElement('tbody');
+                table.appendChild(tbody);
 
-                excelContent.innerHTML = '<table><thead><tr><th>SKU Original</th><th>Nuevo Renombre</th></tr></thead><tbody></tbody></table>';
-                const tbody = excelContent.querySelector('tbody');
+                errors = []; // Reiniciar errores
+                errorList.innerHTML = ''; // Limpiar lista de errores
 
-                rows.forEach(([originalSku, newSku]) => {
+                // Leer filas del Excel
+                sheet.forEach((row, index) => {
+                    if (index === 0) return; // Omitir encabezados
+                    const originalSku = row[0];
+                    const newSku = row[1];
+
                     const tr = document.createElement('tr');
                     const tdSku = document.createElement('td');
                     const tdNewSku = document.createElement('td');
@@ -261,24 +285,39 @@
                     tr.appendChild(tdNewSku);
                     tbody.appendChild(tr);
 
-                    // Asignar automáticamente los nuevos SKUs en los inputs de la derecha
-                    const input = document.querySelector(`input[data-sku="${originalSku}"]`);
-                    if (input) {
-                        input.value = newSku;
+                    // Validar si el SKU del Excel tiene una imagen correspondiente
+                    if (!skus[originalSku]) {
+                        errors.push(`El SKU "${originalSku}" del Excel no tiene una imagen correspondiente.`);
+                    } else {
+                        // Asignar automáticamente los nuevos SKUs en los inputs de la derecha
+                        const input = document.querySelector(`input[data-sku="${originalSku}"]`);
+                        if (input) {
+                            input.value = newSku;
+                        }
                     }
                 });
 
-                // Habilitar el botón de renombrado si todos los SKUs tienen un nuevo nombre
-                renameButton.disabled = !Object.keys(skus).every(sku => {
-                    const input = document.querySelector(`input[data-sku="${sku}"]`);
-                    return input && input.value.trim() !== '';
-                });
+                excelContent.appendChild(table);
+
+                // Si hay errores, mostrarlos
+                if (errors.length > 0) {
+                    errorLog.style.display = 'block';
+                    errors.forEach(error => {
+                        const li = document.createElement('li');
+                        li.textContent = error;
+                        errorList.appendChild(li);
+                    });
+                    renameButton.disabled = true;
+                } else {
+                    errorLog.style.display = 'none';
+                    renameButton.disabled = false;
+                }
             };
 
             reader.readAsArrayBuffer(file);
         });
 
-        // Evento para el botón de descarga
+        // Función para renombrar y descargar las imágenes
         renameButton.addEventListener('click', function() {
             progressBarContainer.style.display = 'block';
             progressBar.style.width = '0%';
