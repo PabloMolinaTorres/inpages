@@ -104,7 +104,6 @@
             border-radius: 5px;
             background-color: #f9f9f9;
         }
-        /* Estilo para mostrar el contenido del Excel */
         .excelContent {
             background-color: #fff;
             padding: 10px;
@@ -113,18 +112,6 @@
             margin-top: 20px;
             max-height: 300px;
             overflow-y: auto;
-        }
-        .excelContent table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .excelContent table th, .excelContent table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        .excelContent table th {
-            background-color: #8fca00;
-            color: white;
         }
         .error-log {
             color: red;
@@ -145,16 +132,15 @@
     <div class="container">
         <!-- Left Container -->
         <div class="leftContainer">
-            <!-- Mostrar mensaje hasta que se carguen las imágenes -->
             <div class="message" id="message">
                 Primero, por favor cargue las imágenes.
             </div>
             
             <input type="file" id="excelUpload" accept=".xlsx,.xls" disabled>
+            <button id="downloadTemplate">Descargar plantilla</button>
             <div class="excelContent" id="excelContent">
                 <!-- Aquí se mostrará el contenido del Excel -->
             </div>
-            <!-- Log de errores -->
             <div id="errorLog" class="error-log" style="display:none;">
                 <strong>Errores:</strong>
                 <ul id="errorList"></ul>
@@ -195,10 +181,19 @@
         const message = document.getElementById('message');
         const errorLog = document.getElementById('errorLog');
         const errorList = document.getElementById('errorList');
+        const downloadTemplate = document.getElementById('downloadTemplate');
 
         let files = [];
         let skus = {};
         let errors = [];
+
+        // Descargar plantilla de Excel
+        downloadTemplate.addEventListener('click', function() {
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet([["original", "renombre"]]); // Plantilla con encabezados
+            XLSX.utils.book_append_sheet(wb, ws, "Plantilla");
+            XLSX.writeFile(wb, "plantilla_sku.xlsx");
+        });
 
         // Función para validar los SKUs
         function validateSKU(fileName) {
@@ -262,6 +257,12 @@
                 const workbook = XLSX.read(data, { type: 'array' });
                 const sheetName = workbook.SheetNames[0];
                 const sheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
+
+                // Verificar si las columnas son "original" y "renombre"
+                if (sheet[0][0] !== 'original' || sheet[0][1] !== 'renombre') {
+                    alert("El archivo debe tener 'original' y 'renombre' como títulos de columna en A1 y B1.");
+                    return;
+                }
 
                 excelContent.innerHTML = ''; // Limpiar el contenido anterior
                 const table = document.createElement('table');
