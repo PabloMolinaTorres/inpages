@@ -170,7 +170,7 @@
             <div id="progressBarContainer">
                 <div id="progressBar"></div>
             </div>
-            <button id="renameButton" disabled>Descargar</button>
+            <button id="renameButton" disabled>Descargar</button> <!-- Botón inicialmente deshabilitado -->
         </div>
     </div>
 
@@ -211,7 +211,19 @@
             return true;
         }
 
-        // Cargar imágenes
+        // Habilitar o deshabilitar el botón de descarga según el estado de los SKUs
+        function checkDownloadButton() {
+            const inputs = document.querySelectorAll('input[data-sku]');
+            let allRenamed = true;
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    allRenamed = false;
+                }
+            });
+            renameButton.disabled = !allRenamed; // Habilitar solo si todos los SKUs tienen renombre
+        }
+
+        // Subir imágenes
         fileUpload.addEventListener('change', function(event) {
             files = Array.from(event.target.files);
             fileTable.innerHTML = '';
@@ -227,7 +239,6 @@
                 }
                 skus[sku].push(file);
 
-                // Crear fila en la tabla con los SKUs originales y los renombres vacíos
                 if (!document.querySelector(`input[data-sku="${sku}"]`)) {
                     const row = document.createElement('tr');
                     const originalSkuCell = document.createElement('td');
@@ -240,6 +251,7 @@
                     input.placeholder = `Nuevo SKU para ${sku}`;
                     input.dataset.sku = sku;
 
+                    input.addEventListener('input', checkDownloadButton); // Verificar si el botón puede habilitarse
                     newSkuCell.appendChild(input);
                     row.appendChild(originalSkuCell);
                     row.appendChild(newSkuCell);
@@ -251,9 +263,10 @@
                 excelUpload.disabled = false;
                 message.textContent = "Ahora, por favor cargue el archivo Excel.";
             }
+            checkDownloadButton();
         });
 
-        // Cargar y procesar el archivo Excel
+        // Subir Excel
         excelUpload.addEventListener('change', function(event) {
             const file = event.target.files[0];
             const reader = new FileReader();
@@ -269,14 +282,13 @@
                     return;
                 }
 
-                // Limpiar el contenido anterior
                 excelContent.innerHTML = '';
                 const table = document.createElement('table');
                 const tbody = document.createElement('tbody');
                 table.appendChild(tbody);
 
-                errors = []; // Limpiar errores anteriores
-                errorList.innerHTML = ''; // Limpiar la lista de errores visual
+                errors = [];
+                errorList.innerHTML = '';
 
                 sheet.forEach((row, index) => {
                     if (index === 0) return;
@@ -288,7 +300,6 @@
                         return;
                     }
 
-                    // Crear una fila para mostrar el SKU original y su renombre en el Excel
                     const tr = document.createElement('tr');
                     const tdSku = document.createElement('td');
                     const tdNewSku = document.createElement('td');
@@ -300,22 +311,20 @@
                     tr.appendChild(tdNewSku);
                     tbody.appendChild(tr);
 
-                    // Si el SKU del Excel no coincide con las imágenes cargadas, mostrar un error
                     if (!skus[originalSku]) {
                         tdSku.classList.add('missing-sku');
                         errors.push(`El SKU "${originalSku}" del Excel no tiene una imagen correspondiente.`);
                     } else {
-                        // Asignar el nuevo SKU al campo de entrada correspondiente
                         const input = document.querySelector(`input[data-sku="${originalSku}"]`);
                         if (input) {
                             input.value = newSku;
+                            input.dispatchEvent(new Event('input'));  // Verificar si el botón puede habilitarse
                         }
                     }
                 });
 
                 excelContent.appendChild(table);
 
-                // Mostrar errores si existen
                 if (errors.length > 0) {
                     errorLog.style.display = 'block';
                     errors.forEach(error => {
@@ -323,17 +332,15 @@
                         li.textContent = error;
                         errorList.appendChild(li);
                     });
-                    renameButton.disabled = true;
                 } else {
                     errorLog.style.display = 'none';
-                    renameButton.disabled = false;
                 }
+                checkDownloadButton(); // Verificar si el botón puede habilitarse
             };
 
             reader.readAsArrayBuffer(file);
         });
 
-        // Renombrar y descargar archivos
         renameButton.addEventListener('click', function() {
             progressBarContainer.style.display = 'block';
             progressBar.style.width = '0%';
