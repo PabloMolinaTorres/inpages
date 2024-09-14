@@ -2,31 +2,46 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Renombrador con Excel</title>
+    <title>Renombrador</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
     <style>
-        body {
+        * {
+            box-sizing: border-box;
             font-family: 'Lato', sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
+        }
+        body {
+            background-color: #fff;
             margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 20px;
+            font-size: 24px;
         }
         .container {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-        .sidebar {
-            width: 20%;
-            margin-right: 20px;
-            position: sticky;
-            top: 20px;
-        }
-        .file-list {
-            width: 75%;
-            background-color: white;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .leftContainer {
+            width: 25%;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-right: 1px solid #eeeeee;
+        }
+        .rightContainer {
+            width: 75%;
+            padding: 20px;
+        }
+        input[type="file"] {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            width: 100%;
         }
         table {
             border-collapse: collapse;
@@ -37,87 +52,114 @@
         table, th, td {
             border: 1px solid #ddd;
         }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
         th {
             background-color: #8fca00;
             color: white;
-        }
-        input[type="file"] {
-            margin-bottom: 10px;
             padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            width: calc(100% - 22px);
-            box-sizing: border-box;
+        }
+        td {
+            padding: 8px;
+            text-align: left;
         }
         input[type="text"] {
             width: 100%;
-            box-sizing: border-box;
-            padding: 5px;
-            border: 1px solid #ddd;
+            padding: 8px;
             border-radius: 5px;
+            border: 1px solid #ddd;
             font-size: 12px;
         }
         button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
+            padding: 12px 20px;
+            background-color: #8fca00;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
+            text-transform: uppercase;
+            font-size: 12px;
         }
         button:disabled {
             background-color: #ccc;
             cursor: not-allowed;
         }
         #progressBarContainer {
-            width: 200px;
+            width: 100%;
             background-color: #ddd;
-            margin-top: 10px;
             border-radius: 5px;
+            margin-bottom: 20px;
             display: none;
-            position: fixed;
-            top: 60px;
-            right: 20px;
-            z-index: 1000;
         }
         #progressBar {
             width: 0;
             height: 10px;
-            background-color: #4CAF50;
+            background-color: #8fca00;
+            border-radius: 5px;
+        }
+        .message {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        /* Estilo para mostrar el contenido del Excel */
+        .excelContent {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .excelContent table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .excelContent table th, .excelContent table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .excelContent table th {
+            background-color: #8fca00;
+            color: white;
+        }
+        .error-log {
+            color: red;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ff0000;
+            background-color: #ffe6e6;
             border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <h1>Renombrador con Excel</h1>
+    <h1>Renombrador</h1>
     
     <div class="container">
-        <div class="sidebar">
-            <!-- Carga de Excel -->
-            <input type="file" id="excelUpload" accept=".xlsx, .xls">
-            <table>
-                <thead>
-                    <tr>
-                        <th>SKU Original</th>
-                        <th>Nuevo Renombre</th>
-                    </tr>
-                </thead>
-                <tbody id="excelTable">
-                    <!-- Filas generadas dinámicamente desde el Excel -->
-                </tbody>
-            </table>
+        <!-- Left Container -->
+        <div class="leftContainer">
+            <!-- Mostrar mensaje hasta que se carguen las imágenes -->
+            <div class="message" id="message">
+                Primero, por favor cargue las imágenes.
+            </div>
+            
+            <input type="file" id="excelUpload" accept=".xlsx,.xls" disabled>
+            <div class="excelContent" id="excelContent">
+                <!-- Aquí se mostrará el contenido del Excel -->
+            </div>
+            <!-- Log de errores -->
+            <div id="errorLog" class="error-log" style="display:none;">
+                <strong>Errores:</strong>
+                <ul id="errorList"></ul>
+            </div>
         </div>
 
-        <div class="file-list">
-            <!-- Carga de archivos de imágenes -->
+        <!-- Right Container -->
+        <div class="rightContainer">
             <input type="file" id="fileUpload" multiple accept=".jpg,.jpeg,.png">
             <table>
                 <thead>
@@ -127,67 +169,87 @@
                     </tr>
                 </thead>
                 <tbody id="fileTable">
-                    <!-- Filas generadas dinámicamente desde los archivos -->
+                    <!-- Filas generadas dinámicamente -->
                 </tbody>
             </table>
+            <div id="progressBarContainer">
+                <div id="progressBar"></div>
+            </div>
+            <button id="renameButton" disabled>Descargar</button>
         </div>
     </div>
 
-    <button id="renameButton" disabled>Descargar</button>
-
-    <div id="progressBarContainer">
-        <div id="progressBar"></div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script>
         const fileUpload = document.getElementById('fileUpload');
-        const excelUpload = document.getElementById('excelUpload');
         const fileTable = document.getElementById('fileTable');
-        const excelTable = document.getElementById('excelTable');
         const renameButton = document.getElementById('renameButton');
         const progressBarContainer = document.getElementById('progressBarContainer');
         const progressBar = document.getElementById('progressBar');
+        const excelUpload = document.getElementById('excelUpload');
+        const excelContent = document.getElementById('excelContent');
+        const message = document.getElementById('message');
+        const errorLog = document.getElementById('errorLog');
+        const errorList = document.getElementById('errorList');
 
         let files = [];
-        let skus = [];
-        let excelData = [];
+        let skus = {};
+        let errors = [];
 
+        // Función para validar los SKUs
         function validateSKU(fileName) {
             const parts = fileName.split('_');
-            return parts.length === 2 && !isNaN(parts[1]) && Number(parts[1]) >= 1 && Number(parts[1]) <= 99;
+            if (parts.length !== 2) return false;
+            const sku = parts[0];
+            const vista = parts[1];
+            if (vista.length > 3 || isNaN(vista) || Number(vista) < 1 || Number(vista) > 99) return false;
+            return true;
         }
 
-        // Cargar imágenes y generar tabla
+        // Evento para la carga de imágenes
         fileUpload.addEventListener('change', function(event) {
             files = Array.from(event.target.files);
             fileTable.innerHTML = '';
+            skus = {};
 
-            files.forEach(file => {
-                const fileName = file.name.split('.')[0];
-                const sku = fileName.split('_')[0];
+            files.forEach((file, index) => {
+                const fileName = file.name.split('.')[0]; // Nombre sin extensión
+                if (!validateSKU(fileName)) return;
 
-                const row = document.createElement('tr');
-                const originalSkuCell = document.createElement('td');
-                const newSkuCell = document.createElement('td');
+                const sku = fileName.split('_')[0]; // Extraer el SKU
+                if (!skus[sku]) {
+                    skus[sku] = [];
+                }
+                skus[sku].push(file);
 
-                originalSkuCell.textContent = sku;
+                if (!document.querySelector(`input[data-sku="${sku}"]`)) {
+                    const row = document.createElement('tr');
+                    const originalSkuCell = document.createElement('td');
+                    const newSkuCell = document.createElement('td');
 
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.placeholder = `Nuevo SKU para ${sku}`;
-                input.dataset.sku = sku;
+                    originalSkuCell.textContent = sku;
 
-                newSkuCell.appendChild(input);
-                row.appendChild(originalSkuCell);
-                row.appendChild(newSkuCell);
-                fileTable.appendChild(row);
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.placeholder = `Nuevo SKU para ${sku}`;
+                    input.dataset.sku = sku;
+
+                    newSkuCell.appendChild(input);
+                    row.appendChild(originalSkuCell);
+                    row.appendChild(newSkuCell);
+                    fileTable.appendChild(row);
+                }
             });
+
+            // Habilitar carga del Excel una vez que las imágenes están cargadas
+            if (files.length > 0) {
+                excelUpload.disabled = false;
+                message.textContent = "Ahora, por favor cargue el archivo Excel.";
+            }
         });
 
-        // Cargar Excel y generar tabla de nombres desde el Excel
+        // Función para leer Excel y cargar los valores de renombrado
         excelUpload.addEventListener('change', function(event) {
             const file = event.target.files[0];
             const reader = new FileReader();
@@ -197,41 +259,65 @@
                 const workbook = XLSX.read(data, { type: 'array' });
                 const sheetName = workbook.SheetNames[0];
                 const sheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
-                
-                excelData = sheet;
-                excelTable.innerHTML = '';
 
+                excelContent.innerHTML = ''; // Limpiar el contenido anterior
+                const table = document.createElement('table');
+                const tbody = document.createElement('tbody');
+                table.appendChild(tbody);
+
+                errors = []; // Reiniciar errores
+                errorList.innerHTML = ''; // Limpiar lista de errores
+
+                // Leer filas del Excel
                 sheet.forEach((row, index) => {
+                    if (index === 0) return; // Omitir encabezados
                     const originalSku = row[0];
                     const newSku = row[1];
 
-                    if (!originalSku || !newSku) {
-                        return; // Saltar filas vacías
-                    }
+                    const tr = document.createElement('tr');
+                    const tdSku = document.createElement('td');
+                    const tdNewSku = document.createElement('td');
 
-                    const excelRow = document.createElement('tr');
-                    const originalSkuCell = document.createElement('td');
-                    const newSkuCell = document.createElement('td');
+                    tdSku.textContent = originalSku;
+                    tdNewSku.textContent = newSku;
 
-                    originalSkuCell.textContent = originalSku;
-                    newSkuCell.textContent = newSku;
+                    tr.appendChild(tdSku);
+                    tr.appendChild(tdNewSku);
+                    tbody.appendChild(tr);
 
-                    excelRow.appendChild(originalSkuCell);
-                    excelRow.appendChild(newSkuCell);
-                    excelTable.appendChild(excelRow);
-
-                    // Asignar los nombres del Excel a los inputs correspondientes en la tabla de imágenes
-                    const input = document.querySelector(`input[data-sku="${originalSku}"]`);
-                    if (input) {
-                        input.value = newSku;
+                    // Validar si el SKU del Excel tiene una imagen correspondiente
+                    if (!skus[originalSku]) {
+                        errors.push(`El SKU "${originalSku}" del Excel no tiene una imagen correspondiente.`);
+                    } else {
+                        // Asignar automáticamente los nuevos SKUs en los inputs de la derecha
+                        const input = document.querySelector(`input[data-sku="${originalSku}"]`);
+                        if (input) {
+                            input.value = newSku;
+                        }
                     }
                 });
+
+                excelContent.appendChild(table);
+
+                // Si hay errores, mostrarlos
+                if (errors.length > 0) {
+                    errorLog.style.display = 'block';
+                    errors.forEach(error => {
+                        const li = document.createElement('li');
+                        li.textContent = error;
+                        errorList.appendChild(li);
+                    });
+                    renameButton.disabled = true;
+                } else {
+                    errorLog.style.display = 'none';
+                    renameButton.disabled = false;
+                }
             };
 
             reader.readAsArrayBuffer(file);
         });
 
-        // Proceso de renombrar y descargar archivos
+        // Función para renombrar y descargar las imágenes
         renameButton.addEventListener('click', function() {
             progressBarContainer.style.display = 'block';
             progressBar.style.width = '0%';
@@ -243,20 +329,18 @@
             let processedFiles = 0;
             const totalFiles = files.length;
 
-            files.forEach(file => {
-                const fileName = file.name.split('.')[0];
-                const sku = fileName.split('_')[0];
-                const vista = fileName.split('_')[1];
-
+            Object.keys(skus).forEach(sku => {
                 const input = document.querySelector(`input[data-sku="${sku}"]`);
                 const newSku = input.value.trim();
-
                 if (newSku) {
-                    const newFileName = `${newSku}_${vista}.jpg`;
-                    zip.file(newFileName, file);
+                    skus[sku].forEach(file => {
+                        const vista = file.name.split('_')[1]; // Extraer la vista
+                        const newFileName = `${newSku}_${vista}`;
+                        zip.file(newFileName, file);
 
-                    processedFiles++;
-                    progressBar.style.width = `${(processedFiles / totalFiles) * 100}%`;
+                        processedFiles++;
+                        progressBar.style.width = `${(processedFiles / totalFiles) * 100}%`;
+                    });
                 }
             });
 
@@ -264,13 +348,6 @@
                 saveAs(content, `${timestamp}.zip`);
                 progressBarContainer.style.display = 'none';
             });
-        });
-
-        // Habilitar botón de descarga si hay archivos cargados
-        fileUpload.addEventListener('change', function() {
-            if (files.length > 0) {
-                renameButton.disabled = false;
-            }
         });
     </script>
 </body>
