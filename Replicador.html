@@ -84,8 +84,9 @@
         .visualizadorContainer {
             width: 5%;
             display: flex;
-            justify-content: flex-end;
-            align-items: flex-start;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-end;
             padding: 10px;
             box-sizing: border-box;
         }
@@ -99,6 +100,7 @@
             font-weight: bold;
             white-space: nowrap;
             display: inline-block;
+            margin-bottom: 10px; /* Espacio entre botones */
         }
         textarea {
             width: 100%;
@@ -279,6 +281,7 @@
         <!-- Visualizador Container -->
         <div class="visualizadorContainer">
             <a href="index.html">Visualizador</a>
+            <a href="renombre.html">Renombre local</a> <!-- Nuevo botón de Renombre local -->
         </div>
     </div>
 
