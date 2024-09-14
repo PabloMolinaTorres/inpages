@@ -278,6 +278,12 @@
                     const originalSku = row[0];
                     const newSku = row[1];
 
+                    // Validar que no haya celdas vacías o nulas
+                    if (!originalSku || !newSku) {
+                        errors.push(`Fila ${index + 1} tiene valores vacíos. Verifique los datos.`);
+                        return;
+                    }
+
                     const tr = document.createElement('tr');
                     const tdSku = document.createElement('td');
                     const tdNewSku = document.createElement('td');
@@ -291,7 +297,6 @@
 
                     // Validar si el SKU del Excel tiene una imagen correspondiente
                     if (!skus[originalSku]) {
-                        // Si no se encuentra la imagen, poner la fila en rojo
                         tdSku.classList.add('missing-sku');
                         errors.push(`El SKU "${originalSku}" del Excel no tiene una imagen correspondiente.`);
                     } else {
