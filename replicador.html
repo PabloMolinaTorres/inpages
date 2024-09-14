@@ -2,379 +2,554 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Renombrador</title>
+    <title>Renombrador de Imágenes Falabella</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Last-Modified" content="0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js?v=1.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js?v=1.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.1.0/jszip-utils.min.js?v=1.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js?v=1.0"></script>
     <style>
         * {
             box-sizing: border-box;
             font-family: 'Lato', sans-serif;
         }
-        body {
-            background-color: #fff;
+        html, body {
+            height: 100%;
             margin: 0;
             padding: 0;
             color: #333;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-top: 20px;
-            font-size: 24px;
+            background-color: #fff;
         }
         .container {
             display: flex;
-            padding: 20px;
+            height: 100%;
+            width: 100%;
         }
         .leftContainer {
-            width: 25%;
+            width: 35%;
+            display: flex;
             padding: 20px;
-            background-color: #f9f9f9;
-            border-right: 1px solid #eeeeee;
+            box-sizing: border-box;
+            flex-direction: column;
+        }
+        .columns {
+            display: flex;
+            justify-content: space-between;
+        }
+        .column {
+            width: 48%;
         }
         .rightContainer {
-            width: 75%;
+            width: 60%;
             padding: 20px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        .imgContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .imgWrapper {
+            width: 120px;
+            height: 120px;
             position: relative;
+            display: block;
+            overflow: hidden;
+            border: 1px solid #eeeeee;
+            text-align: center;
         }
-        .rightContainer .replicador-button {
+        .imgWrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .sku {
             position: absolute;
-            top: 0;
+            bottom: 0;
+            left: 0;
             right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            text-align: center;
+            font-size: 10px;
+            padding: 2px;
+        }
+        .visualizadorContainer {
+            width: 5%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .visualizadorContainer a {
             background-color: #8fca00;
-            color: white;
-            padding: 10px 20px;
+            padding: 5px 15px;
             border-radius: 5px;
-            text-transform: uppercase;
-            font-size: 12px;
+            color: white;
             text-decoration: none;
-            cursor: pointer;
-        }
-        input[type="file"] {
-            margin-bottom: 20px;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            width: 100%;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 20px;
             font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+            display: inline-block;
         }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th {
-            background-color: #8fca00;
-            color: white;
-            padding: 10px;
-        }
-        td {
-            padding: 8px;
-            text-align: left;
-        }
-        input[type="text"] {
+        textarea {
             width: 100%;
-            padding: 8px;
-            border-radius: 5px;
+            margin: 20px 0;
+            padding: 10px;
+            height: 250px;
             border: 1px solid #ddd;
-            font-size: 12px;
+            border-radius: 4px;
+            font-family: 'Lato', sans-serif;
+            font-size: 14px;
+            resize: none;
         }
         button {
-            padding: 12px 20px;
-            background-color: #8fca00;
-            color: white;
+            width: 100%;
             border: none;
+            margin: 20px 0;
+            background-color: #8fca00;
+            height: 50px;
+            line-height: 50px;
             border-radius: 5px;
+            color: white;
+            font-size: 12px;
             cursor: pointer;
             text-transform: uppercase;
-            font-size: 12px;
         }
-        button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        #progressBarContainer {
-            width: 100%;
-            background-color: #ddd;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            display: none;
-        }
-        #progressBar {
-            width: 0;
-            height: 10px;
-            background-color: #8fca00;
-            border-radius: 5px;
-        }
-        .message {
-            font-size: 14px;
-            color: #555;
+        .icon-selector {
+            display: flex;
+            justify-content: center;
             margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
         }
-        .excelContent {
-            background-color: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
+        .icon-selector img {
+            width: 50px;
+            height: 50px;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+        .icon-selector img.inactive {
+            filter: grayscale(100%);
+        }
+        .country-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .country-link {
+            color: grey;
+            font-size: 14px;
+            margin-right: 10px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .country-link.active {
+            color: #333;
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 2px solid #8fca00;
+        }
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
         }
-        .error-log {
-            color: red;
-            margin-top: 10px;
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #8fca00;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        /* Títulos añadidos */
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        /* Estilo para el log de errores */
+        #errorLog {
+            display: none;
+            background-color: #ffe6e6;
             padding: 10px;
             border: 1px solid #ff0000;
-            background-color: #ffe6e6;
-            border-radius: 5px;
-        }
-        .missing-sku {
-            color: red;
+            border-radius: 4px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Renombrador</h1>
-    
     <div class="container">
         <!-- Left Container -->
         <div class="leftContainer">
-            <div class="message" id="message">
-                Primero, por favor cargue las imágenes.
+            <!-- Título Renombre -->
+            <div class="title">Renombre</div>
+
+            <!-- Icon Selector -->
+            <div class="icon-selector">
+                <img src="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" id="falabellaIcon" class="active" alt="Falabella">
+                <img src="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png" id="sodimacIcon" class="inactive" alt="Sodimac">
+                <img src="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png" id="tottusIcon" class="inactive" alt="Tottus">
             </div>
-            
-            <input type="file" id="excelUpload" accept=".xlsx,.xls" disabled>
-            <button id="downloadTemplate">Descargar plantilla</button>
-            <div class="excelContent" id="excelContent">
-                <!-- Aquí se mostrará el contenido del Excel -->
+
+            <!-- Country Selector centered below the icons -->
+            <div class="country-selector" id="countrySelector">
+                <a href="#" class="country-link" id="linkCL">Chile</a>
+                <a href="#" class="country-link" id="linkPE">Perú</a>
+                <a href="#" class="country-link" id="linkCO">Colombia</a>
             </div>
-            <div id="errorLog" class="error-log" style="display:none;">
-                <strong>Errores:</strong>
+
+            <div class="columns">
+                <div class="column">
+                    <textarea id="skuInputLeft" placeholder="Ingrese SKUs, uno por línea"></textarea>
+                    <button id="buscar">Buscar</button>
+                </div>
+                <div class="column">
+                    <textarea id="skuInputRight" placeholder="Ingrese los nombres para renombrar, uno por línea"></textarea>
+                    <button id="downloadAll">Descargar Todo</button>
+                </div>
+            </div>
+            <div class="switch-container">
+                <span>Vista</span>
+                <label class="switch">
+                    <input type="checkbox" id="viewToggle">
+                    <span class="slider"></span>
+                </label>
+                <span>SKU</span>
+            </div>
+
+            <!-- Log de errores -->
+            <div id="errorLog">
+                <strong>No encontrado:</strong>
                 <ul id="errorList"></ul>
             </div>
         </div>
 
         <!-- Right Container -->
         <div class="rightContainer">
-            <a href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/replicador.html" class="replicador-button">Replicador</a>
-            <input type="file" id="fileUpload" multiple accept=".jpg,.jpeg,.png">
-            <table>
-                <thead>
-                    <tr>
-                        <th>SKU Original</th>
-                        <th>Nuevo Renombre</th>
-                    </tr>
-                </thead>
-                <tbody id="fileTable">
-                    <!-- Filas generadas dinámicamente -->
-                </tbody>
-            </table>
-            <div id="progressBarContainer">
-                <div id="progressBar"></div>
-            </div>
-            <button id="renameButton" disabled>Descargar</button>
+            <!-- Título Previsualizar -->
+            <div class="title">Previsualizar</div>
+            
+            <div class="imgContainer" id="imgContainer"></div>
+        </div>
+
+        <!-- Visualizador Container -->
+        <div class="visualizadorContainer">
+            <a href="index.html">Visualizador</a>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script>
-        const fileUpload = document.getElementById('fileUpload');
-        const fileTable = document.getElementById('fileTable');
-        const renameButton = document.getElementById('renameButton');
-        const progressBarContainer = document.getElementById('progressBarContainer');
-        const progressBar = document.getElementById('progressBar');
-        const excelUpload = document.getElementById('excelUpload');
-        const excelContent = document.getElementById('excelContent');
-        const message = document.getElementById('message');
-        const errorLog = document.getElementById('errorLog');
-        const errorList = document.getElementById('errorList');
-        const downloadTemplate = document.getElementById('downloadTemplate');
+        var skuList = [];
+        var mode = "vista"; // Por defecto, modo vista
+        var country = "CL"; // Por defecto, Chile
+        var activeLogic = "falabella"; // Falabella activa por defecto
 
-        let files = [];
-        let skus = {};
-        let errors = [];
+        // Función para cargar la imagen basada en el SKU y el sufijo
+        function loadImage(sku, suffix = "") {
+            return new Promise(function(resolve, reject) {
+                var baseUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country}/`;
+                var imgUrl = `${baseUrl}${sku}${suffix}/w=120,h=120,fit=pad`; // Miniaturas de 120x120
+                var img = new Image();
+                img.src = imgUrl;
+                img.alt = sku + suffix;
 
-        // Descargar plantilla de Excel
-        downloadTemplate.addEventListener('click', function() {
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet([["original", "renombre"]]); // Plantilla con encabezados
-            XLSX.utils.book_append_sheet(wb, ws, "Plantilla");
-            XLSX.writeFile(wb, "plantilla_sku.xlsx");
-        });
+                img.onload = function() {
+                    var wrapper = document.createElement('div');
+                    wrapper.classList.add('imgWrapper');
+                    var link = document.createElement('a');
+                    link.href = `${baseUrl}${sku}${suffix}/w=1500,h=1500,fit=pad`; // Enlace a la imagen completa
+                    link.target = '_blank';
+                    link.appendChild(img);
+                    var skuDiv = document.createElement('div');
+                    skuDiv.classList.add('sku');
+                    skuDiv.textContent = sku + suffix;
+                    wrapper.appendChild(link);
+                    wrapper.appendChild(skuDiv);
+                    resolve(wrapper);
+                };
 
-        // Función para validar los SKUs
-        function validateSKU(fileName) {
-            const parts = fileName.split('_');
-            if (parts.length !== 2) return false;
-            const sku = parts[0];
-            const vista = parts[1];
-            if (vista.length > 3 || isNaN(vista) || Number(vista) < 1 || Number(vista) > 99) return false;
-            return true;
+                img.onerror = function() {
+                    resolve(null); // No mostrar imágenes 404 en modo SKU
+                };
+            });
         }
 
-        // Evento para la carga de imágenes
-        fileUpload.addEventListener('change', function(event) {
-            files = Array.from(event.target.files);
-            fileTable.innerHTML = '';
-            skus = {};
-
-            files.forEach((file, index) => {
-                const fileName = file.name.split('.')[0]; // Nombre sin extensión
-                if (!validateSKU(fileName)) return;
-
-                const sku = fileName.split('_')[0]; // Extraer el SKU
-                if (!skus[sku]) {
-                    skus[sku] = [];
-                }
-                skus[sku].push(file);
-
-                if (!document.querySelector(`input[data-sku="${sku}"]`)) {
-                    const row = document.createElement('tr');
-                    const originalSkuCell = document.createElement('td');
-                    const newSkuCell = document.createElement('td');
-
-                    originalSkuCell.textContent = sku;
-
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.placeholder = `Nuevo SKU para ${sku}`;
-                    input.dataset.sku = sku;
-
-                    newSkuCell.appendChild(input);
-                    row.appendChild(originalSkuCell);
-                    row.appendChild(newSkuCell);
-                    fileTable.appendChild(row);
-                }
-            });
-
-            // Habilitar carga del Excel una vez que las imágenes están cargadas
-            if (files.length > 0) {
-                excelUpload.disabled = false;
-                message.textContent = "Ahora, por favor cargue el archivo Excel.";
-            }
+        // Manejar el cambio de modo (Vista o SKU)
+        $('#viewToggle').change(function() {
+            mode = $(this).is(':checked') ? 'sku' : 'vista';
+            $('#imgContainer').empty();
+            skuList = [];
+            updateCounts();
         });
 
-        // Función para leer Excel y cargar los valores de renombrado
-        excelUpload.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
+        // Función para actualizar el subrayado y el cambio del país activo
+        function setActiveCountry(countryCode) {
+            $('.country-link').removeClass('active');
+            $(`#link${countryCode}`).addClass('active');
+            country = countryCode;
+            $('#imgContainer').empty();
+            skuList = [];
+            updateCounts();
+        }
 
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const sheetName = workbook.SheetNames[0];
-                const sheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
+        // Manejar el cambio de país
+        $('.country-link').click(function() {
+            var selectedCountry = $(this).attr('id').replace('link', '');
+            setActiveCountry(selectedCountry);
+        });
 
-                // Verificar si las columnas son "original" y "renombre"
-                if (sheet[0][0] !== 'original' || sheet[0][1] !== 'renombre') {
-                    alert("El archivo debe tener 'original' y 'renombre' como títulos de columna en A1 y B1.");
-                    return;
+        // Función para actualizar el selector de países según la marca activa
+        function updateCountrySelector(countries) {
+            var countrySelector = $('#countrySelector');
+            countrySelector.empty();
+            countries.forEach(function(countryName) {
+                var countryCode;
+                
+                // Asignar códigos manualmente
+                if (countryName === "Uruguay") {
+                    countryCode = "UY";
+                } else if (countryName === "México") {
+                    countryCode = "MX";
+                } else if (countryName === "Perú") {
+                    countryCode = "PE";
+                } else if (countryName === "Argentina") {
+                    countryCode = "AR";
+                } else if (countryName === "Chile") {
+                    countryCode = "CL";
+                } else if (countryName === "Colombia") {
+                    countryCode = "CO";
+                } else if (countryName === "Brasil") {
+                    countryCode = "BR";
+                } else {
+                    countryCode = countryName.slice(0, 2).toUpperCase(); // Por defecto
                 }
 
-                excelContent.innerHTML = ''; // Limpiar el contenido anterior
-                const table = document.createElement('table');
-                const tbody = document.createElement('tbody');
-                table.appendChild(tbody);
+                var countryLink = $('<a href="#" class="country-link">' + countryName + '</a>');
+                countryLink.attr('id', `link${countryCode}`);
+                countryLink.click(function() {
+                    setActiveCountry(countryCode);
+                });
+                countrySelector.append(countryLink);
+            });
+            setActiveCountry("CL"); // Por defecto, seleccionamos Chile
+        }
 
-                errors = []; // Reiniciar errores
-                errorList.innerHTML = ''; // Limpiar lista de errores
+        // Lógica para manejar el cambio de marca
+        $('#falabellaIcon').click(function() {
+            activeLogic = "falabella";
+            $('#falabellaIcon').removeClass('inactive').addClass('active');
+            $('#sodimacIcon').addClass('inactive');
+            $('#tottusIcon').addClass('inactive');
+            $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png');
+            $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
+            $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
+            updateCountrySelector(["Chile", "Perú", "Colombia"]);
+            $('#imgContainer').empty();
+        });
 
-                // Leer filas del Excel
-                sheet.forEach((row, index) => {
-                    if (index === 0) return; // Omitir encabezados
-                    const originalSku = row[0];
-                    const newSku = row[1];
+        $('#sodimacIcon').click(function() {
+            activeLogic = "sodimac";
+            $('#falabellaIcon').addClass('inactive');
+            $('#sodimacIcon').removeClass('inactive').addClass('active');
+            $('#tottusIcon').addClass('inactive');
+            $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
+            $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac.png');
+            $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus-bn.png');
+            updateCountrySelector(["Chile", "Argentina", "Colombia", "Perú", "Brasil", "México", "Uruguay"]);
+            $('#imgContainer').empty();
+        });
 
-                    // Validar que no haya celdas vacías o nulas
-                    if (!originalSku || !newSku) {
-                        errors.push(`Fila ${index + 1} tiene valores vacíos. Verifique los datos.`);
-                        return;
-                    }
+        $('#tottusIcon').click(function() {
+            activeLogic = "tottus";
+            $('#falabellaIcon').addClass('inactive');
+            $('#sodimacIcon').addClass('inactive');
+            $('#tottusIcon').removeClass('inactive').addClass('active');
+            $('#falabellaIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella-bn.png');
+            $('#sodimacIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/sodimac-bn.png');
+            $('#tottusIcon').attr('src', 'https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/tottus.png');
+            updateCountrySelector(["Chile", "Perú"]);
+            $('#imgContainer').empty();
+        });
 
-                    const tr = document.createElement('tr');
-                    const tdSku = document.createElement('td');
-                    const tdNewSku = document.createElement('td');
+        // Función para registrar errores en el log
+        function logError(error) {
+            $('#errorLog').show();
+            $('#errorList').append('<li>' + error + '</li>');
+        }
 
-                    tdSku.textContent = originalSku;
-                    tdNewSku.textContent = newSku;
+        // Función para eliminar SKU o vista no encontrada de la caja de texto
+        function removeNotFound(sku) {
+            var skus = $('#skuInputLeft').val().trim().split('\n');
+            skus = skus.filter(function(item) {
+                return item.trim() !== sku;
+            });
+            $('#skuInputLeft').val(skus.join('\n'));
+        }
 
-                    tr.appendChild(tdSku);
-                    tr.appendChild(tdNewSku);
-                    tbody.appendChild(tr);
+        // Búsqueda de SKUs o Vistas
+        $('#buscar').click(function() {
+            $('#imgContainer').empty();
+            $('#errorLog').hide(); // Ocultar log de errores al iniciar nueva búsqueda
+            $('#errorList').empty(); // Limpiar lista de errores
 
-                    // Validar si el SKU del Excel tiene una imagen correspondiente
-                    if (!skus[originalSku]) {
-                        tdSku.classList.add('missing-sku');
-                        errors.push(`El SKU "${originalSku}" del Excel no tiene una imagen correspondiente.`);
-                    } else {
-                        // Asignar automáticamente los nuevos SKUs en los inputs de la derecha
-                        const input = document.querySelector(`input[data-sku="${originalSku}"]`);
-                        if (input) {
-                            input.value = newSku;
+            skuList = [];
+            var skus = $('#skuInputLeft').val().trim().split('\n');
+            if (skus.length > 0) {
+                skus.forEach(function(sku) {
+                    sku = sku.trim();
+                    if (sku) {
+                        if (mode === "vista") {
+                            skuList.push(sku);
+                            loadImage(sku).then(function(imageElement) {
+                                if (imageElement) {
+                                    document.getElementById('imgContainer').appendChild(imageElement);
+                                } else {
+                                    logError(sku); // Solo el SKU que no se encontró
+                                    removeNotFound(sku); // Eliminar el SKU de la caja de texto
+                                }
+                                updateCounts();
+                            });
+                        } else if (mode === "sku") {
+                            var suffixes = getSuffixes(activeLogic);
+                            var found = false;
+                            suffixes.forEach(function(suffix) {
+                                loadImage(sku, suffix).then(function(imageElement) {
+                                    if (imageElement) {
+                                        found = true;
+                                        skuList.push(sku + suffix);
+                                        document.getElementById('imgContainer').appendChild(imageElement);
+                                    }
+                                    updateCounts();
+                                });
+                            });
+
+                            setTimeout(function() {
+                                if (!found) {
+                                    logError(sku); // Solo el SKU que no se encontró
+                                    removeNotFound(sku); // Eliminar el SKU de la caja de texto
+                                }
+                            }, 1000); // Esperar un poco para confirmar que no se encontró ninguna imagen
                         }
                     }
                 });
-
-                excelContent.appendChild(table);
-
-                // Si hay errores, mostrarlos
-                if (errors.length > 0) {
-                    errorLog.style.display = 'block';
-                    errors.forEach(error => {
-                        const li = document.createElement('li');
-                        li.textContent = error;
-                        errorList.appendChild(li);
-                    });
-                    renameButton.disabled = true;
-                } else {
-                    errorLog.style.display = 'none';
-                    renameButton.disabled = false;
-                }
-            };
-
-            reader.readAsArrayBuffer(file);
+            } else {
+                alert('Por favor, ingrese SKUs.');
+            }
         });
 
-        // Función para renombrar y descargar las imágenes
-        renameButton.addEventListener('click', function() {
-            progressBarContainer.style.display = 'block';
-            progressBar.style.width = '0%';
+        $('#downloadAll').click(function() {
+            var renameSkus = $('#skuInputRight').val().trim().split('\n');
+            var originalSkus = $('#skuInputLeft').val().trim().split('\n');
+            if (renameSkus.length !== originalSkus.length) {
+                alert('La cantidad de SKUs en el lado izquierdo y derecho debe coincidir.');
+                return;
+            }
 
-            const zip = new JSZip();
-            const date = new Date();
-            const timestamp = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getHours()).padStart(2, '0')}${String(date.getMinutes()).padStart(2, '0')}`;
+            var zip = new JSZip();
+            var count = 0;
+            var zipFilename = getFormattedDate() + ".zip";
+            var urls = [];
+            var filenames = [];
 
-            let processedFiles = 0;
-            const totalFiles = files.length;
-
-            Object.keys(skus).forEach(sku => {
-                const input = document.querySelector(`input[data-sku="${sku}"]`);
-                const newSku = input.value.trim();
-                if (newSku) {
-                    skus[sku].forEach(file => {
-                        const vista = file.name.split('_')[1]; // Extraer la vista
-                        const newFileName = `${newSku}_${vista}`;
-                        zip.file(newFileName, file);
-
-                        processedFiles++;
-                        progressBar.style.width = `${(processedFiles / totalFiles) * 100}%`;
-                    });
-                }
+            originalSkus.forEach(function(originalSku, index) {
+                skuList.forEach(function(sku) {
+                    if (sku.startsWith(originalSku)) {
+                        var renameSku = renameSkus[index];
+                        var finalName = sku.replace(originalSku, renameSku);
+                        var imgUrl = `https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/${activeLogic}${country}/${sku}/w=1500,h=1500,fit=pad`;
+                        urls.push(imgUrl);
+                        filenames.push(finalName);
+                    }
+                });
             });
 
-            zip.generateAsync({ type: 'blob' }).then(function(content) {
-                saveAs(content, `${timestamp}.zip`);
-                progressBarContainer.style.display = 'none';
+            urls.forEach(function(url, index) {
+                var filename = filenames[index] + ".jpg";
+                JSZipUtils.getBinaryContent(url, function(err, data) {
+                    if (err) {
+                        console.error("Error al obtener contenido binario:", err);
+                        return;
+                    }
+                    zip.file(filename, data, { binary: true });
+                    count++;
+                    if (count === urls.length) {
+                        zip.generateAsync({ type: 'blob' }).then(function(content) {
+                            saveAs(content, zipFilename);
+                        });
+                    }
+                });
             });
         });
+
+        function getFormattedDate() {
+            var date = new Date();
+            var day = String(date.getDate()).padStart(2, '0');
+            var month = String(date.getMonth() + 1).padStart(2, '0');
+            var hours = String(date.getHours()).padStart(2, '0');
+            var minutes = String(date.getMinutes()).padStart(2, '0');
+            return day + '-' + month + '_' + hours + minutes;
+        }
+
+        function updateCounts() {
+            $('#leftCount').text('Total SKUs/Vistas: ' + skuList.length);
+            $('#rightCount').text('Total Renombres: ' + $('#skuInputRight').val().trim().split('\n').length);
+        }
+
+        function getSuffixes(logic) {
+            if (logic === "falabella" || logic === "tottus") {
+                return ['_001', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_1', '_10', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_90', '_91', '_92', '_93', '_94', '_95', '_96', '_97', '_98', '_99'];
+            } else if (logic === "sodimac") {
+                return ['_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_01', '_02', '_03', '_04', '_05', '_06', '_07', '_08', '_09', '_12', '_13', '_14', '_15', '_17', '_18', '_19', '_20', '_21', '_22', '_23', '_24', '_25', '_26', '_27', '_28', '_SEC', '_EFI'];
+            }
+        }
+
+        $('#skuInputLeft, #skuInputRight').on('input', updateCounts);
+
+        setActiveCountry("CL"); // Inicializamos con Chile activo por defecto
     </script>
 </body>
 </html>
