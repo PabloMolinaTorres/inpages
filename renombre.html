@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Renombre Local</title> <!-- Cambiado a "Renombre Local" -->
-    <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" type="image/png"> <!-- Logo Falabella -->
+    <title>Renombre Local</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
     <style>
@@ -125,7 +125,6 @@
         .missing-sku {
             color: red;
         }
-        /* Nuevo container para el botón Replicador */
         .replicatorContainer {
             position: absolute;
             top: 10px;
@@ -133,7 +132,7 @@
         }
         .replicatorButton {
             padding: 12px 20px;
-            background-color: #333;
+            background-color: #8fca00; /* Color modificado a verde */
             color: white;
             border: none;
             border-radius: 5px;
@@ -147,31 +146,23 @@
     <h1>Renombrador</h1>
     
     <div class="container">
-        <!-- Container para el botón de Replicador -->
         <div class="replicatorContainer">
-            <a href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/Replicador.html" target="_blank">
+            <a href="https://github.com/PabloMolinaTorres/inpages/tree/main" target="_blank">
                 <button class="replicatorButton">Replicador</button>
             </a>
         </div>
 
-        <!-- Left Container -->
         <div class="leftContainer">
-            <div class="message" id="message">
-                Primero, por favor cargue las imágenes.
-            </div>
-            
+            <div class="message" id="message">Primero, por favor cargue las imágenes.</div>
             <input type="file" id="excelUpload" accept=".xlsx,.xls" disabled>
             <button id="downloadTemplate">Descargar plantilla</button>
-            <div class="excelContent" id="excelContent">
-                <!-- Aquí se mostrará el contenido del Excel -->
-            </div>
+            <div class="excelContent" id="excelContent"></div>
             <div id="errorLog" class="error-log" style="display:none;">
                 <strong>Errores:</strong>
                 <ul id="errorList"></ul>
             </div>
         </div>
 
-        <!-- Right Container -->
         <div class="rightContainer">
             <input type="file" id="fileUpload" multiple accept=".jpg,.jpeg,.png">
             <table>
@@ -181,9 +172,7 @@
                         <th>Nuevo Renombre</th>
                     </tr>
                 </thead>
-                <tbody id="fileTable">
-                    <!-- Filas generadas dinámicamente -->
-                </tbody>
+                <tbody id="fileTable"></tbody>
             </table>
             <div id="progressBarContainer">
                 <div id="progressBar"></div>
@@ -211,15 +200,13 @@
         let skus = {};
         let errors = [];
 
-        // Descargar plantilla de Excel
         downloadTemplate.addEventListener('click', function() {
             const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet([["original", "renombre"]]); // Plantilla con encabezados
+            const ws = XLSX.utils.aoa_to_sheet([["original", "renombre"]]);
             XLSX.utils.book_append_sheet(wb, ws, "Plantilla");
             XLSX.writeFile(wb, "plantilla_sku.xlsx");
         });
 
-        // Función para validar los SKUs
         function validateSKU(fileName) {
             const parts = fileName.split('_');
             if (parts.length !== 2) return false;
@@ -229,17 +216,16 @@
             return true;
         }
 
-        // Evento para la carga de imágenes
         fileUpload.addEventListener('change', function(event) {
             files = Array.from(event.target.files);
             fileTable.innerHTML = '';
             skus = {};
 
             files.forEach((file, index) => {
-                const fileName = file.name.split('.')[0]; // Nombre sin extensión
+                const fileName = file.name.split('.')[0];
                 if (!validateSKU(fileName)) return;
 
-                const sku = fileName.split('_')[0]; // Extraer el SKU
+                const sku = fileName.split('_')[0];
                 if (!skus[sku]) {
                     skus[sku] = [];
                 }
@@ -264,14 +250,12 @@
                 }
             });
 
-            // Habilitar carga del Excel una vez que las imágenes están cargadas
             if (files.length > 0) {
                 excelUpload.disabled = false;
                 message.textContent = "Ahora, por favor cargue el archivo Excel.";
             }
         });
 
-        // Función para leer Excel y cargar los valores de renombrado
         excelUpload.addEventListener('change', function(event) {
             const file = event.target.files[0];
             const reader = new FileReader();
@@ -282,27 +266,24 @@
                 const sheetName = workbook.SheetNames[0];
                 const sheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
 
-                // Verificar si las columnas son "original" y "renombre"
                 if (sheet[0][0] !== 'original' || sheet[0][1] !== 'renombre') {
                     alert("El archivo debe tener 'original' y 'renombre' como títulos de columna en A1 y B1.");
                     return;
                 }
 
-                excelContent.innerHTML = ''; // Limpiar el contenido anterior
+                excelContent.innerHTML = '';
                 const table = document.createElement('table');
                 const tbody = document.createElement('tbody');
                 table.appendChild(tbody);
 
-                errors = []; // Reiniciar errores
-                errorList.innerHTML = ''; // Limpiar lista de errores
+                errors = [];
+                errorList.innerHTML = '';
 
-                // Leer filas del Excel
                 sheet.forEach((row, index) => {
-                    if (index === 0) return; // Omitir encabezados
+                    if (index === 0) return;
                     const originalSku = row[0];
                     const newSku = row[1];
 
-                    // Validar que no haya celdas vacías o nulas
                     if (!originalSku || !newSku) {
                         errors.push(`Fila ${index + 1} tiene valores vacíos. Verifique los datos.`);
                         return;
@@ -319,12 +300,10 @@
                     tr.appendChild(tdNewSku);
                     tbody.appendChild(tr);
 
-                    // Validar si el SKU del Excel tiene una imagen correspondiente
                     if (!skus[originalSku]) {
                         tdSku.classList.add('missing-sku');
                         errors.push(`El SKU "${originalSku}" del Excel no tiene una imagen correspondiente.`);
                     } else {
-                        // Asignar automáticamente los nuevos SKUs en los inputs de la derecha
                         const input = document.querySelector(`input[data-sku="${originalSku}"]`);
                         if (input) {
                             input.value = newSku;
@@ -334,7 +313,6 @@
 
                 excelContent.appendChild(table);
 
-                // Si hay errores, mostrarlos
                 if (errors.length > 0) {
                     errorLog.style.display = 'block';
                     errors.forEach(error => {
@@ -352,7 +330,6 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // Función para renombrar y descargar las imágenes
         renameButton.addEventListener('click', function() {
             progressBarContainer.style.display = 'block';
             progressBar.style.width = '0%';
@@ -369,7 +346,7 @@
                 const newSku = input.value.trim();
                 if (newSku) {
                     skus[sku].forEach(file => {
-                        const vista = file.name.split('_')[1]; // Extraer la vista
+                        const vista = file.name.split('_')[1];
                         const newFileName = `${newSku}_${vista}`;
                         zip.file(newFileName, file);
 
