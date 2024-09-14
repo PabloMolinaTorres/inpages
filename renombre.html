@@ -170,7 +170,7 @@
             <div id="progressBarContainer">
                 <div id="progressBar"></div>
             </div>
-            <button id="renameButton" disabled>Descargar</button>
+            <button id="renameButton" disabled>Descargar</button> <!-- El botón sigue inicialmente deshabilitado -->
         </div>
     </div>
 
@@ -193,6 +193,7 @@
         let skus = {};
         let errors = [];
 
+        // Descargar plantilla
         downloadTemplate.addEventListener('click', function() {
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.aoa_to_sheet([["original", "renombre"]]);
@@ -200,6 +201,7 @@
             XLSX.writeFile(wb, "plantilla_sku.xlsx");
         });
 
+        // Validar SKU
         function validateSKU(fileName) {
             const parts = fileName.split('_');
             if (parts.length !== 2) return false;
@@ -209,6 +211,16 @@
             return true;
         }
 
+        // Función para verificar si se puede habilitar el botón de descarga
+        function checkEnableDownload() {
+            if (errors.length === 0 && Object.keys(skus).length > 0) {
+                renameButton.disabled = false;  // Habilitar el botón de descarga
+            } else {
+                renameButton.disabled = true;   // Deshabilitar si hay errores
+            }
+        }
+
+        // Actualizar errores
         function updateErrors() {
             errorList.innerHTML = '';  // Limpiar lista de errores previa
             if (errors.length > 0) {
@@ -218,13 +230,14 @@
                     li.textContent = error;
                     errorList.appendChild(li);
                 });
-                renameButton.disabled = true;
+                renameButton.disabled = true; // Deshabilitar botón si hay errores
             } else {
                 errorLog.style.display = 'none';
-                renameButton.disabled = false;
+                checkEnableDownload(); // Verificar si se puede habilitar el botón
             }
         }
 
+        // Subir imágenes
         fileUpload.addEventListener('change', function(event) {
             files = Array.from(event.target.files);
             fileTable.innerHTML = '';
@@ -262,9 +275,11 @@
             if (files.length > 0) {
                 excelUpload.disabled = false;
                 message.textContent = "Ahora, por favor cargue el archivo Excel.";
+                checkEnableDownload(); // Verificar si el botón puede habilitarse después de cargar imágenes
             }
         });
 
+        // Subir Excel
         excelUpload.addEventListener('change', function(event) {
             const file = event.target.files[0];
             const reader = new FileReader();
@@ -321,12 +336,13 @@
                 });
 
                 excelContent.appendChild(table);
-                updateErrors();
+                updateErrors(); // Verificar errores y habilitar el botón si no hay
             };
 
             reader.readAsArrayBuffer(file);
         });
 
+        // Proceso de renombrado y descarga
         renameButton.addEventListener('click', function() {
             progressBarContainer.style.display = 'block';
             progressBar.style.width = '0%';
