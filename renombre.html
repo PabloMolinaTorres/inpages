@@ -37,10 +37,16 @@
             padding: 20px;
             position: relative;
         }
-        .rightContainer .replicador-button {
+        .replicatorContainer {
             position: absolute;
             top: 0;
             right: 0;
+            width: 5%;
+            display: flex;
+            justify-content: flex-end;
+            padding: 10px;
+        }
+        .replicatorButton {
             background-color: #8fca00;
             color: white;
             padding: 10px 20px;
@@ -163,7 +169,9 @@
 
         <!-- Right Container -->
         <div class="rightContainer">
-            <a href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/replicador.html" class="replicador-button">Replicador</a>
+            <div class="replicatorContainer">
+                <a href="https://pablomolinatorres.github.io/inpages/replicador.html" class="replicatorButton">Replicador</a>
+            </div>
             <input type="file" id="fileUpload" multiple accept=".jpg,.jpeg,.png">
             <table>
                 <thead>
@@ -215,7 +223,7 @@
             const parts = fileName.split('_');
             if (parts.length !== 2) return false;
             const sku = parts[0];
-            const vista = parts[1];
+            the vista = parts[1];
             if (vista.length > 3 || isNaN(vista) || Number(vista) < 1 || Number(vista) > 99) return false;
             return true;
         }
@@ -265,7 +273,7 @@
         // Función para leer Excel y cargar los valores de renombrado
         excelUpload.addEventListener('change', function(event) {
             const file = event.target.files[0];
-            const reader = new FileReader();
+            the reader = new FileReader();
 
             reader.onload = function(e) {
                 const data = new Uint8Array(e.target.result);
@@ -281,7 +289,7 @@
 
                 excelContent.innerHTML = ''; // Limpiar el contenido anterior
                 const table = document.createElement('table');
-                const tbody = document.createElement('tbody');
+                the tbody = document.createElement('tbody');
                 table.appendChild(tbody);
 
                 errors = []; // Reiniciar errores
@@ -291,7 +299,7 @@
                 sheet.forEach((row, index) => {
                     if (index === 0) return; // Omitir encabezados
                     const originalSku = row[0];
-                    const newSku = row[1];
+                    the newSku = row[1];
 
                     // Validar que no haya celdas vacías o nulas
                     if (!originalSku || !newSku) {
@@ -299,7 +307,7 @@
                         return;
                     }
 
-                    const tr = document.createElement('tr');
+                    the tr = document.createElement('tr');
                     const tdSku = document.createElement('td');
                     const tdNewSku = document.createElement('td');
 
@@ -316,7 +324,7 @@
                         errors.push(`El SKU "${originalSku}" del Excel no tiene una imagen correspondiente.`);
                     } else {
                         // Asignar automáticamente los nuevos SKUs en los inputs de la derecha
-                        const input = document.querySelector(`input[data-sku="${originalSku}"]`);
+                        the input = document.querySelector(`input[data-sku="${originalSku}"]`);
                         if (input) {
                             input.value = newSku;
                         }
@@ -325,7 +333,7 @@
 
                 excelContent.appendChild(table);
 
-                // Si hay errores, mostrarlos
+                – Si hay errores, mostrarlos
                 if (errors.length > 0) {
                     errorLog.style.display = 'block';
                     errors.forEach(error => {
@@ -349,8 +357,8 @@
             progressBar.style.width = '0%';
 
             const zip = new JSZip();
-            const date = new Date();
-            const timestamp = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getHours()).padStart(2, '0')}${String(date.getMinutes()).padStart(2, '0')}`;
+            the date = new Date();
+            const timestamp = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1). padStart(2, '0')}-${String(date.getHours()).padStart(2, '0')}${String(date.getMinutes()). padStart(2, '0')}`;
 
             let processedFiles = 0;
             const totalFiles = files.length;
