@@ -104,6 +104,7 @@
             border-radius: 5px;
             background-color: #f9f9f9;
         }
+        /* Estilo para mostrar el contenido del Excel */
         .excelContent {
             background-color: #fff;
             padding: 10px;
@@ -133,6 +134,10 @@
             background-color: #ffe6e6;
             border-radius: 5px;
         }
+        /* Estilo para los SKUs sin imagen correspondiente */
+        .missing-image {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -141,6 +146,7 @@
     <div class="container">
         <!-- Left Container -->
         <div class="leftContainer">
+            <!-- Mostrar mensaje hasta que se carguen las imágenes -->
             <div class="message" id="message">
                 Primero, por favor cargue las imágenes.
             </div>
@@ -149,6 +155,7 @@
             <div class="excelContent" id="excelContent">
                 <!-- Aquí se mostrará el contenido del Excel -->
             </div>
+            <!-- Log de errores -->
             <div id="errorLog" class="error-log" style="display:none;">
                 <strong>Errores:</strong>
                 <ul id="errorList"></ul>
@@ -194,6 +201,7 @@
         let skus = {};
         let errors = [];
 
+        // Función para validar los SKUs
         function validateSKU(fileName) {
             const parts = fileName.split('_');
             if (parts.length !== 2) return false;
@@ -264,13 +272,11 @@
                 errors = []; // Reiniciar errores
                 errorList.innerHTML = ''; // Limpiar lista de errores
 
-                // Leer desde la columna A1 y B1 hacia abajo
+                // Leer filas del Excel (empezando en A1 y B1)
                 sheet.forEach((row, index) => {
                     if (index === 0) return; // Omitir encabezados
                     const originalSku = row[0];
                     const newSku = row[1];
-
-                    if (!originalSku || !newSku) return; // Si no hay valores en A1 o B1, saltar
 
                     const tr = document.createElement('tr');
                     const tdSku = document.createElement('td');
@@ -279,15 +285,17 @@
                     tdSku.textContent = originalSku;
                     tdNewSku.textContent = newSku;
 
+                    // Si no se encuentra una imagen correspondiente, marcar en rojo
+                    if (!skus[originalSku]) {
+                        tdSku.classList.add('missing-image');
+                    }
+
                     tr.appendChild(tdSku);
                     tr.appendChild(tdNewSku);
                     tbody.appendChild(tr);
 
-                    // Validar si el SKU del Excel tiene una imagen correspondiente
-                    if (!skus[originalSku]) {
-                        errors.push(`El SKU "${originalSku}" del Excel no tiene una imagen correspondiente.`);
-                    } else {
-                        // Asignar automáticamente los nuevos SKUs en los inputs de la derecha
+                    // Asignar automáticamente los nuevos SKUs en los inputs de la derecha si hay imagen
+                    if (skus[originalSku]) {
                         const input = document.querySelector(`input[data-sku="${originalSku}"]`);
                         if (input) {
                             input.value = newSku;
@@ -329,7 +337,7 @@
 
             Object.keys(skus).forEach(sku => {
                 const input = document.querySelector(`input[data-sku="${sku}"]`);
-                const newSku = input.value.trim();
+                const newSku = input ? input.value.trim() : null;
                 if (newSku) {
                     skus[sku].forEach(file => {
                         const vista = file.name.split('_')[1]; // Extraer la vista
