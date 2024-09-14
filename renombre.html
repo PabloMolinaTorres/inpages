@@ -209,6 +209,22 @@
             return true;
         }
 
+        function updateErrors() {
+            errorList.innerHTML = '';  // Limpiar lista de errores previa
+            if (errors.length > 0) {
+                errorLog.style.display = 'block';
+                errors.forEach(error => {
+                    const li = document.createElement('li');
+                    li.textContent = error;
+                    errorList.appendChild(li);
+                });
+                renameButton.disabled = true;
+            } else {
+                errorLog.style.display = 'none';
+                renameButton.disabled = false;
+            }
+        }
+
         fileUpload.addEventListener('change', function(event) {
             files = Array.from(event.target.files);
             fileTable.innerHTML = '';
@@ -269,8 +285,8 @@
                 const tbody = document.createElement('tbody');
                 table.appendChild(tbody);
 
-                errors = [];
-                errorList.innerHTML = '';
+                errors = []; // Limpiar lista de errores antes de comenzar a validar
+                errorList.innerHTML = ''; // Limpiar lista de errores visual
 
                 sheet.forEach((row, index) => {
                     if (index === 0) return;
@@ -305,19 +321,7 @@
                 });
 
                 excelContent.appendChild(table);
-
-                if (errors.length > 0) {
-                    errorLog.style.display = 'block';
-                    errors.forEach(error => {
-                        const li = document.createElement('li');
-                        li.textContent = error;
-                        errorList.appendChild(li);
-                    });
-                    renameButton.disabled = true;
-                } else {
-                    errorLog.style.display = 'none';
-                    renameButton.disabled = false;
-                }
+                updateErrors();
             };
 
             reader.readAsArrayBuffer(file);
