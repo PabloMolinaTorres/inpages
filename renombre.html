@@ -2,8 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Renombre Local</title> <!-- Cambiado a "Renombre Local" -->
-    <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" type="image/png"> <!-- Logo Falabella -->
+    <title>Renombrador</title>
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
     <style>
@@ -36,6 +35,20 @@
         .rightContainer {
             width: 75%;
             padding: 20px;
+            position: relative;
+        }
+        .rightContainer .replicador-button {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #8fca00;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-transform: uppercase;
+            font-size: 12px;
+            text-decoration: none;
+            cursor: pointer;
         }
         input[type="file"] {
             margin-bottom: 20px;
@@ -125,35 +138,12 @@
         .missing-sku {
             color: red;
         }
-        /* Nuevo container para el botón Replicador */
-        .replicatorContainer {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-        }
-        .replicatorButton {
-            padding: 12px 20px;
-            background-color: #333;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-size: 12px;
-        }
     </style>
 </head>
 <body>
     <h1>Renombrador</h1>
     
     <div class="container">
-        <!-- Container para el botón de Replicador -->
-        <div class="replicatorContainer">
-            <a href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/Replicador.html" target="_blank">
-                <button class="replicatorButton">Replicador</button>
-            </a>
-        </div>
-
         <!-- Left Container -->
         <div class="leftContainer">
             <div class="message" id="message">
@@ -173,6 +163,7 @@
 
         <!-- Right Container -->
         <div class="rightContainer">
+            <a href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/replicador.html" class="replicador-button">Replicador</a>
             <input type="file" id="fileUpload" multiple accept=".jpg,.jpeg,.png">
             <table>
                 <thead>
