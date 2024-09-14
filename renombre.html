@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Renombrador</title>
+    <title>Renombre Local</title> <!-- Cambiado a "Renombre Local" -->
+    <link rel="icon" href="https://raw.githubusercontent.com/PabloMolinaTorres/inpages/main/falabella.png" type="image/png"> <!-- Logo Falabella -->
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
     <style>
@@ -132,15 +133,16 @@
     <div class="container">
         <!-- Left Container -->
         <div class="leftContainer">
+            <!-- Mostrar mensaje hasta que se carguen las imágenes -->
             <div class="message" id="message">
                 Primero, por favor cargue las imágenes.
             </div>
             
             <input type="file" id="excelUpload" accept=".xlsx,.xls" disabled>
-            <button id="downloadTemplate">Descargar plantilla</button>
             <div class="excelContent" id="excelContent">
                 <!-- Aquí se mostrará el contenido del Excel -->
             </div>
+            <!-- Log de errores -->
             <div id="errorLog" class="error-log" style="display:none;">
                 <strong>Errores:</strong>
                 <ul id="errorList"></ul>
@@ -181,19 +183,10 @@
         const message = document.getElementById('message');
         const errorLog = document.getElementById('errorLog');
         const errorList = document.getElementById('errorList');
-        const downloadTemplate = document.getElementById('downloadTemplate');
 
         let files = [];
         let skus = {};
         let errors = [];
-
-        // Descargar plantilla de Excel
-        downloadTemplate.addEventListener('click', function() {
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet([["original", "renombre"]]); // Plantilla con encabezados
-            XLSX.utils.book_append_sheet(wb, ws, "Plantilla");
-            XLSX.writeFile(wb, "plantilla_sku.xlsx");
-        });
 
         // Función para validar los SKUs
         function validateSKU(fileName) {
@@ -258,12 +251,6 @@
                 const sheetName = workbook.SheetNames[0];
                 const sheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
 
-                // Verificar si las columnas son "original" y "renombre"
-                if (sheet[0][0] !== 'original' || sheet[0][1] !== 'renombre') {
-                    alert("El archivo debe tener 'original' y 'renombre' como títulos de columna en A1 y B1.");
-                    return;
-                }
-
                 excelContent.innerHTML = ''; // Limpiar el contenido anterior
                 const table = document.createElement('table');
                 const tbody = document.createElement('tbody');
@@ -278,12 +265,6 @@
                     const originalSku = row[0];
                     const newSku = row[1];
 
-                    // Validar que no haya celdas vacías o nulas
-                    if (!originalSku || !newSku) {
-                        errors.push(`Fila ${index + 1} tiene valores vacíos. Verifique los datos.`);
-                        return;
-                    }
-
                     const tr = document.createElement('tr');
                     const tdSku = document.createElement('td');
                     const tdNewSku = document.createElement('td');
@@ -297,7 +278,6 @@
 
                     // Validar si el SKU del Excel tiene una imagen correspondiente
                     if (!skus[originalSku]) {
-                        tdSku.classList.add('missing-sku');
                         errors.push(`El SKU "${originalSku}" del Excel no tiene una imagen correspondiente.`);
                     } else {
                         // Asignar automáticamente los nuevos SKUs en los inputs de la derecha
