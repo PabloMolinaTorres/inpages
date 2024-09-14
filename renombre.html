@@ -71,7 +71,7 @@
         }
         button {
             padding: 12px 20px;
-            background-color: #8fca00;
+            background-color: #8fca00; /* Green color */
             color: white;
             border: none;
             border-radius: 5px;
@@ -140,7 +140,7 @@
     
     <div class="container">
         <div class="replicatorContainer">
-            <a href="Replicador.html">
+            <a href="https://pablomolinatorres.github.io/inpages/replicador.html" target="_blank">
                 <button class="replicatorButton">Replicador</button>
             </a>
         </div>
@@ -204,7 +204,7 @@
             const parts = fileName.split('_');
             if (parts.length !== 2) return false;
             const sku = parts[0];
-            the vista = parts[1];
+            const vista = parts[1];
             if (vista.length > 3 || isNaN(vista) || Number(vista) < 1 || Number(vista) > 99) return false;
             return true;
         }
@@ -224,7 +224,7 @@
                 }
                 skus[sku].push(file);
 
-                if (!document.querySelector(`input[data-sku="${sku}"]`)) {
+                if (!document.querySelector(input[data-sku="${sku}"])) {
                     const row = document.createElement('tr');
                     const originalSkuCell = document.createElement('td');
                     const newSkuCell = document.createElement('td');
@@ -233,7 +233,7 @@
 
                     const input = document.createElement('input');
                     input.type = 'text';
-                    input.placeholder = `Nuevo SKU para ${sku}`;
+                    input.placeholder = Nuevo SKU para ${sku};
                     input.dataset.sku = sku;
 
                     newSkuCell.appendChild(input);
@@ -278,13 +278,13 @@
                     const newSku = row[1];
 
                     if (!originalSku || !newSku) {
-                        errors.push(`Fila ${index + 1} tiene valores vacíos. Verifique los datos.`);
+                        errors.push(Fila ${index + 1} tiene valores vacíos. Verifique los datos.);
                         return;
                     }
 
                     const tr = document.createElement('tr');
                     const tdSku = document.createElement('td');
-                    the tdNewSku = document.createElement('td');
+                    const tdNewSku = document.createElement('td');
 
                     tdSku.textContent = originalSku;
                     tdNewSku.textContent = newSku;
@@ -295,9 +295,9 @@
 
                     if (!skus[originalSku]) {
                         tdSku.classList.add('missing-sku');
-                        errors.push(`El SKU "${originalSku}" del Excel no tiene una imagen correspondiente.`);
+                        errors.push(El SKU "${originalSku}" del Excel no tiene una imagen correspondiente.);
                     } else {
-                        const input = document.querySelector(`input[data-sku="${originalSku}"]`);
+                        const input = document.querySelector(input[data-sku="${originalSku}"]);
                         if (input) {
                             input.value = newSku;
                         }
@@ -328,29 +328,29 @@
             progressBar.style.width = '0%';
 
             const zip = new JSZip();
-            the date = new Date();
-            the timestamp = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getHours()).padStart(2, '0')}${String(date.getMinutes()).padStart(2, '0')}`;
+            const date = new Date();
+            const timestamp = ${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getHours()).padStart(2, '0')}${String(date.getMinutes()).padStart(2, '0')};
 
             let processedFiles = 0;
-            the totalFiles = files.length;
+            const totalFiles = files.length;
 
             Object.keys(skus).forEach(sku => {
-                const input = document.querySelector(`input[data-sku="${sku}"]`);
+                const input = document.querySelector(input[data-sku="${sku}"]);
                 const newSku = input.value.trim();
                 if (newSku) {
                     skus[sku].forEach(file => {
-                        the vista = file.name.split('_')[1]; // Extraer la vista
-                        the newFileName = `${newSku}_${vista}`;
+                        const vista = file.name.split('_')[1]; // Extraer la vista
+                        const newFileName = ${newSku}_${vista};
                         zip.file(newFileName, file);
 
                         processedFiles++;
-                        progressBar.style.width = `${(processedFiles / totalFiles) * 100}%`;
+                        progressBar.style.width = ${(processedFiles / totalFiles) * 100}%;
                     });
                 }
             });
 
             zip.generateAsync({ type: 'blob' }).then(function(content) {
-                saveAs(content, `${timestamp}.zip`);
+                saveAs(content, ${timestamp}.zip);
                 progressBarContainer.style.display = 'none';
             });
         });
